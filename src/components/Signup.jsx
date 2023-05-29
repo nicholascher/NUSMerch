@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { initializeApp } from 'firebase/app';
+import { getDatabase } from 'firebase/database';
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 import firebaseConfig from "../../firebase/firebase"; 
+
+const app = initializeApp(firebaseConfig);
 
 function Signup() {
   const [email, setEmail] = useState('');
@@ -10,8 +13,6 @@ function Signup() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    
-    const app = initializeApp(firebaseConfig);
     const database = getDatabase(app);
     const auth = getAuth(app);
 
@@ -20,11 +21,13 @@ function Signup() {
         // Signed in
         const user = userCredential.user;
         alert('User created!');
+        // ...
       })
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
         alert(errorMessage);
+        // ...
       });
   };
 
