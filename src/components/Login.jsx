@@ -21,7 +21,7 @@ function Login() {
       .then((userCredential) => {
         const user = userCredential.user;
         navigate('/landingpage');
-        alert('Logged in successfully!');
+        
       })
       .catch((error) => {
         const errorCode = error.code;
