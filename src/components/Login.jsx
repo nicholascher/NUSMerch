@@ -3,31 +3,50 @@ import { Link, useNavigate } from 'react-router-dom';
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import firebaseConfig from "../../firebase/firebase"; 
-import logo from "../../Images/Logo.jpg"; 
+import logo from "../../Images/Logo.jpg";
+import Validation from './LoginValidation';
 
 function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [values, setValues] = useState({
+    email: '',
+    password: ''
+  });
+  const [errors, setErrors] = useState({});
   const navigate = useNavigate();
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    
-    
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    const validationErrors = Validation(values);
+    setErrors(validationErrors);
+    const isValid = Object.keys(validationErrors).every((key) => validationErrors[key] === '');
 
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        navigate('/landingpage');
-        alert('Logged in successfully!');
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        alert(errorMessage);
-      });
+    if (isValid) {
+      const { email, password } = values;
+      signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          const user = userCredential.user;
+          navigate('/landingpage');
+          alert('Logged in successfully!');
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          if (errorCode === 'auth/wrong-password') {
+            setErrors((prevErrors) => ({
+              ...prevErrors,
+              password: 'Incorrect password',
+            }));
+          }
+          if (errorCode === 'auth/user-not-found') {
+            setErrors((prevErrors) => ({
+              ...prevErrors,
+              email: 'User does not exist',
+            }));
+          }
+        });
+    }
   };
 
   return (
@@ -44,9 +63,10 @@ function Login() {
               type="email"
               placeholder='Email address'
               className='form-control rounded-0'
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={values.email}
+              onChange={(e) => setValues({ ...values, email: e.target.value })}
             />
+            {errors.email && <span className='text-danger'>{errors.email}</span>}
           </div>
           <div className='mb-3'>
             <label htmlFor="password"><strong>Password</strong></label>
@@ -54,9 +74,10 @@ function Login() {
               type="password"
               placeholder='Password'
               className='form-control rounded-0'
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={values.password}
+              onChange={(e) => setValues({ ...values, password: e.target.value })}
             />
+            {errors.password && <span className='text-danger'>{errors.password}</span>}
           </div>
           <button className='btn btn-primary w-100'>Log in</button>
           <p></p>
