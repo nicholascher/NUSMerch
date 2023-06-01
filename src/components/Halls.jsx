@@ -17,13 +17,13 @@ function Halls() {
           <div className="collapse navbar-collapse" id="navbarTogglerDemo02">
             <ul className="navbar-nav me-auto mb-2 mb-lg-0">
               <li className="nav-item">
-                <a className="nav-link" aria-current="page" href="#">Halls</a>
+                <a className="nav-link" aria-current="page" href="/halls">Halls</a>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="#">RC</a>
+                <a className="nav-link" href="/rc">RC</a>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="#">Clubs</a>
+                <a className="nav-link" href="/clubs">Clubs</a>
               </li>
             </ul>
             <form className="d-flex" role="search">

@@ -5,7 +5,7 @@ import { getAuth, sendPasswordResetEmail } from 'firebase/auth';
 import firebaseConfig from "../../firebase/firebase"; 
 import logo from "../../Images/Logo.jpg";
 
-function RC() {
+function Clubs() {
   return (
     <>
       <nav className="navbar navbar-expand-lg bg-body-tertiary">
@@ -138,4 +138,4 @@ function RC() {
   );
 }
 
-export default RC;
+export default Clubs;

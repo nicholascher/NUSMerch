@@ -11,7 +11,7 @@ function LandingPage() {
     <>
       <nav className="navbar navbar-expand-lg bg-body-tertiary">
         <div className="container-fluid">
-          <a className="navbar-brand" href="#">NUSMerch</a>
+          <a className="navbar-brand" href="/landingpage">NUSMerch</a>
           <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
             <span className="navbar-toggler-icon"></span>
           </button>
@@ -21,10 +21,10 @@ function LandingPage() {
                 <a className="nav-link" aria-current="page" href="/halls">Halls</a>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="#">RC</a>
+                <a className="nav-link" href="/rc">RC</a>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="#">Clubs</a>
+                <a className="nav-link" href="/clubs">Clubs</a>
               </li>
             </ul>
             <form className="d-flex" role="search">
