@@ -13,13 +13,14 @@ function Login() {
   const handleSubmit = (event) => {
     event.preventDefault();
     
-    navigate('/landingpage');
+    
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const user = userCredential.user;
+        navigate('/landingpage');
         alert('Logged in successfully!');
       })
       .catch((error) => {
