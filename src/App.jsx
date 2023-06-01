@@ -4,6 +4,9 @@ import Signup from "./components/Signup"
 import LandingPage from "./components/LandingPage"
 import ForgotPassword from "./components/ForgotPassword"
 import ForgotPassConfirm from "./components/ForgotPassConfirm"
+import Halls from "./components/Halls"
+import RC from "./components/RC"
+import Clubs from "./components/Clubs"
 
 function App() {
   return (
@@ -15,6 +18,10 @@ function App() {
         <Route path='/landingpage' element={<LandingPage/>}></Route>
         <Route path='/forgotpassword' element={<ForgotPassword/>}></Route>
         <Route path='/forgotpassconfirm' element={<ForgotPassConfirm/>}></Route>
+        <Route path='/halls' element={<Halls/>}></Route>
+        <Route path='/rc' element={<RC/>}></Route>
+        <Route path='/clubs' element={<RC/>}></Route>
+
       </Route>
     </Routes>
   </BrowserRouter>

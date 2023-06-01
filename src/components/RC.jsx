@@ -5,8 +5,7 @@ import { getAuth, sendPasswordResetEmail } from 'firebase/auth';
 import firebaseConfig from "../../firebase/firebase"; 
 import logo from "../../Images/Logo.jpg";
 
-
-function LandingPage() {
+function RC() {
   return (
     <>
       <nav className="navbar navbar-expand-lg bg-body-tertiary">
@@ -139,4 +138,4 @@ function LandingPage() {
   );
 }
 
-export default LandingPage;
+export default RC;
