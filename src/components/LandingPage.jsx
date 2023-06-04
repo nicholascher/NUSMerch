@@ -1,12 +1,13 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate} from 'react-router-dom';
 import { initializeApp } from 'firebase/app';
-import { getAuth, sendPasswordResetEmail } from 'firebase/auth';
+import { getAuth, signOut } from 'firebase/auth';
 import firebaseConfig from "../../firebase/firebase"; 
 import logo from "../../Images/Logo.jpg";
-
+import Signout from './Signout';
 
 function LandingPage() {
+
   return (
     <>
       <nav className="navbar navbar-expand-lg bg-body-tertiary">
@@ -31,11 +32,12 @@ function LandingPage() {
               <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
               <button className="btn btn-outline-success" type="submit">Search</button>
             </form>
+            <button className="btn btn-primary ms-2" onClick={Signout()}>Sign Out</button>
           </div>
         </div>
       </nav>
         <div class="row row-cols-1 row-cols-md-3 g-4">
-      <div class="col">
+      <div class="col"> 
         <div class="card">
           <img src={logo} class="card-img-top" alt="..."/>
           <div class="card-body">

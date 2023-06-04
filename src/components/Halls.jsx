@@ -4,6 +4,7 @@ import { initializeApp } from 'firebase/app';
 import { getAuth, sendPasswordResetEmail } from 'firebase/auth';
 import firebaseConfig from "../../firebase/firebase"; 
 import logo from "../../Images/Logo.jpg";
+import Signout from './Signout';
 
 function Halls() {
   return (
@@ -30,6 +31,7 @@ function Halls() {
             <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
             <button className="btn btn-outline-success" type="submit">Search</button>
           </form>
+          <button className="btn btn-primary ms-2" onClick={Signout()}>Sign Out</button>
         </div>
       </div>
     </nav>

@@ -14,13 +14,14 @@ function App() {
     <Routes> 
       <Route>
         <Route path='/' element={<Login />}></Route>
+        <Route path='/login' element={<Login />}></Route>
         <Route path='/signup' element={<Signup />}></Route>
-        <Route path='/landingpage' element={<LandingPage/>}></Route>
-        <Route path='/forgotpassword' element={<ForgotPassword/>}></Route>
-        <Route path='/forgotpassconfirm' element={<ForgotPassConfirm/>}></Route>
-        <Route path='/halls' element={<Halls/>}></Route>
-        <Route path='/rc' element={<RC/>}></Route>
-        <Route path='/clubs' element={<RC/>}></Route>
+        <Route path='/landingpage' element={<LandingPage />}></Route>
+        <Route path='/forgotpassword' element={<ForgotPassword />}></Route>
+        <Route path='/forgotpassconfirm' element={<ForgotPassConfirm />}></Route>
+        <Route path='/halls' element={<Halls />}></Route>
+        <Route path='/rc' element={<RC />}></Route>
+        <Route path='/clubs' element={<Clubs />}></Route>
 
       </Route>
     </Routes>
