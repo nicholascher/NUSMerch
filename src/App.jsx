@@ -7,6 +7,8 @@ import ForgotPassConfirm from "./components/ForgotPassConfirm"
 import Halls from "./components/Halls"
 import RC from "./components/RC"
 import Clubs from "./components/Clubs"
+import SellersListings from "./components/SellersListings"
+import AddListings from "./components/AddListings"
 
 function App() {
   return (
@@ -22,7 +24,8 @@ function App() {
         <Route path='/halls' element={<Halls />}></Route>
         <Route path='/rc' element={<RC />}></Route>
         <Route path='/clubs' element={<Clubs />}></Route>
-
+        <Route path='/sellerslistings' element={<SellersListings />}></Route>
+        <Route path='/addlistings' element={<AddListings />}></Route>
       </Route>
     </Routes>
   </BrowserRouter>
