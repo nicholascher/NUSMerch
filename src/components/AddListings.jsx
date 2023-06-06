@@ -10,6 +10,7 @@ function AddListings() {
 
   const [description, setDescription] = useState('');
   const [name, setName] = useState('');
+  const [sellerType, setSellerType] = useState('');
   const [imageUpload, setImageUpload] = useState(null);
 
   const handleSubmit = async (event) => {
@@ -18,13 +19,14 @@ function AddListings() {
     if (imageUpload) {
       const imagePath = `images/${imageUpload.name}`
       const imageRef = ref(storage, imagePath);
-      await addDoc(sellersCollectionRef, { description, name, imagePath });
-      uploadBytes(imageRef, imageUpload);
+      await addDoc(sellersCollectionRef, { description, name, imagePath, sellerType });
+      await uploadBytes(imageRef, imageUpload);
     }
     alert('Listing added!');
     setDescription('');
     setName('');
     setImageUpload(null);
+    window.location.reload()
   };
 
   return (
@@ -39,7 +41,16 @@ function AddListings() {
       </div>
       <div className="row justify-content-center">
         <div className="col-md-6">
-          <form>
+          <form onSubmit={handleSubmit}>
+            <select className="form-select" 
+              aria-label="Default select example" 
+              onChange={(event) => setSellerType(event.target.value)}>
+              <option defaultValue>Who are you selling to?</option>
+              <option value="Halls">Halls</option>
+              <option value="RC">RC</option>
+              <option value="Clubs">Clubs</option>
+            </select>
+            <p></p>
             <div className="mb-3">
               <label htmlFor="productName" className="form-label">
                 Product Name
@@ -85,7 +96,7 @@ function AddListings() {
               />
             </div>
             <div className="text-center">
-              <button type="submit" className="btn btn-primary" onClick={handleSubmit}>
+              <button type="submit" className="btn btn-primary">
                 Submit
               </button>
             </div>
