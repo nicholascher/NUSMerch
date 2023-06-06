@@ -6,6 +6,17 @@ import { Link } from 'react-router-dom';
 import logo from '../../Images/Logo.jpg';
 
 function AddListings() {
+  function makeid() {
+    let result = '';
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const charactersLength = characters.length;
+    let counter = 0;
+    while (counter < 14) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+      counter += 1;
+    }
+    return result;
+}
   const sellersCollectionRef = collection(db, 'Sellers');
 
   const [description, setDescription] = useState('');
@@ -17,7 +28,7 @@ function AddListings() {
     event.preventDefault();
     
     if (imageUpload) {
-      const imagePath = `images/${imageUpload.name}`
+      const imagePath = `images/${imageUpload.name + makeid()}`
       const imageRef = ref(storage, imagePath);
       await addDoc(sellersCollectionRef, { description, name, imagePath, sellerType });
       await uploadBytes(imageRef, imageUpload);
