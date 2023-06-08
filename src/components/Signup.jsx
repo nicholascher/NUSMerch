@@ -4,7 +4,7 @@ import { initializeApp } from 'firebase/app';
 import { getDatabase } from 'firebase/database';
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 import firebaseConfig from "../../firebase/firebase"; 
-import logo from "../../Images/Logo.jpg"; 
+import logo from "../../Images/Logo.png"; 
 import Validation from './SignupValidation';
 
 const app = initializeApp(firebaseConfig);

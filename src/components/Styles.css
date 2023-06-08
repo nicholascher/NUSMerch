@@ -1,0 +1,39 @@
+/* styles.css */
+.login-section {
+  background-color: #82EEFD;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-logo {
+  border-radius: 1rem;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  margin-bottom: 1rem;
+}
+
+.login-card {
+  border: 0px solid #000000;
+  border-radius: 1rem;
+}
+
+.login-form-label {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.error-message {
+  color: red;
+  font-size: 0.875rem;
+}
+
+.button-primary {
+  background-color: #000000;
+}
+
+.login-link {
+  color: #393f81;
+}

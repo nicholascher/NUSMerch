@@ -3,7 +3,7 @@ import { collection, addDoc } from 'firebase/firestore';
 import { db, storage } from '../../firebase/firebase';
 import { ref, uploadBytes } from 'firebase/storage';
 import { Link } from 'react-router-dom';
-import logo from '../../Images/Logo.jpg';
+import logo from '../../Images/Logo.png';
 
 function AddListings() {
   function makeid() {
