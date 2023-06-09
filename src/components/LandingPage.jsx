@@ -5,6 +5,7 @@ import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 import { db } from '../../firebase/firebase';
 import logo from '../../Images/Logo.jpg';
 import Signout from './Signout';
+import SellerCheck from './SellerCheck';
 
 function Halls() {
   const [sellers, setSellers] = useState([]);
@@ -81,6 +82,11 @@ function Halls() {
                 </Link>
               </li>
             </ul>
+            <div>
+            <button className="btn btn-primary me-2" onClick={SellerCheck()}>
+              Sell Items
+            </button>
+            </div>
             <form className="d-flex" role="search">
               <input
                 className="form-control me-2"
@@ -109,6 +115,7 @@ function Halls() {
                 <div className="card-body">
                   <h5 className="card-title">{seller.name}</h5>
                   <p className="card-text">{seller.description}</p>
+                  
                 </div>
               </div>
             </div>

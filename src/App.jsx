@@ -9,6 +9,8 @@ import RC from "./components/RC"
 import Clubs from "./components/Clubs"
 import SellersListings from "./components/SellersListings"
 import AddListings from "./components/AddListings"
+import NotSeller from "./components/NotSeller"
+import DeleteListings from "./components/DeleteListings"
 
 function App() {
   return (
@@ -26,6 +28,8 @@ function App() {
         <Route path='/clubs' element={<Clubs />}></Route>
         <Route path='/sellerslistings' element={<SellersListings />}></Route>
         <Route path='/addlistings' element={<AddListings />}></Route>
+        <Route path='/notseller' element={<NotSeller />}></Route>
+        <Route path='/deletelistings/:id/:imagePath' element={<DeleteListings />}></Route>
       </Route>
     </Routes>
   </BrowserRouter>

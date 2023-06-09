@@ -4,9 +4,10 @@ import { getStorage, ref, getDownloadURL } from "firebase/storage";
 import { db } from '../../firebase/firebase';
 import logo from '../../Images/Logo.jpg';
 import Signout from './Signout';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 function SellersListings() {
+  const navigate = useNavigate();
   const [sellers, setSellers] = useState([]);
   const [newImages, setNewImages] = useState([]);
   const storage = getStorage();
@@ -39,14 +40,19 @@ function SellersListings() {
     getSellers();
   }, []);
 
+  const handleEdit = (id, imagePath) => {
+    navigate(`/deletelistings/${id}/${encodeURIComponent(imagePath)}`)
+  }
+
   return (
     <>
       <div className="container mt-5">
         <div className="row mb-3">
-          <div className="col text-start">
-            <Link to="/addlistings" className="btn btn-primary">Add Listing</Link>
+          <div className="col d-flex text-start">
+            <Link to="/addlistings" className="btn btn-primary me-2">Add Listing</Link>
           </div>
           <div className="col text-end">
+            <Link to="/landingpage" className="btn btn-primary me-2">Back to Home</Link>
             <button className="btn btn-primary" onClick={Signout}>Sign Out</button>
           </div>
         </div>
@@ -58,6 +64,10 @@ function SellersListings() {
                 <div className="card-body">
                   <h5 className="card-title">{seller.name}</h5>
                   <p className="card-text">{seller.description}</p>
+                  <button 
+                  className="btn btn-primary"
+                  onClick={() => handleEdit(seller.id, seller.imagePath)}
+                  >Edit</button>
                 </div>
               </div>
             </div>
