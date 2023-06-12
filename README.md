@@ -14,8 +14,5 @@ If you're a student who wants to promote your NUS-themed creations, our website 
 So why waste time searching for NUS merchandise when you can find it all in one place?
 
 
-# How to run Locally
-
-1. Ensure that you have node.js installed
-2. In your terminal, run npm install bootstrap firebase 
-3. Then type npm run dev in your terminal to launch the web app locally
+# Try out the App!
+https://nus-merch-git-master-nicholascher.vercel.app/
