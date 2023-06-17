@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { collection, addDoc } from 'firebase/firestore';
 import { db, storage } from '../../firebase/firebase';
 import { ref, uploadBytes } from 'firebase/storage';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import logo from '../../Images/Logo.jpg';
 
 function AddListings() {
@@ -17,6 +17,7 @@ function AddListings() {
     }
     return result;
 }
+  const navigate = useNavigate();
   const sellersCollectionRef = collection(db, 'Sellers');
 
   const [description, setDescription] = useState('');
@@ -37,7 +38,7 @@ function AddListings() {
     setDescription('');
     setName('');
     setImageUpload(null);
-    window.location.reload()
+    navigate('/addlistings')
   };
 
   return (

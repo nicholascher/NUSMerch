@@ -45,6 +45,8 @@ function Halls() {
     return seller.sellerType === "Halls" && seller.name.toLowerCase().includes(search.toLowerCase());
   });
 
+
+
   return (
     <>
       <nav className="navbar navbar-expand-lg bg-body-tertiary">
@@ -90,9 +92,6 @@ function Halls() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
-              <button className="btn btn-outline-success" type="submit">
-                Search
-              </button>
             </form>
             <button className="btn btn-primary ms-2" onClick={Signout()}>
               Sign Out
