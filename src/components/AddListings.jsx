@@ -16,7 +16,8 @@ function AddListings() {
       counter += 1;
     }
     return result;
-}
+  }
+
   const navigate = useNavigate();
   const sellersCollectionRef = collection(db, 'Sellers');
 
@@ -24,21 +25,46 @@ function AddListings() {
   const [name, setName] = useState('');
   const [sellerType, setSellerType] = useState('');
   const [imageUpload, setImageUpload] = useState(null);
+  const [dependentOptions, setDependentOptions] = useState([]);
+  const [sellerSpecific, setSellerSpecific] = useState('');
+
+  const handleSellerTypeChange = (event) => {
+    const selectedSellerType = event.target.value;
+    setSellerType(selectedSellerType);
+
+    // Update dependent options based on selected seller type
+    if (selectedSellerType === 'Halls') {
+      setDependentOptions(['Eusoff', 'Temasek', 'Kent Ridge', 'Sheares', 'Raffles']);
+    } else if (selectedSellerType === 'RC') {
+      setDependentOptions(['CAPT', 'RC4', 'Ridge View', 'Tembusu']);
+    } else if (selectedSellerType === 'Clubs') {
+      setDependentOptions(['Club 1', 'Club 2', 'Club 3']);
+    } else {
+      setDependentOptions([]);
+    }
+
+    setSellerSpecific('');
+  };
+
+  const handleSellerSpecificChange = (event) => {
+    setSellerSpecific(event.target.value);
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    
+
     if (imageUpload) {
-      const imagePath = `images/${imageUpload.name + makeid()}`
+      const imagePath = `images/${imageUpload.name + makeid()}`;
       const imageRef = ref(storage, imagePath);
-      await addDoc(sellersCollectionRef, { description, name, imagePath, sellerType });
+      await addDoc(sellersCollectionRef, { description, name, imagePath, sellerType, sellerSpecific });
       await uploadBytes(imageRef, imageUpload);
     }
     alert('Listing added!');
     setDescription('');
     setName('');
     setImageUpload(null);
-    navigate('/addlistings')
+    navigate('/addlistings');
+    window.location.reload()
   };
 
   return (
@@ -48,19 +74,37 @@ function AddListings() {
           <img src={logo} alt="Logo" className="rounded" style={{ width: '100px', height: 'auto' }} />
         </div>
         <div>
-          <Link to="/sellerslistings" className="btn btn-primary">Back to Listing</Link>
+          <Link to="/sellerslistings" className="btn btn-primary">
+            Back to Listing
+          </Link>
         </div>
       </div>
       <div className="row justify-content-center">
         <div className="col-md-6">
           <form onSubmit={handleSubmit}>
-            <select className="form-select" 
-              aria-label="Default select example" 
-              onChange={(event) => setSellerType(event.target.value)}>
+            <select
+              className="form-select"
+              aria-label="Default select example"
+              onChange={handleSellerTypeChange}
+              value={sellerType}
+            >
               <option defaultValue>Who are you selling to?</option>
-              <option value="Halls">Halls</option>
               <option value="RC">RC</option>
               <option value="Clubs">Clubs</option>
+              <option value="Halls">Halls</option>
+            </select>
+            <p></p>
+            <select className="form-select" 
+              aria-label="Default select example" 
+              disabled={!sellerType} 
+              onChange={handleSellerSpecificChange} 
+              value={sellerSpecific}>
+              <option defaultValue>Select an option</option>
+              {dependentOptions.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
             </select>
             <p></p>
             <div className="mb-3">

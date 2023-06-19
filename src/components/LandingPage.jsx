@@ -67,12 +67,12 @@ function Halls() {
           <div className="collapse navbar-collapse" id="navbarTogglerDemo02">
             <ul className="navbar-nav me-auto mb-2 mb-lg-0">
               <li className="nav-item">
-                <Link className="nav-link" to="/halls">
+                <Link className="nav-link" to="/hallslanding">
                   Halls
                 </Link>
               </li>
               <li className="nav-item">
-                <Link className="nav-link" to="/rc">
+                <Link className="nav-link" to="/rclanding">
                   RC
                 </Link>
               </li>

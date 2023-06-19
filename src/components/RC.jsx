@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { collection, getDocs } from 'firebase/firestore';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 import { db } from '../../firebase/firebase';
@@ -10,6 +10,8 @@ function RC() {
   const [sellers, setSellers] = useState([]);
   const [newImages, setNewImages] = useState([]);
   const [search, setSearch] = useState('');
+  const { rctype } = useParams();
+  console.log(rctype);
 
   const storage = getStorage();
 
@@ -42,7 +44,7 @@ function RC() {
   }, []);
 
   const filteredSellers = sellers.filter((seller) => {
-    return seller.sellerType === "RC" && seller.name.toLowerCase().includes(search.toLowerCase());
+    return seller.sellerSpecific === rctype && seller.name.toLowerCase().includes(search.toLowerCase());
   });
 
   return (
@@ -66,7 +68,7 @@ function RC() {
           <div className="collapse navbar-collapse" id="navbarTogglerDemo02">
             <ul className="navbar-nav me-auto mb-2 mb-lg-0">
               <li className="nav-item">
-                <Link className="nav-link" to="/halls">
+                <Link className="nav-link" to="/hallslanding">
                   Halls
                 </Link>
               </li>

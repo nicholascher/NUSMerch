@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { collection, getDocs } from 'firebase/firestore';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 import { db } from '../../firebase/firebase';
@@ -10,7 +10,8 @@ function Halls() {
   const [sellers, setSellers] = useState([]);
   const [newImages, setNewImages] = useState([]);
   const [search, setSearch] = useState('');
-
+  const { hall } = useParams();
+  console.log(hall);
   const storage = getStorage();
 
   useEffect(() => {
@@ -42,10 +43,8 @@ function Halls() {
   }, []);
 
   const filteredSellers = sellers.filter((seller) => {
-    return seller.sellerType === "Halls" && seller.name.toLowerCase().includes(search.toLowerCase());
+    return seller.sellerSpecific === hall && seller.name.toLowerCase().includes(search.toLowerCase());
   });
-
-
 
   return (
     <>
@@ -68,12 +67,12 @@ function Halls() {
           <div className="collapse navbar-collapse" id="navbarTogglerDemo02">
             <ul className="navbar-nav me-auto mb-2 mb-lg-0">
               <li className="nav-item">
-                <Link className="nav-link" to="/halls">
+                <Link className="nav-link" to="/hallslanding">
                   Halls
                 </Link>
               </li>
               <li className="nav-item">
-                <Link className="nav-link" to="/rc">
+                <Link className="nav-link" to="/rclanding">
                   RC
                 </Link>
               </li>
@@ -92,6 +91,9 @@ function Halls() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
+              <button className="btn btn-outline-success" type="submit">
+                Search
+              </button>
             </form>
             <button className="btn btn-primary ms-2" onClick={Signout()}>
               Sign Out
