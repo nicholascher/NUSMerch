@@ -6,6 +6,7 @@ import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 import firebaseConfig from "../../firebase/firebase"; 
 import logo from "../../Images/Logo.png"; 
 import Validation from './SignupValidation';
+import "./Styles.css";
 
 const app = initializeApp(firebaseConfig);
 
@@ -48,60 +49,62 @@ function Signup() {
   };
 
   return (
-    <div className="d-flex justify-content-center align-items-center bg-dark vh-100">
-      <div className="position-absolute top-0 start-0 p-3">
-        <img src={logo} alt="Logo" className="rounded" style={{ width: '100px', height: 'auto' }} />
-      </div>
-      <div className="bg-white p-3 rounded w-25">
-        <h2>Sign Up</h2>
-        <form onSubmit={handleSubmit}>
-          <div className="mb-3">
-            <label htmlFor="email">
-              <strong>Email</strong>
-            </label>
+    <section className="login-section">
+      <div className="container">
+        <div className="row">
+          <div className="col-md-7">
+            <img src={logo} alt="Logo" className="login-logo" />
+          </div>
+          <div className="row col-md-5">
+            <div className="card login-card shadow-lg">
+              <div className="card-body p-4 p-lg-5 text-black">
+                <form onSubmit={handleSubmit}>
+                  <h5 className="fw-bold mb-3 pb-1">Create your account</h5>
+          <div className="form-group mb-4">
+          <label className="form-label login-form-label" htmlFor="form2Example17">Email address</label>
             <input
               type="email"
-              placeholder="Email address"
-              className="form-control rounded-0"
+              id="form2Example17"
+              className="form-control form-control-lg"
               value={values.email}
               onChange={(e) => setValues({ ...values, email: e.target.value })}
             />
-            {errors.email && <span className='text-danger'>{errors.email}</span>}
+            {errors.email && <span className='text-danger error-message'>{errors.email}</span>}
           </div>
-          <div className="mb-3">
-            <label htmlFor="password">
-              <strong>Password</strong>
-            </label>
+          <div className="form-group mb-4">
+          <label className="form-label login-form-label" htmlFor="form2Example17">Password</label>
             <input
               type="password"
-              placeholder="Password"
-              className="form-control rounded-0"
+              id="form2Example17"
+              className="form-control form-control-lg"
               value={values.password}
               onChange={(e) => setValues({ ...values, password: e.target.value })}
             />
-            {errors.password && <span className='text-danger'>{errors.password}</span>}
+            {errors.password && <span className='text-danger error-message'>{errors.password}</span>}
           </div>
           <div className="mb-3">
-            <label htmlFor="password">
-              <strong>Enter Password Again</strong>
-            </label>
+          <label className="form-label login-form-label" htmlFor="form2Example17">Enter Password Again</label>
             <input
               type="password"
-              placeholder="Enter Password Again"
-              className="form-control rounded-0"
+              id="form2Example17"
+              className="form-control form-control-lg"
               value={values.passwordAgain}
               onChange={(e) => setValues({ ...values, passwordAgain: e.target.value })}
             />
-            {errors.passwordAgain && <span className='text-danger'>{errors.passwordAgain}</span>}
+            {errors.passwordAgain && <span className='text-danger error-message'>{errors.passwordAgain}</span>}
           </div>
-          <button className="btn btn-primary w-100">Sign Up</button>
+          <div className="pt-1 mb-4">
+                    <button className="btn btn-dark btn-lg btn-block button-primary" type="submit">Sign up</button>
+                  </div>
           <p></p>
-          <Link to="/" className="btn btn-success border w-100">
-            Back to Login
-          </Link>
+          <Link to="/" className="login-link">Back to Login</Link>
         </form>
       </div>
     </div>
+    </div>
+    </div>
+    </div>
+    </section>
   );
 }
 

@@ -1,4 +1,3 @@
-// Login.js
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { initializeApp } from 'firebase/app';
@@ -6,7 +5,7 @@ import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import firebaseConfig from "../../firebase/firebase";
 import Validation from './LoginValidation';
 import logo from "../../Images/Logo.png";
-import "./Styles.css"; // Import the styles.css file
+import "./Styles.css";
 
 function Login() {
   const [values, setValues] = useState({
@@ -54,10 +53,10 @@ function Login() {
     <section className="login-section">
       <div className="container">
         <div className="row">
-          <div className="col-md-6">
+          <div className="col-md-7">
             <img src={logo} alt="Logo" className="login-logo" />
           </div>
-          <div className="col-md-6">
+          <div className="row col-md-5">
             <div className="card login-card shadow-lg">
               <div className="card-body p-4 p-lg-5 text-black">
                 <form onSubmit={handleSubmit}>
