@@ -35,12 +35,12 @@ function RCLanding() {
                 </Link>
               </li>
               <li className="nav-item">
-                <Link className="nav-link" to="/clubs">
+                <Link className="nav-link" to="/clubslanding">
                   Clubs
                 </Link>
               </li>
             </ul>
-            <button className="btn btn-primary ms-2" onClick={Signout}>
+            <button className="btn btn-primary ms-2" onClick={Signout()}>
               Sign Out
             </button>
           </div>
@@ -69,7 +69,7 @@ function RCLanding() {
             </div>
           </div>
           <div className="col">
-            <div className="card text-bg-light h-100 card:hover">
+            <div className="card text-bg-light h-100">
               <div className="card-body">
                 <Link
                   to={`/rc/RC4`}

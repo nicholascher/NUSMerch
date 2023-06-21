@@ -13,6 +13,8 @@ import NotSeller from "./components/NotSeller"
 import DeleteListings from "./components/DeleteListings"
 import HallsLanding from "./components/HallsLanding"
 import RCLanding from "./components/RCLanding"
+import ProductDisplay from "./components/ProductDisplay"
+import ClubsLanding from "./components/ClubsLanding"
 
 function App() {
   return (
@@ -33,7 +35,9 @@ function App() {
         <Route path='/notseller' element={<NotSeller />}></Route>
         <Route path='/hallslanding' element={<HallsLanding />}></Route>
         <Route path='/RClanding' element={<RCLanding />}></Route>
-        <Route path='/deletelistings/:id/:imagePath' element={<DeleteListings />}></Route>   
+        <Route path='/clubslanding' element={<ClubsLanding />}></Route>
+        <Route path='/deletelistings/:id/:imagePath' element={<DeleteListings />}></Route>
+        <Route path='/productdisplay/:id' element={<ProductDisplay />}></Route>
 
       </Route>
     </Routes>

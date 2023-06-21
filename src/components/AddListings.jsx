@@ -27,6 +27,7 @@ function AddListings() {
   const [imageUpload, setImageUpload] = useState(null);
   const [dependentOptions, setDependentOptions] = useState([]);
   const [sellerSpecific, setSellerSpecific] = useState('');
+  const [price, setPrice] = useState('');
 
   const handleSellerTypeChange = (event) => {
     const selectedSellerType = event.target.value;
@@ -62,7 +63,7 @@ function AddListings() {
 
       const imagePath = `images/${imageUpload.name + makeid()}`;
       const imageRef = ref(storage, imagePath);
-      await addDoc(sellersCollectionRef, { description, name, imagePath, sellerType, sellerSpecific });
+      await addDoc(sellersCollectionRef, { description, name, imagePath, sellerType, sellerSpecific, price });
       await uploadBytes(imageRef, imageUpload);
 
       alert('Listing added!');
@@ -128,6 +129,21 @@ function AddListings() {
                 value={name}
                 onChange={(event) => {
                   setName(event.target.value);
+                }}
+              />
+            </div>
+            <div className="mb-3">
+              <label htmlFor="productPrice" className="form-label">
+                Price
+              </label>
+              <input
+                type="text"
+                className="form-control"
+                id="productPrice"
+                name="price"
+                value={price}
+                onChange={(event) => {
+                  setPrice(event.target.value);
                 }}
               />
             </div>

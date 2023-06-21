@@ -1,15 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Signout from './Signout';
-import logo from '../../Images/Corner Logo.png';
 
-function HallsLanding() {
+function ClubsLanding() {
   return (
     <>
       <nav className="navbar navbar-expand-lg bg-body-tertiary">
         <div className="container-fluid">
           <Link className="navbar-brand" to="/landingpage">
-            <img src={logo} alt="Logo" className="logo smaller" />
+            NUSMerch
           </Link>
           <button
             className="navbar-toggler"
@@ -35,7 +34,7 @@ function HallsLanding() {
                 </Link>
               </li>
               <li className="nav-item">
-                <Link className="nav-link" to="/clubslanding">
+                <Link className="nav-link" to="/clubs">
                   Clubs
                 </Link>
               </li>
@@ -49,71 +48,43 @@ function HallsLanding() {
       <div className="container mt-5">
         <div className="row row-cols-1 row-cols-md-3 g-4">
           <div className="col">
-            <div className="card text-bg-light h-100">
+            <div className="card product text-bg-light h-100">
               <Link
-                to={`/halls/Kent Ridge`}
+                to={`/clubs/Club 1`}
                 activeClassName="active-nav"
                 style={{ textDecoration: 'none', color: 'inherit' }}
               >
-                <img src='../Images/KR Hall.png' className="card-img" alt="logo" />
+                <img src='../Images/Tembusu.jpg' className="card-img" alt="logo" />
                 <div className="card-img-overlay">
-                  <h5 className="card-title">KR</h5>
+                  <h5 className="card-title">Club 1</h5>
                 </div>
               </Link>
             </div>
           </div>
           <div className="col">
-            <div className="card text-bg-light h-100">
+            <div className="card product text-bg-light h-100">
               <Link
-                to={`/halls/Temasek`}
+                to={`/clubs/Club 2`}
                 activeClassName="active-nav"
                 style={{ textDecoration: 'none', color: 'inherit' }}
               >
-                <img src='../Images/Temasek Hall.png' className="card-img" alt="logo" />
+                <img src='../Images/RC4.jpg' className="card-img" alt="logo" />
                 <div className="card-img-overlay">
-                  <h5 className="card-title">Temasek</h5>
+                  <h5 className="card-title">Club 2</h5>
                 </div>
               </Link>
             </div>
           </div>
           <div className="col">
-            <div className="card text-bg-light h-100">
+            <div className="card product text-bg-light h-100">
               <Link
-                to={`/halls/Sheares`}
+                to={`/clubs/Club 3`}
                 activeClassName="active-nav"
                 style={{ textDecoration: 'none', color: 'inherit' }}
               >
-                <img src='../Images/Sheares Hall.png' className="card-img" alt="logo" />
+                <img src='../Images/Ridge View.jpg' className="card-img" alt="logo" />
                 <div className="card-img-overlay">
-                  <h5 className="card-title">Sheares</h5>
-                </div>
-              </Link>
-            </div>
-          </div>
-          <div className="col">
-            <div className="card text-bg-light h-100">
-              <Link
-                to={`/halls/Raffles`}
-                activeClassName="active-nav"
-                style={{ textDecoration: 'none', color: 'inherit' }}
-              >
-                <img src='../Images/Raffles Hall.png' className="card-img" alt="logo" />
-                <div className="card-img-overlay">
-                  <h5 className="card-title">Raffles</h5>
-                </div>
-              </Link>
-            </div>
-          </div>
-          <div className="col">
-            <div className="card text-bg-light h-100">
-              <Link
-                to={`/halls/Eusoff`}
-                activeClassName="active-nav"
-                style={{ textDecoration: 'none', color: 'inherit' }}
-              >
-                <img src='../Images/Eusoff Hall.png' className="card-img" alt="logo" />
-                <div className="card-img-overlay">
-                  <h5 className="card-title">Eusoff</h5>
+                  <h5 className="card-title">Club 3</h5>
                 </div>
               </Link>
             </div>
@@ -124,4 +95,4 @@ function HallsLanding() {
   );
 }
 
-export default HallsLanding;
+export default ClubsLanding;

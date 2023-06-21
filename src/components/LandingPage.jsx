@@ -77,7 +77,7 @@ function LandingPage() {
                 </Link>
               </li>
               <li className="nav-item">
-                <Link className="nav-link" to="/clubs">
+                <Link className="nav-link" to="/clubslanding">
                   Clubs
                 </Link>
               </li>
