@@ -90,7 +90,7 @@ function HallsLanding() {
           {groups.map((group, index) => (
             <div className="col" key={group.id}>
               <Link to={`/halls/${group.name}`} className="card-link">
-                <div className="card text-bg-light h-100">
+                <div className="card product text-bg-light h-100">
                   <img src={newImages[index]} className="card-img" alt="Group Image" />
                   <div className="card-img-overlay">
                     <h5 className="card-title">{group.name}</h5>

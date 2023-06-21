@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { collection, getDocs } from 'firebase/firestore';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 import { db } from '../../firebase/firebase';
-import logo from '../../Images/Logo.png';
+import logo from '../../Images/Corner Logo.png';
 import Signout from './Signout';
 
 function ClubsLanding() {
@@ -51,7 +51,7 @@ function ClubsLanding() {
       <nav className="navbar navbar-expand-lg bg-body-tertiary">
         <div className="container-fluid">
           <Link className="navbar-brand" to="/landingpage">
-            NUSMerch
+            <img src={logo} alt="Logo" className="logo smaller" />
           </Link>
           <button
             className="navbar-toggler"
@@ -82,7 +82,7 @@ function ClubsLanding() {
                 </Link>
               </li>
             </ul>
-            <button className="btn btn-primary ms-2" onClick={Signout}>
+            <button className="btn btn-primary ms-2" onClick={Signout()}>
               Sign Out
             </button>
           </div>
@@ -93,7 +93,7 @@ function ClubsLanding() {
           {groups.map((group, index) => (
             <div className="col" key={group.id}>
               <Link to={`/halls/${group.name}`} className="card-link">
-                <div className="card text-bg-light h-100">
+                <div className="card product text-bg-light h-100">
                   <img src={newImages[index]} className="card-img" alt="Group Image" />
                   <div className="card-img-overlay">
                     <h5 className="card-title">{group.name}</h5>

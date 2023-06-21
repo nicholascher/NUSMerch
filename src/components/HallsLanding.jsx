@@ -3,7 +3,6 @@ import { Link, useParams } from 'react-router-dom';
 import { collection, getDocs } from 'firebase/firestore';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 import { db } from '../../firebase/firebase';
-import logo from '../../Images/Logo.png';
 import Signout from './Signout';
 import logo from '../../Images/Corner Logo.png';
 
@@ -94,7 +93,7 @@ function HallsLanding() {
           {groups.map((group, index) => (
             <div className="col" key={group.id}>
               <Link to={`/halls/${group.name}`} className="card-link">
-                <div className="card text-bg-light h-100">
+                <div className="card product text-bg-light h-100">
                   <img src={newImages[index]} className="card-img" alt="Group Image" />
                   <div className="card-img-overlay">
                     <h5 className="card-title">{group.name}</h5>
