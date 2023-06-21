@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import Signout from './Signout';
 
-function RCLanding() {
+function ClubsLanding() {
   return (
     <>
       <nav className="navbar navbar-expand-lg bg-body-tertiary">
@@ -34,7 +34,7 @@ function RCLanding() {
                 </Link>
               </li>
               <li className="nav-item">
-                <Link className="nav-link" to="/clubslanding">
+                <Link className="nav-link" to="/clubs">
                   Clubs
                 </Link>
               </li>
@@ -50,13 +50,13 @@ function RCLanding() {
           <div className="col">
             <div className="card text-bg-light h-100">
               <Link
-                to={`/rc/Tembusu`}
+                to={`/clubs/Club 1`}
                 activeClassName="active-nav"
                 style={{ textDecoration: 'none', color: 'inherit' }}
               >
                 <img src='../Images/Tembusu.jpg' className="card-img" alt="logo" />
                 <div className="card-img-overlay">
-                  <h5 className="card-title">Tembusu</h5>
+                  <h5 className="card-title">Club 1</h5>
                 </div>
               </Link>
             </div>
@@ -64,13 +64,13 @@ function RCLanding() {
           <div className="col">
             <div className="card text-bg-light h-100">
               <Link
-                to={`/rc/RC4`}
+                to={`/clubs/Club 2`}
                 activeClassName="active-nav"
                 style={{ textDecoration: 'none', color: 'inherit' }}
               >
                 <img src='../Images/RC4.jpg' className="card-img" alt="logo" />
                 <div className="card-img-overlay">
-                  <h5 className="card-title">RC4</h5>
+                  <h5 className="card-title">Club 2</h5>
                 </div>
               </Link>
             </div>
@@ -78,27 +78,13 @@ function RCLanding() {
           <div className="col">
             <div className="card text-bg-light h-100">
               <Link
-                to={`/rc/Ridge View`}
+                to={`/clubs/Club 3`}
                 activeClassName="active-nav"
                 style={{ textDecoration: 'none', color: 'inherit' }}
               >
                 <img src='../Images/Ridge View.jpg' className="card-img" alt="logo" />
                 <div className="card-img-overlay">
-                  <h5 className="card-title">Ridge View</h5>
-                </div>
-              </Link>
-            </div>
-          </div>
-          <div className="col">
-            <div className="card text-bg-light h-100">
-              <Link
-                to={`/rc/CAPT`}
-                activeClassName="active-nav"
-                style={{ textDecoration: 'none', color: 'inherit' }}
-              >
-                <img src='../Images/CAPT.jpg' className="card-img" alt="logo" />
-                <div className="card-img-overlay">
-                  <h5 className="card-title">CAPT</h5>
+                  <h5 className="card-title">Club 3</h5>
                 </div>
               </Link>
             </div>
@@ -109,4 +95,4 @@ function RCLanding() {
   );
 }
 
-export default RCLanding;
+export default ClubsLanding;

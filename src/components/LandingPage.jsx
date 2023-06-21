@@ -7,7 +7,7 @@ import logo from '../../Images/Logo.png';
 import Signout from './Signout';
 import SellerCheck from './SellerCheck';
 
-function Halls() {
+function LandingPage() {
   const [sellers, setSellers] = useState([]);
   const [newImages, setNewImages] = useState([]);
   const [search, setSearch] = useState('');
@@ -77,7 +77,7 @@ function Halls() {
                 </Link>
               </li>
               <li className="nav-item">
-                <Link className="nav-link" to="/clubs">
+                <Link className="nav-link" to="/clubslanding">
                   Clubs
                 </Link>
               </li>
@@ -123,4 +123,4 @@ function Halls() {
   );
 }
 
-export default Halls;
+export default LandingPage;
