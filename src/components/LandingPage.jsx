@@ -1,30 +1,29 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { collection, getDocs } from 'firebase/firestore';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 import { db } from '../../firebase/firebase';
 import logo from '../../Images/Logo.png';
 import Signout from './Signout';
-import SellerCheck from './SellerCheck';
 
-function LandingPage() {
-  const [sellers, setSellers] = useState([]);
+function HallsLanding() {
+  const [groups, setGroups] = useState([]);
   const [newImages, setNewImages] = useState([]);
-  const [search, setSearch] = useState('');
-
+  const { hall } = useParams();
+  console.log(hall);
   const storage = getStorage();
 
   useEffect(() => {
-    const getSellers = async () => {
-      const sellersCollectionRef = collection(db, 'Sellers');
-      const data = await getDocs(sellersCollectionRef);
-      const sellersData = data.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
-      setSellers(sellersData);
+    const fetchGroupsAndImages = async () => {
+      const groupsCollectionRef = collection(db, 'Groups');
+      const data = await getDocs(groupsCollectionRef);
+      const groupsData = data.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+      setGroups(groupsData);
 
-      const imagePromises = sellersData.map(async (seller) => {
-        if (seller.imagePath) {
+      const imagePromises = groupsData.map(async (group) => {
+        if (group.imagePath) {
           try {
-            const url = await getDownloadURL(ref(storage, seller.imagePath));
+            const url = await getDownloadURL(ref(storage, group.imagePath));
             return url;
           } catch (error) {
             console.log(error);
@@ -39,12 +38,10 @@ function LandingPage() {
         .catch((error) => console.log(error));
     };
 
-    getSellers();
+    fetchGroupsAndImages();
   }, []);
 
-  const filteredSellers = sellers.filter((seller) => {
-    return seller.name.toLowerCase().includes(search.toLowerCase());
-  });
+
 
   return (
     <>
@@ -82,21 +79,6 @@ function LandingPage() {
                 </Link>
               </li>
             </ul>
-            <div>
-            <button className="btn btn-primary me-2" onClick={SellerCheck()}>
-              Sell Items
-            </button>
-            </div>
-            <form className="d-flex" role="search">
-              <input
-                className="form-control me-2"
-                type="search"
-                placeholder="Search by name"
-                aria-label="Search"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
-            </form>
             <button className="btn btn-primary ms-2" onClick={Signout()}>
               Sign Out
             </button>
@@ -105,16 +87,16 @@ function LandingPage() {
       </nav>
       <div className="container mt-5">
         <div className="row row-cols-1 row-cols-md-3 g-4">
-          {filteredSellers.map((seller, index) => (
-            <div className="col" key={seller.id}>
-              <div className="card">
-                <img src={newImages[index]} className="card-img-top" alt="..." />
-                <div className="card-body">
-                  <h5 className="card-title">{seller.name}</h5>
-                  <p className="card-text">{seller.description}</p>
-                  
+          {groups.map((group, index) => (
+            <div className="col" key={group.id}>
+              <Link to={`/halls/${group.name}`} className="card-link">
+                <div className="card text-bg-light h-100">
+                  <img src={newImages[index]} className="card-img" alt="Group Image" />
+                  <div className="card-img-overlay">
+                    <h5 className="card-title">{group.name}</h5>
+                  </div>
                 </div>
-              </div>
+              </Link>
             </div>
           ))}
         </div>
@@ -123,4 +105,4 @@ function LandingPage() {
   );
 }
 
-export default LandingPage;
+export default HallsLanding;

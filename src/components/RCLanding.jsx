@@ -1,8 +1,51 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useParams } from 'react-router-dom';
+import { collection, getDocs } from 'firebase/firestore';
+import { getStorage, ref, getDownloadURL } from 'firebase/storage';
+import { db } from '../../firebase/firebase';
+import logo from '../../Images/Logo.png';
 import Signout from './Signout';
 
 function RCLanding() {
+  const [groups, setGroups] = useState([]);
+  const [newImages, setNewImages] = useState([]);
+  const { hall } = useParams();
+  console.log(hall);
+  const storage = getStorage();
+
+  useEffect(() => {
+    const fetchGroupsAndImages = async () => {
+      const groupsCollectionRef = collection(db, 'Groups');
+      const data = await getDocs(groupsCollectionRef);
+      const groupsData = data.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+      const filteredGroups = groupsData.filter((group) => {
+        return group.type === "RC";
+      });
+      setGroups(filteredGroups);
+
+      const imagePromises = filteredGroups.map(async (group) => {
+        if (group.imagePath) {
+          try {
+            const url = await getDownloadURL(ref(storage, group.imagePath));
+            return url;
+          } catch (error) {
+            console.log(error);
+            return null;
+          }
+        }
+        return Promise.resolve(null);
+      });
+
+      Promise.all(imagePromises)
+        .then((urls) => setNewImages(urls))
+        .catch((error) => console.log(error));
+    };
+
+    fetchGroupsAndImages();
+  }, []);
+
+
+
   return (
     <>
       <nav className="navbar navbar-expand-lg bg-body-tertiary">
@@ -39,7 +82,7 @@ function RCLanding() {
                 </Link>
               </li>
             </ul>
-            <button className="btn btn-primary ms-2" onClick={Signout()}>
+            <button className="btn btn-primary ms-2" onClick={Signout}>
               Sign Out
             </button>
           </div>
@@ -47,62 +90,18 @@ function RCLanding() {
       </nav>
       <div className="container mt-5">
         <div className="row row-cols-1 row-cols-md-3 g-4">
-          <div className="col">
-            <div className="card text-bg-light h-100">
-              <Link
-                to={`/rc/Tembusu`}
-                activeClassName="active-nav"
-                style={{ textDecoration: 'none', color: 'inherit' }}
-              >
-                <img src='../Images/Tembusu.jpg' className="card-img" alt="logo" />
-                <div className="card-img-overlay">
-                  <h5 className="card-title">Tembusu</h5>
+          {groups.map((group, index) => (
+            <div className="col" key={group.id}>
+              <Link to={`/halls/${group.name}`} className="card-link">
+                <div className="card text-bg-light h-100">
+                  <img src={newImages[index]} className="card-img" alt="Group Image" />
+                  <div className="card-img-overlay">
+                    <h5 className="card-title">{group.name}</h5>
+                  </div>
                 </div>
               </Link>
             </div>
-          </div>
-          <div className="col">
-            <div className="card text-bg-light h-100">
-              <Link
-                to={`/rc/RC4`}
-                activeClassName="active-nav"
-                style={{ textDecoration: 'none', color: 'inherit' }}
-              >
-                <img src='../Images/RC4.jpg' className="card-img" alt="logo" />
-                <div className="card-img-overlay">
-                  <h5 className="card-title">RC4</h5>
-                </div>
-              </Link>
-            </div>
-          </div>
-          <div className="col">
-            <div className="card text-bg-light h-100">
-              <Link
-                to={`/rc/Ridge View`}
-                activeClassName="active-nav"
-                style={{ textDecoration: 'none', color: 'inherit' }}
-              >
-                <img src='../Images/Ridge View.jpg' className="card-img" alt="logo" />
-                <div className="card-img-overlay">
-                  <h5 className="card-title">Ridge View</h5>
-                </div>
-              </Link>
-            </div>
-          </div>
-          <div className="col">
-            <div className="card text-bg-light h-100">
-              <Link
-                to={`/rc/CAPT`}
-                activeClassName="active-nav"
-                style={{ textDecoration: 'none', color: 'inherit' }}
-              >
-                <img src='../Images/CAPT.jpg' className="card-img" alt="logo" />
-                <div className="card-img-overlay">
-                  <h5 className="card-title">CAPT</h5>
-                </div>
-              </Link>
-            </div>
-          </div>
+          ))}
         </div>
       </div>
     </>
