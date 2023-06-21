@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Signout from './Signout';
+import logo from '../../Images/Corner Logo.png';
 
 function RCLanding() {
   return (
@@ -8,7 +9,7 @@ function RCLanding() {
       <nav className="navbar navbar-expand-lg bg-body-tertiary">
         <div className="container-fluid">
           <Link className="navbar-brand" to="/landingpage">
-            NUSMerch
+            <img src={logo} alt="Logo" className="logo smaller" />
           </Link>
           <button
             className="navbar-toggler"
@@ -49,58 +50,82 @@ function RCLanding() {
         <div className="row row-cols-1 row-cols-md-3 g-4">
           <div className="col">
             <div className="card text-bg-light h-100">
-              <Link
-                to={`/rc/Tembusu`}
-                activeClassName="active-nav"
-                style={{ textDecoration: 'none', color: 'inherit' }}
-              >
-                <img src='../Images/Tembusu.jpg' className="card-img" alt="logo" />
-                <div className="card-img-overlay">
+              <div className="card-body">
+                <Link
+                  to={`/rc/Tembusu`}
+                  activeClassName="active-nav"
+                  style={{ textDecoration: 'none', color: 'inherit' }}
+                >
                   <h5 className="card-title">Tembusu</h5>
-                </div>
-              </Link>
+                </Link>
+                <Link
+                  to={`/rc/Tembusu`}
+                  activeClassName="active-nav"
+                  style={{ textDecoration: 'none', color: 'inherit' }}
+                >
+                  <img src="../Images/Tembusu.jpg" className="card-img" alt="logo" />
+                </Link>
+              </div>
             </div>
           </div>
           <div className="col">
-            <div className="card text-bg-light h-100">
-              <Link
-                to={`/rc/RC4`}
-                activeClassName="active-nav"
-                style={{ textDecoration: 'none', color: 'inherit' }}
-              >
-                <img src='../Images/RC4.jpg' className="card-img" alt="logo" />
-                <div className="card-img-overlay">
+            <div className="card text-bg-light h-100 card:hover">
+              <div className="card-body">
+                <Link
+                  to={`/rc/RC4`}
+                  activeClassName="active-nav"
+                  style={{ textDecoration: 'none', color: 'inherit' }}
+                >
                   <h5 className="card-title">RC4</h5>
-                </div>
-              </Link>
+                </Link>
+                <Link
+                  to={`/rc/RC4`}
+                  activeClassName="active-nav"
+                  style={{ textDecoration: 'none', color: 'inherit' }}
+                >
+                  <img src="../Images/RC4.jpg" className="card-img" alt="logo"/>
+                </Link>
+              </div>
             </div>
           </div>
           <div className="col">
             <div className="card text-bg-light h-100">
-              <Link
-                to={`/rc/Ridge View`}
-                activeClassName="active-nav"
-                style={{ textDecoration: 'none', color: 'inherit' }}
-              >
-                <img src='../Images/Ridge View.jpg' className="card-img" alt="logo" />
-                <div className="card-img-overlay">
+              <div className="card-body">
+                <Link
+                  to={`/rc/Ridge View`}
+                  activeClassName="active-nav"
+                  style={{ textDecoration: 'none', color: 'inherit' }}
+                >
                   <h5 className="card-title">Ridge View</h5>
-                </div>
-              </Link>
+                </Link>
+                <Link
+                  to={`/rc/Ridge View`}
+                  activeClassName="active-nav"
+                  style={{ textDecoration: 'none', color: 'inherit' }}
+                >
+                  <img src="../Images/Ridge View.jpg" className="card-img" alt="logo" />
+                </Link>
+              </div>
             </div>
           </div>
           <div className="col">
             <div className="card text-bg-light h-100">
-              <Link
-                to={`/rc/CAPT`}
-                activeClassName="active-nav"
-                style={{ textDecoration: 'none', color: 'inherit' }}
-              >
-                <img src='../Images/CAPT.jpg' className="card-img" alt="logo" />
-                <div className="card-img-overlay">
+              <div className="card-body">
+                <Link
+                  to={`/rc/CAPT`}
+                  activeClassName="active-nav"
+                  style={{ textDecoration: 'none', color: 'inherit' }}
+                >
                   <h5 className="card-title">CAPT</h5>
-                </div>
-              </Link>
+                </Link>
+                <Link
+                  to={`/rc/CAPT`}
+                  activeClassName="active-nav"
+                  style={{ textDecoration: 'none', color: 'inherit' }}
+                >
+                  <img src="../Images/CAPT.jpg" className="card-img object-fit: cover" alt="logo" />
+                </Link>
+              </div>
             </div>
           </div>
         </div>

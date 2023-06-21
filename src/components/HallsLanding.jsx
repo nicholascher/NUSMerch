@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Signout from './Signout';
+import logo from '../../Images/Corner Logo.png';
 
 function HallsLanding() {
   return (
@@ -8,7 +9,7 @@ function HallsLanding() {
       <nav className="navbar navbar-expand-lg bg-body-tertiary">
         <div className="container-fluid">
           <Link className="navbar-brand" to="/landingpage">
-            NUSMerch
+            <img src={logo} alt="Logo" className="logo smaller" />
           </Link>
           <button
             className="navbar-toggler"

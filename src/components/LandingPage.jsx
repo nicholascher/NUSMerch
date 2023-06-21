@@ -3,11 +3,11 @@ import { Link } from 'react-router-dom';
 import { collection, getDocs } from 'firebase/firestore';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 import { db } from '../../firebase/firebase';
-import logo from '../../Images/Logo.png';
+import logo from '../../Images/Corner Logo.png';
 import Signout from './Signout';
 import SellerCheck from './SellerCheck';
 
-function Halls() {
+function LandingPage() {
   const [sellers, setSellers] = useState([]);
   const [newImages, setNewImages] = useState([]);
   const [search, setSearch] = useState('');
@@ -51,7 +51,7 @@ function Halls() {
       <nav className="navbar navbar-expand-lg bg-body-tertiary">
         <div className="container-fluid">
           <Link className="navbar-brand" to="/landingpage">
-            NUSMerch
+            <img src={logo} alt="Logo" className="logo smaller" />
           </Link>
           <button
             className="navbar-toggler"
@@ -107,8 +107,8 @@ function Halls() {
         <div className="row row-cols-1 row-cols-md-3 g-4">
           {filteredSellers.map((seller, index) => (
             <div className="col" key={seller.id}>
-              <div className="card">
-                <img src={newImages[index]} className="card-img-top" alt="..." />
+              <div className="card h-100">
+                <img src={newImages[index]} className="card-img card-image" alt="..." />
                 <div className="card-body">
                   <h5 className="card-title">{seller.name}</h5>
                   <p className="card-text">{seller.description}</p>
@@ -123,4 +123,4 @@ function Halls() {
   );
 }
 
-export default Halls;
+export default LandingPage;

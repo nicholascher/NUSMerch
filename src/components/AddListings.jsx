@@ -54,17 +54,24 @@ function AddListings() {
     event.preventDefault();
 
     if (imageUpload) {
+      const allowedTypes = ['image/jpeg', 'image/png'];
+      if (!allowedTypes.includes(imageUpload.type)) {
+        alert('Please upload a valid JPG or PNG image.');
+        return;
+      }
+
       const imagePath = `images/${imageUpload.name + makeid()}`;
       const imageRef = ref(storage, imagePath);
       await addDoc(sellersCollectionRef, { description, name, imagePath, sellerType, sellerSpecific });
       await uploadBytes(imageRef, imageUpload);
+
+      alert('Listing added!');
+      setDescription('');
+      setName('');
+      setImageUpload(null);
+      navigate('/addlistings');
+      window.location.reload();
     }
-    alert('Listing added!');
-    setDescription('');
-    setName('');
-    setImageUpload(null);
-    navigate('/addlistings');
-    window.location.reload()
   };
 
   return (
@@ -94,11 +101,13 @@ function AddListings() {
               <option value="Halls">Halls</option>
             </select>
             <p></p>
-            <select className="form-select" 
-              aria-label="Default select example" 
-              disabled={!sellerType} 
-              onChange={handleSellerSpecificChange} 
-              value={sellerSpecific}>
+            <select
+              className="form-select"
+              aria-label="Default select example"
+              disabled={!sellerType}
+              onChange={handleSellerSpecificChange}
+              value={sellerSpecific}
+            >
               <option defaultValue>Select an option</option>
               {dependentOptions.map((option) => (
                 <option key={option} value={option}>
@@ -143,6 +152,7 @@ function AddListings() {
               </label>
               <input
                 type="file"
+                accept=".jpg, .png"
                 className="form-control"
                 id="productImage"
                 name="image"
