@@ -3,7 +3,7 @@ import { collection, doc, deleteDoc, updateDoc } from 'firebase/firestore';
 import { db, storage } from '../../firebase/firebase';
 import { deleteObject, ref, uploadBytes } from 'firebase/storage';
 import { Link, useParams, useNavigate } from 'react-router-dom';
-import logo from '../../Images/New Logo.png';
+import logo from '../../Images/Logo.png';
 
 function DeleteListings() {
   const navigate = useNavigate();

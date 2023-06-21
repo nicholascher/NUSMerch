@@ -3,8 +3,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import firebaseConfig from "../../firebase/firebase"; 
-import logo from '../../Images/New Logo.png';
+import logo from "../../Images/Logo.png";
 import Validation from './LoginValidation';
+import "./Styles.css";
 
 function Login() {
   const [values, setValues] = useState({
@@ -49,43 +50,57 @@ function Login() {
   };
 
   return (
-    <div className='d-flex justify-content-center align-items-center bg-dark vh-100'>  
-      <div className='position-absolute top-0 start-0 p-3'>
-        <img src={logo} alt='Logo' className='rounded' style={{ width: '200px', height: 'auto' }} />
-      </div> 
-      <div className='bg-white p-3 rounded w-25'>
-        <h2>Login</h2>
-        <form onSubmit={handleSubmit}>
-          <div className='mb-3'>
-            <label htmlFor="email"><strong>Email</strong></label>
-            <input
-              type="email"
-              placeholder='Email address'
-              className='form-control rounded-0'
-              value={values.email}
-              onChange={(e) => setValues({ ...values, email: e.target.value })}
-            />
-            {errors.email && <span className='text-danger'>{errors.email}</span>}
+    <section className="login-section">
+      <div className="container">
+        <div className="row">
+          <div className="col-md-7">
+            <img src={logo} alt="Logo" className="login-logo" />
           </div>
-          <div className='mb-3'>
-            <label htmlFor="password"><strong>Password</strong></label>
-            <input
-              type="password"
-              placeholder='Password'
-              className='form-control rounded-0'
-              value={values.password}
-              onChange={(e) => setValues({ ...values, password: e.target.value })}
-            />
-            {errors.password && <span className='text-danger'>{errors.password}</span>}
+          <div className="row col-md-5">
+            <div className="card login-card shadow-lg">
+              <div className="card-body p-4 p-lg-5 text-black">
+                <form onSubmit={handleSubmit}>
+                  <h5 className="fw-bold mb-3 pb-1">Sign into your account</h5>
+
+                  <div className="form-group mb-4">
+                    <label className="form-label login-form-label" htmlFor="form2Example17">Email address</label>
+                    <input
+                      type="email"
+                      id="form2Example17"
+                      className="form-control form-control-lg"
+                      value={values.email}
+                      onChange={(e) => setValues({ ...values, email: e.target.value })}
+                    />
+                    {errors.email && <span className="text-danger error-message">{errors.email}</span>}
+                  </div>
+
+                  <div className="form-group mb-4">
+                    <label className="form-label login-form-label" htmlFor="form2Example27">Password</label>
+                    <input
+                      type="password"
+                      id="form2Example27"
+                      className="form-control form-control-lg"
+                      value={values.password}
+                      onChange={(e) => setValues({ ...values, password: e.target.value })}
+                    />
+                    {errors.password && <span className="text-danger error-message">{errors.password}</span>}
+                  </div>
+
+                  <div className="pt-1 mb-4">
+                    <button className="btn btn-dark btn-lg btn-block button-primary" type="submit">Login</button>
+                  </div>
+
+                  <Link to="/forgotPassword" className="small text-muted login-link">Forgot password?</Link>
+                  <p className="mb-5 pb-lg-2" style={{ color: '#393f81' }}>
+                    Don't have an account? <Link to="/signup" className="login-link">Register here</Link>
+                  </p>
+                </form>
+              </div>
+            </div>
           </div>
-          <button className='btn btn-primary w-100'>Log in</button>
-          <p></p>
-          <Link to="/signup" className='btn btn-success border w-100'>Create Account</Link>
-          <p></p>
-          <Link to='/forgotPassword' className='btn btn-secondary border w-100'>Forgot Password</Link>
-        </form>
+        </div>
       </div>
-    </div>
+    </section>
   );
 }
 

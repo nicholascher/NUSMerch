@@ -3,7 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { initializeApp } from 'firebase/app';
 import { getAuth, sendPasswordResetEmail } from 'firebase/auth';
 import firebaseConfig from "../../firebase/firebase"; 
-import logo from "../../Images/Logo.jpg"; 
+import logo from "../../Images/Logo.png";
+import "./Styles.css";
 
 function ForgotPassword() {
 
@@ -24,33 +25,40 @@ function ForgotPassword() {
         const errorCode = error.code;
         const errorMessage = error.message;
         alert(errorMessage)
-        // ..
       });
   };
   return (
-    <div className='d-flex justify-content-center align-items-center bg-dark vh-100'>  
-      <div className='position-absolute top-0 start-0 p-3'>
-        <img src={logo} alt='Logo' className='rounded' style={{ width: '100px', height: 'auto' }} />
-      </div> 
-      <div className='bg-white p-3 rounded w-25'>
-        <h2>Login</h2>
-        <form onSubmit={handleSubmit}>
+    <section className="login-section">
+      <div className="container">
+        <div className="row">
+          <div className="col-md-7">
+            <img src={logo} alt="Logo" className="login-logo" />
+          </div>
+          <div className="row col-md-5">
+            <div className="card login-card shadow-lg">
+              <div className="card-body p-4 p-lg-5 text-black">
+                <form onSubmit={handleSubmit}>
+                  <h5 className="fw-bold mb-3 pb-1">Forgot Password</h5>
           <div className='mb-3'>
-            <label htmlFor="email"><strong>Email</strong></label>
+          <label className="form-label login-form-label" htmlFor="form2Example17">Email</label>
             <input
               type="email"
-              placeholder='Email address'
-              className='form-control rounded-0'
+              id="form2Example17"
+              className="form-control form-control-lg"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
           </div>
-          <button className='btn btn-primary w-100'>Send Reset Link</button>
+          <button className="btn btn-dark btn-lg btn-block button-primary" type="submit">Send Reset Link</button>
           <p></p>
-          <Link to="/" className='btn btn-success border w-100'>Back to Login</Link>
+          <Link to="/" className="login-link">Back to Login</Link>
         </form>
       </div>
     </div>
+    </div>
+    </div>
+    </div>
+    </section>
   );
 }
 

@@ -3,7 +3,7 @@ import { Link, useNavigate} from 'react-router-dom';
 import { initializeApp } from 'firebase/app';
 import { getAuth, signOut } from 'firebase/auth';
 import firebaseConfig from "../../firebase/firebase"; 
-import logo from "../../Images/Logo.jpg";
+import logo from "../../Images/Logo.png";
 
 
 function Signout() {
