@@ -79,6 +79,9 @@ function HallsLanding() {
                 </Link>
               </li>
             </ul>
+            <Link className="btn btn-primary ms-2" to="/addlistings">
+              Add Listings
+            </Link>
             <button className="btn btn-primary ms-2" onClick={Signout()}>
               Sign Out
             </button>

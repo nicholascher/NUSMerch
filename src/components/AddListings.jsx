@@ -83,7 +83,7 @@ function AddListings() {
         </div>
         <div>
           <Link to="/sellerslistings" className="btn btn-primary">
-            Back to Listing
+            Back to Listings
           </Link>
         </div>
       </div>
