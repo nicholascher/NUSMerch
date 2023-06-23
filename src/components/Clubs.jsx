@@ -1,23 +1,26 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { collection, getDocs } from 'firebase/firestore';
-import { getStorage, ref, getDownloadURL } from 'firebase/storage';
-import { db } from '../../firebase/firebase';
-import logo from '../../Images/Corner Logo.png';
-import Signout from './Signout';
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { collection, getDocs } from "firebase/firestore";
+import { getStorage, ref, getDownloadURL } from "firebase/storage";
+import { db } from "../../firebase/firebase";
+import logo from "../../Images/Corner Logo.png";
+import Signout from "./Signout";
 
 function Clubs() {
   const [sellers, setSellers] = useState([]);
   const [newImages, setNewImages] = useState([]);
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
 
   const storage = getStorage();
 
   useEffect(() => {
     const getSellers = async () => {
-      const sellersCollectionRef = collection(db, 'Sellers');
+      const sellersCollectionRef = collection(db, "Sellers");
       const data = await getDocs(sellersCollectionRef);
-      const sellersData = data.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+      const sellersData = data.docs.map((doc) => ({
+        ...doc.data(),
+        id: doc.id,
+      }));
       setSellers(sellersData);
 
       const imagePromises = sellersData.map(async (seller) => {
@@ -42,7 +45,10 @@ function Clubs() {
   }, []);
 
   const filteredSellers = sellers.filter((seller) => {
-    return seller.sellerType === "Clubs" && seller.name.toLowerCase().includes(search.toLowerCase());
+    return (
+      seller.sellerType === "Clubs" &&
+      seller.name.toLowerCase().includes(search.toLowerCase())
+    );
   });
 
   return (
@@ -99,20 +105,24 @@ function Clubs() {
       </nav>
       <div className="container mt-5">
         <div className="row row-cols-1 row-cols-md-3 g-4">
-        {filteredSellers.map((seller, index) => (
-          <div className="col" key={seller.id}>
-            <div className="card product">
-              <img src={newImages[index]} className="card-img-top" alt="..." />
-              <div className="card-body d-flex flex-column">
-                <div className="d-flex justify-content-between align-items-start">
-                  <h5 className="card-title">{seller.name}</h5>
-                  <p className="card-text">{seller.price}</p>
+          {filteredSellers.map((seller, index) => (
+            <div className="col" key={seller.id}>
+              <div className="card product h-100">
+                <img
+                  src={newImages[index]}
+                  className="card-img card-image"
+                  alt="..."
+                />
+                <div className="card-body d-flex flex-column">
+                  <div className="d-flex justify-content-between align-items-start">
+                    <h5 className="card-title">{seller.name}</h5>
+                    <p className="card-text">{seller.price}</p>
+                  </div>
+                  <p className="card-text">{seller.description}</p>
                 </div>
-                <p className="card-text">{seller.description}</p>
               </div>
             </div>
-          </div>
-        ))}
+          ))}
         </div>
       </div>
     </>

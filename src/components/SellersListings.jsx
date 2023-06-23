@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { collection, getDocs } from 'firebase/firestore';
+import React, { useState, useEffect } from "react";
+import { collection, getDocs } from "firebase/firestore";
 import { getStorage, ref, getDownloadURL } from "firebase/storage";
-import { db } from '../../firebase/firebase';
-import logo from '../../Images/Logo.png';
-import Signout from './Signout';
-import { Link, useNavigate } from 'react-router-dom';
+import { db } from "../../firebase/firebase";
+import logo from "../../Images/Logo.png";
+import Signout from "./Signout";
+import { Link, useNavigate } from "react-router-dom";
 
 function SellersListings() {
   const navigate = useNavigate();
@@ -14,9 +14,12 @@ function SellersListings() {
 
   useEffect(() => {
     const getSellers = async () => {
-      const sellersCollectionRef = collection(db, 'Sellers');
+      const sellersCollectionRef = collection(db, "Sellers");
       const data = await getDocs(sellersCollectionRef);
-      const sellersData = data.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+      const sellersData = data.docs.map((doc) => ({
+        ...doc.data(),
+        id: doc.id,
+      }));
       setSellers(sellersData);
 
       const imagePromises = sellersData.map(async (seller) => {
@@ -41,33 +44,45 @@ function SellersListings() {
   }, []);
 
   const handleEdit = (id, imagePath) => {
-    navigate(`/deletelistings/${id}/${encodeURIComponent(imagePath)}`)
-  }
+    navigate(`/deletelistings/${id}/${encodeURIComponent(imagePath)}`);
+  };
 
   return (
     <>
       <div className="container mt-5">
         <div className="row mb-3">
           <div className="col d-flex text-start">
-            <Link to="/addlistings" className="btn btn-primary me-2">Add Listing</Link>
+            <Link to="/addlistings" className="btn btn-primary me-2">
+              Add Listing
+            </Link>
           </div>
           <div className="col text-end">
-            <Link to="/landingpage" className="btn btn-primary me-2">Back to Home</Link>
-            <button className="btn btn-primary" onClick={Signout()}>Sign Out</button>
+            <Link to="/landingpage" className="btn btn-primary me-2">
+              Back to Home
+            </Link>
+            <button className="btn btn-primary" onClick={Signout()}>
+              Sign Out
+            </button>
           </div>
         </div>
         <div className="row row-cols-1 row-cols-md-3 g-4">
           {sellers.map((seller, index) => (
             <div className="col" key={seller.id}>
-              <div className="card">
-                <img src={newImages[index]} className="card-img-top" alt="..." />
+              <div className="card h-100">
+                <img
+                  src={newImages[index]}
+                  className="card-img card-image"
+                  alt="..."
+                />
                 <div className="card-body">
                   <h5 className="card-title">{seller.name}</h5>
                   <p className="card-text">{seller.description}</p>
-                  <button 
-                  className="btn btn-primary"
-                  onClick={() => handleEdit(seller.id, seller.imagePath)}
-                  >Edit</button>
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => handleEdit(seller.id, seller.imagePath)}
+                  >
+                    Edit
+                  </button>
                 </div>
               </div>
             </div>

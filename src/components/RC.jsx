@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useParams } from 'react-router-dom';
-import { collection, getDocs } from 'firebase/firestore';
-import { getStorage, ref, getDownloadURL } from 'firebase/storage';
-import { db } from '../../firebase/firebase';
-import logo from '../../Images/Logo.png';
-import Signout from './Signout';
+import React, { useState, useEffect } from "react";
+import { Link, useParams } from "react-router-dom";
+import { collection, getDocs } from "firebase/firestore";
+import { getStorage, ref, getDownloadURL } from "firebase/storage";
+import { db } from "../../firebase/firebase";
+import logo from "../../Images/Corner Logo.png";
+import Signout from "./Signout";
 
 function RC() {
   const [sellers, setSellers] = useState([]);
   const [newImages, setNewImages] = useState([]);
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
   const { rctype } = useParams();
   console.log(rctype);
 
@@ -17,9 +17,12 @@ function RC() {
 
   useEffect(() => {
     const getSellers = async () => {
-      const sellersCollectionRef = collection(db, 'Sellers');
+      const sellersCollectionRef = collection(db, "Sellers");
       const data = await getDocs(sellersCollectionRef);
-      const sellersData = data.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+      const sellersData = data.docs.map((doc) => ({
+        ...doc.data(),
+        id: doc.id,
+      }));
       setSellers(sellersData);
 
       const imagePromises = sellersData.map(async (seller) => {
@@ -44,7 +47,10 @@ function RC() {
   }, []);
 
   const filteredSellers = sellers.filter((seller) => {
-    return seller.sellerSpecific === rctype && seller.name.toLowerCase().includes(search.toLowerCase());
+    return (
+      seller.sellerSpecific === rctype &&
+      seller.name.toLowerCase().includes(search.toLowerCase())
+    );
   });
 
   return (
@@ -52,7 +58,7 @@ function RC() {
       <nav className="navbar navbar-expand-lg bg-body-tertiary">
         <div className="container-fluid">
           <Link className="navbar-brand" to="/landingpage">
-            NUSMerch
+            <img src={logo} alt="Logo" className="logo smaller" />
           </Link>
           <button
             className="navbar-toggler"
@@ -73,12 +79,12 @@ function RC() {
                 </Link>
               </li>
               <li className="nav-item">
-                <Link className="nav-link" to="/rc">
+                <Link className="nav-link" to="/rclanding">
                   RC
                 </Link>
               </li>
               <li className="nav-item">
-                <Link className="nav-link" to="/clubs">
+                <Link className="nav-link" to="/clubslanding">
                   Clubs
                 </Link>
               </li>
@@ -101,20 +107,24 @@ function RC() {
       </nav>
       <div className="container mt-5">
         <div className="row row-cols-1 row-cols-md-3 g-4">
-        {filteredSellers.map((seller, index) => (
-          <div className="col" key={seller.id}>
-            <div className="card">
-              <img src={newImages[index]} className="card-img-top" alt="..." />
-              <div className="card-body d-flex flex-column">
-                <div className="d-flex justify-content-between align-items-start">
-                  <h5 className="card-title">{seller.name}</h5>
-                  <p className="card-text">{seller.price}</p>
+          {filteredSellers.map((seller, index) => (
+            <div className="col" key={seller.id}>
+              <div className="card product h-100">
+                <img
+                  src={newImages[index]}
+                  className="card-img card-image"
+                  alt="..."
+                />
+                <div className="card-body d-flex flex-column">
+                  <div className="d-flex justify-content-between align-items-start">
+                    <h5 className="card-title">{seller.name}</h5>
+                    <p className="card-text">{seller.price}</p>
+                  </div>
+                  <p className="card-text">{seller.description}</p>
                 </div>
-                <p className="card-text">{seller.description}</p>
               </div>
             </div>
-          </div>
-        ))}
+          ))}
         </div>
       </div>
     </>
