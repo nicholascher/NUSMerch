@@ -21,9 +21,15 @@ function Clubs() {
         ...doc.data(),
         id: doc.id,
       }));
-      setSellers(sellersData);
+      const filteredSellers = sellers.filter((seller) => {
+        return (
+          seller.sellerType === "Clubs" &&
+          seller.name.toLowerCase().includes(search.toLowerCase())
+        );
+      });
+      setSellers(filteredSellers);
 
-      const imagePromises = sellersData.map(async (seller) => {
+      const imagePromises = filteredSellers.map(async (seller) => {
         if (seller.imagePath) {
           try {
             const url = await getDownloadURL(ref(storage, seller.imagePath));
@@ -43,13 +49,6 @@ function Clubs() {
 
     getSellers();
   }, []);
-
-  const filteredSellers = sellers.filter((seller) => {
-    return (
-      seller.sellerType === "Clubs" &&
-      seller.name.toLowerCase().includes(search.toLowerCase())
-    );
-  });
 
   return (
     <>
@@ -105,12 +104,12 @@ function Clubs() {
       </nav>
       <div className="container mt-5">
         <div className="row row-cols-1 row-cols-md-3 g-4">
-          {filteredSellers.map((seller, index) => (
+          {sellers.map((seller, index) => (
             <div className="col" key={seller.id}>
-              <div className="card product h-100">
+              <div className="card product">
                 <img
                   src={newImages[index]}
-                  className="card-img card-image"
+                  className="card-img-top"
                   alt="..."
                 />
                 <div className="card-body d-flex flex-column">

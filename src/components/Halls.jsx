@@ -22,9 +22,16 @@ function Halls() {
         ...doc.data(),
         id: doc.id,
       }));
-      setSellers(sellersData);
+      const filteredSellers = sellersData.filter((seller) => {
+        return (
+          seller.sellerSpecific === hall &&
+          seller.name.toLowerCase().includes(search.toLowerCase())
+        );
+      });
 
-      const imagePromises = sellersData.map(async (seller) => {
+      setSellers(filteredSellers);
+
+      const imagePromises = filteredSellers.map(async (seller) => {
         if (seller.imagePath) {
           try {
             const url = await getDownloadURL(ref(storage, seller.imagePath));
@@ -44,13 +51,6 @@ function Halls() {
 
     getSellers();
   }, []);
-
-  const filteredSellers = sellers.filter((seller) => {
-    return (
-      seller.sellerSpecific === hall &&
-      seller.name.toLowerCase().includes(search.toLowerCase())
-    );
-  });
 
   return (
     <>
@@ -88,19 +88,6 @@ function Halls() {
                 </Link>
               </li>
             </ul>
-            <form className="d-flex" role="search">
-              <input
-                className="form-control me-2"
-                type="search"
-                placeholder="Search by name"
-                aria-label="Search"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
-              <button className="btn btn-outline-success" type="submit">
-                Search
-              </button>
-            </form>
             <button className="btn btn-primary ms-2" onClick={Signout()}>
               Sign Out
             </button>
@@ -109,7 +96,7 @@ function Halls() {
       </nav>
       <div className="container mt-5">
         <div className="row row-cols-1 row-cols-md-3 g-4">
-          {filteredSellers.map((seller, index) => (
+          {sellers.map((seller, index) => (
             <div className="col" key={seller.id}>
               <Link
                 to={`/productdisplay/${seller.id}`}
