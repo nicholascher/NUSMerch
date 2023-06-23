@@ -53,7 +53,7 @@ function SellersListings() {
           </div>
           <div className="col text-end">
             <Link to="/landingpage" className="btn btn-primary me-2">Back to Home</Link>
-            <button className="btn btn-primary" onClick={Signout}>Sign Out</button>
+            <button className="btn btn-primary" onClick={Signout()}>Sign Out</button>
           </div>
         </div>
         <div className="row row-cols-1 row-cols-md-3 g-4">

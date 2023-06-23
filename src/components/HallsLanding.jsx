@@ -82,7 +82,7 @@ function HallsLanding() {
                 </Link>
               </li>
             </ul>
-            <button className="btn btn-primary ms-2" onClick={Signout}>
+            <button className="btn btn-primary ms-2" onClick={Signout()}>
               Sign Out
             </button>
           </div>
