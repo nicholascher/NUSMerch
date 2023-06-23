@@ -68,7 +68,7 @@ function SellersListings() {
         <div className="row row-cols-1 row-cols-md-3 g-4">
           {sellers.map((seller, index) => (
             <div className="col" key={seller.id}>
-              <div className="card h-100">
+              <div className="card product h-100">
                 <img
                   src={newImages[index]}
                   className="card-img card-image"

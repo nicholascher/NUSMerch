@@ -110,11 +110,7 @@ function RC() {
           {sellers.map((seller, index) => (
             <div className="col" key={seller.id}>
               <div className="card">
-                <img
-                  src={newImages[index]}
-                  className="card-img-top"
-                  alt="..."
-                />
+                <img src={newImages[index]} className="card-img" alt="..." />
                 <div className="card-body d-flex flex-column">
                   <div className="d-flex justify-content-between align-items-start">
                     <h5 className="card-title">{seller.name}</h5>

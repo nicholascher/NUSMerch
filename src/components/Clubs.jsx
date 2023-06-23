@@ -106,10 +106,10 @@ function Clubs() {
         <div className="row row-cols-1 row-cols-md-3 g-4">
           {sellers.map((seller, index) => (
             <div className="col" key={seller.id}>
-              <div className="card product">
+              <div className="card product h-100">
                 <img
                   src={newImages[index]}
-                  className="card-img-top"
+                  className="card-img card-image"
                   alt="..."
                 />
                 <div className="card-body d-flex flex-column">
