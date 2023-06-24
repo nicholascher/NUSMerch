@@ -109,16 +109,26 @@ function RC() {
         <div className="row row-cols-1 row-cols-md-3 g-4">
           {sellers.map((seller, index) => (
             <div className="col" key={seller.id}>
-              <div className="card">
-                <img src={newImages[index]} className="card-img" alt="..." />
-                <div className="card-body d-flex flex-column">
-                  <div className="d-flex justify-content-between align-items-start">
-                    <h5 className="card-title">{seller.name}</h5>
-                    <p className="card-text">{seller.price}</p>
+              <Link
+                to={`/productdisplay/${seller.id}`}
+                state={seller}
+                className="card-link"
+                style={{ textDecoration: "none" }}
+              >
+                <div className="card product h-100">
+                  <img
+                    src={newImages[index]}
+                    className="card-img card-image"
+                    alt="Product Image"
+                  />
+                  <div className="card-body d-flex flex-column">
+                    <div className="d-flex justify-content-between align-items-start">
+                      <h5 className="card-title">{seller.name}</h5>
+                      <p className="card-text">${seller.price}</p>
+                    </div>
                   </div>
-                  <p className="card-text">{seller.description}</p>
                 </div>
-              </div>
+              </Link>
             </div>
           ))}
         </div>

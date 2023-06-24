@@ -99,7 +99,7 @@ function ClubsLanding() {
                   <Link to={`/clubs/${group.name}`} className="card-link">
                     <img
                       src={newImages[index]}
-                      className="card-img"
+                      className="card-img card-iamge"
                       alt="Group Image"
                     />
                   </Link>

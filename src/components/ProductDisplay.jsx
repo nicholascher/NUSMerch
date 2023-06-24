@@ -73,6 +73,7 @@ function ProductDisplay(props) {
     setRating(0);
     setReviewText("");
     alert("Review added!!");
+    window.location.reload();
   };
 
   return (
@@ -117,7 +118,7 @@ function ProductDisplay(props) {
           </div>
         </div>
       </nav>
-      <section
+      <div
         className="card mx-auto"
         style={{ marginTop: "20px", marginBottom: "20px", width: "1300px" }}
       >
@@ -128,9 +129,35 @@ function ProductDisplay(props) {
             ) : (
               <p>No image available</p>
             )}
-            <p>Description: {seller.description}</p>
-
-            <p>Rating and reviews </p>
+          </div>
+          <div className="col-md-4">
+            <h1>{seller.name}</h1>
+            <p>Price: ${seller.price}</p>
+            <p>
+              Average Rating: <Rate value={averageRating} disabled />
+            </p>
+          </div>
+        </div>
+        <p
+          style={{ marginTop: "50px", marginLeft: "20px", marginRight: "20px" }}
+        >
+          <strong style={{ fontSize: "1.2rem" }}>Product Description</strong>
+          <br />
+          {seller.description}
+        </p>
+      </div>
+      <div
+        className="card mx-auto"
+        style={{ marginTop: "20px", marginBottom: "20px", width: "1300px" }}
+      >
+        <div className="row" style={{ marginTop: "20px" }}>
+          <div className="col-md-7" style={{ marginLeft: "20px" }}>
+            <p>
+              {" "}
+              <strong style={{ fontSize: "1.2rem" }}>
+                Rating and reviews{" "}
+              </strong>
+            </p>
 
             {/* Star component for the reviews I used antd but idt need change much looks okay */}
             <Rate value={rating} onChange={(value) => setRating(value)} />
@@ -173,15 +200,8 @@ function ProductDisplay(props) {
               )}
             </blockquote>
           </div>
-          <div className="col-md-4">
-            <h1>{seller.name}</h1>
-            <p>Price: {seller.price}</p>
-            <p>
-              Average Rating: <Rate value={averageRating} disabled />
-            </p>
-          </div>
         </div>
-      </section>
+      </div>
     </>
   );
 }

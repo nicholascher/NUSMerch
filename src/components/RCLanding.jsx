@@ -99,7 +99,7 @@ function RCLanding() {
                   <Link to={`/rc/${group.name}`} className="card-link">
                     <img
                       src={newImages[index]}
-                      className="card-img"
+                      className="card-img card-image"
                       alt="Group Image"
                     />
                   </Link>
