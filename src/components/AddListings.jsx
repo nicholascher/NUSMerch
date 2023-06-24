@@ -112,11 +112,7 @@ function AddListings() {
       await uploadBytes(imageRef, imageUpload);
 
       alert("Listing added!");
-      setDescription("");
-      setName("");
-      setImageUpload(null);
-      navigate("/addlistings");
-      window.location.reload();
+      navigate("/sellerslistings");
     }
   };
 

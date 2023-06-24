@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { collection, doc, deleteDoc, updateDoc } from 'firebase/firestore';
+import React, { useState, useEffect } from 'react';
+import { collection, doc, deleteDoc, updateDoc, getDocs } from 'firebase/firestore';
 import { db, storage, auth } from '../../firebase/firebase';
 import { deleteObject, ref, uploadBytes } from 'firebase/storage';
 import { Link, useParams, useNavigate } from 'react-router-dom';
@@ -12,6 +12,10 @@ function DeleteListings() {
   const oldimageRef = ref(storage, decodeURIComponent(imagePath))
   const user = auth.currentUser;
 
+  const [halls, setHalls ] = useState([]);
+  const [RC, setRC ] = useState([]);
+  const [clubs, setClubs ] = useState([]);
+
   const [description, setDescription] = useState('');
   const [name, setName] = useState('');
   const [sellerType, setSellerType] = useState('');
@@ -20,6 +24,31 @@ function DeleteListings() {
   const [dependentOptions, setDependentOptions] = useState([]);
   const [price, setPrice] = useState("");
 
+  useEffect(() => {
+    const fetchGroupsAndImages = async () => {
+      const groupsCollectionRef = collection(db, "Groups");
+      const data = await getDocs(groupsCollectionRef);
+      const groupsData = data.docs.map((doc) => ({
+        ...doc.data(),
+        id: doc.id,
+      }));
+      const hallsArray = groupsData
+        .filter((group) => group.type === "Hall")
+        .map((group) => group.name);
+        const RCArray = groupsData
+        .filter((group) => group.type === "RC")
+        .map((group) => group.name);
+        const clubsArray = groupsData
+        .filter((group) => group.type === "Club")
+        .map((group) => group.name);
+
+      setHalls(hallsArray);
+      setRC(RCArray);
+      setClubs(clubsArray);
+    };
+
+    fetchGroupsAndImages();
+  }, []);
 
 
   const handleSellerTypeChange = (event) => {
@@ -28,17 +57,11 @@ function DeleteListings() {
 
     // Update dependent options based on selected seller type
     if (selectedSellerType === "Halls") {
-      setDependentOptions([
-        "Eusoff",
-        "Temasek",
-        "Kent Ridge",
-        "Sheares",
-        "Raffles",
-      ]);
+      setDependentOptions(halls);
     } else if (selectedSellerType === "RC") {
-      setDependentOptions(["CAPT", "RC4", "Ridge View", "Tembusu"]);
+      setDependentOptions(RC);
     } else if (selectedSellerType === "Clubs") {
-      setDependentOptions(["Club 1", "Club 2", "Club 3"]);
+      setDependentOptions(clubs);
     } else {
       setDependentOptions([]);
     }
