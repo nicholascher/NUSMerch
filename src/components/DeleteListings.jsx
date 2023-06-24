@@ -1,22 +1,60 @@
 import React, { useState } from 'react';
 import { collection, doc, deleteDoc, updateDoc } from 'firebase/firestore';
-import { db, storage } from '../../firebase/firebase';
+import { db, storage, auth } from '../../firebase/firebase';
 import { deleteObject, ref, uploadBytes } from 'firebase/storage';
 import { Link, useParams, useNavigate } from 'react-router-dom';
-import logo from '../../Images/Logo.png';
+import logo from '../../Images/Corner Logo.png';
 
 function DeleteListings() {
   const navigate = useNavigate();
   const { id, imagePath } = useParams();
-  console.log(id, imagePath);
   const post = doc(db, 'Sellers', id);
-  console.log(decodeURIComponent(imagePath))
   const oldimageRef = ref(storage, decodeURIComponent(imagePath))
+  const user = auth.currentUser;
 
   const [description, setDescription] = useState('');
   const [name, setName] = useState('');
   const [sellerType, setSellerType] = useState('');
   const [imageUpload, setImageUpload] = useState(null);
+  const [sellerSpecific, setSellerSpecific] = useState('');
+  const [dependentOptions, setDependentOptions] = useState([]);
+  const [price, setPrice] = useState("");
+
+
+
+  const handleSellerTypeChange = (event) => {
+    const selectedSellerType = event.target.value;
+    setSellerType(selectedSellerType);
+
+    // Update dependent options based on selected seller type
+    if (selectedSellerType === "Halls") {
+      setDependentOptions([
+        "Eusoff",
+        "Temasek",
+        "Kent Ridge",
+        "Sheares",
+        "Raffles",
+      ]);
+    } else if (selectedSellerType === "RC") {
+      setDependentOptions(["CAPT", "RC4", "Ridge View", "Tembusu"]);
+    } else if (selectedSellerType === "Clubs") {
+      setDependentOptions(["Club 1", "Club 2", "Club 3"]);
+    } else {
+      setDependentOptions([]);
+    }
+
+    setSellerSpecific("");
+  };
+
+  const handleSellerSpecificChange = (event) => {
+    setSellerSpecific(event.target.value);
+  };
+
+  const handlePriceChange = (event) => {
+    const value = event.target.value;
+    const numericValue = value.replace(/[^0-9]/g, "");
+    setPrice(numericValue);
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -36,7 +74,15 @@ function DeleteListings() {
     
     if (imageUpload) {
       const newimagePath = `images/${imageUpload.name + makeid()}`
-      const newFields = { description: description, name: name, sellerType: sellerType, imagePath: newimagePath }
+      const newFields = { 
+        description: description, 
+        name: name, 
+        sellerType: sellerType, 
+        imagePath: newimagePath,
+        sellerSpecific: sellerSpecific,
+        createdBy: user.email,
+        price : price, 
+      }
       const newimageRef = ref(storage, newimagePath);
       
       await updateDoc(post, newFields)
@@ -60,22 +106,47 @@ function DeleteListings() {
     <div className="container mt-5">
       <div className="d-flex justify-content-between align-items-center mb-3">
         <div>
-          <img src={logo} alt="Logo" className="rounded" style={{ width: '100px', height: 'auto' }} />
+          <img
+            src={logo}
+            alt="Logo"
+            className="rounded"
+            style={{ width: "100px", height: "auto" }}
+          />
         </div>
         <div>
-          <Link to="/sellerslistings" className="btn btn-primary">Back to Listing</Link>
+          <Link to="/sellerslistings" className="btn btn-primary">
+            Back to Listings
+          </Link>
         </div>
       </div>
       <div className="row justify-content-center">
         <div className="col-md-6">
           <form onSubmit={handleSubmit}>
-            <select className="form-select" 
-              aria-label="Default select example" 
-              onChange={(event) => setSellerType(event.target.value)}>
+            <select
+              className="form-select"
+              aria-label="Default select example"
+              onChange={handleSellerTypeChange}
+              value={sellerType}
+            >
               <option defaultValue>Who are you selling to?</option>
-              <option value="Halls">Halls</option>
               <option value="RC">RC</option>
               <option value="Clubs">Clubs</option>
+              <option value="Halls">Halls</option>
+            </select>
+            <p></p>
+            <select
+              className="form-select"
+              aria-label="Default select example"
+              disabled={!sellerType}
+              onChange={handleSellerSpecificChange}
+              value={sellerSpecific}
+            >
+              <option defaultValue>Select an option</option>
+              {dependentOptions.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
             </select>
             <p></p>
             <div className="mb-3">
@@ -91,7 +162,27 @@ function DeleteListings() {
                 onChange={(event) => {
                   setName(event.target.value);
                 }}
+                maxLength={30}
               />
+            </div>
+            <div className="mb-3">
+              <label htmlFor="productPrice" className="form-label">
+                Price
+              </label>
+              <div className="input-group">
+                <span className="input-group-text">$</span>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="productPrice"
+                  name="price"
+                  value={price}
+                  onChange={handlePriceChange}
+                  maxLength={6}
+                  pattern="[0-9]*"
+                  inputMode="numeric"
+                />
+              </div>
             </div>
             <div className="mb-3">
               <label htmlFor="productDescription" className="form-label">
@@ -106,6 +197,7 @@ function DeleteListings() {
                 onChange={(event) => {
                   setDescription(event.target.value);
                 }}
+                maxLength={2000}
               ></textarea>
             </div>
             <div className="mb-3">
@@ -114,6 +206,7 @@ function DeleteListings() {
               </label>
               <input
                 type="file"
+                accept=".jpg, .png"
                 className="form-control"
                 id="productImage"
                 name="image"
@@ -123,10 +216,10 @@ function DeleteListings() {
               />
             </div>
             <div className="text-center">
-              <button type="submit" className="btn btn-primary me-2">
-                Submit
+              <button type="submit" className="btn btn-primary ms-2">
+                Edit Listing
               </button>
-              <button className="btn btn-danger" onClick={() => handleDelete(id)}>Delete Listing</button>
+              <button className="btn btn-danger ms-2" onCLick={handleDelete}>Delete Listing</button>
             </div>
           </form>
         </div>

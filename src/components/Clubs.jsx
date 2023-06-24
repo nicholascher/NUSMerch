@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { collection, getDocs } from "firebase/firestore";
 import { getStorage, ref, getDownloadURL } from "firebase/storage";
 import { db } from "../../firebase/firebase";
@@ -10,7 +10,7 @@ function Clubs() {
   const [sellers, setSellers] = useState([]);
   const [newImages, setNewImages] = useState([]);
   const [search, setSearch] = useState("");
-
+  const { club } = useParams();
   const storage = getStorage();
 
   useEffect(() => {
@@ -21,12 +21,13 @@ function Clubs() {
         ...doc.data(),
         id: doc.id,
       }));
-      const filteredSellers = sellers.filter((seller) => {
+      const filteredSellers = sellersData.filter((seller) => {
         return (
-          seller.sellerType === "Clubs" &&
+          seller.sellerSpecific === club &&
           seller.name.toLowerCase().includes(search.toLowerCase())
         );
       });
+
       setSellers(filteredSellers);
 
       const imagePromises = filteredSellers.map(async (seller) => {
@@ -81,21 +82,11 @@ function Clubs() {
                 </Link>
               </li>
               <li className="nav-item">
-                <Link className="nav-link" to="/clubs">
+                <Link className="nav-link" to="/clubslanding">
                   Clubs
                 </Link>
               </li>
             </ul>
-            <form className="d-flex" role="search">
-              <input
-                className="form-control me-2"
-                type="search"
-                placeholder="Search by name"
-                aria-label="Search"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
-            </form>
             <button className="btn btn-primary ms-2" onClick={Signout()}>
               Sign Out
             </button>
@@ -104,24 +95,34 @@ function Clubs() {
       </nav>
       <div className="container mt-5">
         <div className="row row-cols-1 row-cols-md-3 g-4">
-          {sellers.map((seller, index) => (
-            <div className="col" key={seller.id}>
-              <div className="card product h-100">
-                <img
-                  src={newImages[index]}
-                  className="card-img card-image"
-                  alt="..."
-                />
-                <div className="card-body d-flex flex-column">
-                  <div className="d-flex justify-content-between align-items-start">
-                    <h5 className="card-title">{seller.name}</h5>
-                    <p className="card-text">{seller.price}</p>
+          {sellers.length === 0 ? (
+            <blockquote>This seller has no listings!</blockquote>
+          ) : (
+            sellers.map((seller, index) => (
+              <div className="col" key={seller.id}>
+                <Link
+                  to={`/productdisplay/${seller.id}`}
+                  state={seller}
+                  className="card-link"
+                  style={{ textDecoration: "none" }}
+                >
+                  <div className="card product h-100">
+                    <img
+                      src={newImages[index]}
+                      className="card-img card-image"
+                      alt="Product Image"
+                    />
+                    <div className="card-body d-flex flex-column">
+                      <div className="d-flex justify-content-between align-items-start">
+                        <h5 className="card-title">{seller.name}</h5>
+                        <p className="card-text">${seller.price}</p>
+                      </div>
+                    </div>
                   </div>
-                  <p className="card-text">{seller.description}</p>
-                </div>
+                </Link>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </div>
     </>

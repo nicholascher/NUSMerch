@@ -5,6 +5,7 @@ import { getStorage, ref, getDownloadURL } from "firebase/storage";
 import { db } from "../../firebase/firebase";
 import logo from "../../Images/Corner Logo.png";
 import Signout from "./Signout";
+import SellerCheck from "./SellerCheck";
 
 function HallsLanding() {
   const [groups, setGroups] = useState([]);
@@ -80,9 +81,9 @@ function HallsLanding() {
                 </Link>
               </li>
             </ul>
-            <Link className="btn btn-primary ms-2" to="/addlistings">
-              Add Listings
-            </Link>
+            <button className="btn btn-success ms-2" onClick={SellerCheck()} >
+              View your Listings
+            </button>
             <button className="btn btn-primary ms-2" onClick={Signout()}>
               Sign Out
             </button>

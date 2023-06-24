@@ -60,9 +60,6 @@ function ProductDisplay(props) {
     getReviews();
   }, [seller, storage]);
 
-  if (!seller) {
-    return <p>Loading seller data...</p>;
-  }
 
   const handleSaveReview = async () => {
     await addDoc(reviewCollectionRef, {

@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { collection, addDoc } from "firebase/firestore";
-import { db, storage } from "../../firebase/firebase";
+import React, { useState, useEffect } from "react";
+import { collection, addDoc, getDocs } from "firebase/firestore";
+import { db, storage, auth } from "../../firebase/firebase";
 import { ref, uploadBytes } from "firebase/storage";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../../Images/Logo.png";
@@ -21,7 +21,10 @@ function AddListings() {
 
   const navigate = useNavigate();
   const sellersCollectionRef = collection(db, "Sellers");
-
+  const [halls, setHalls ] = useState([]);
+  const [RC, setRC ] = useState([]);
+  const [clubs, setClubs ] = useState([]);
+  
   const [description, setDescription] = useState("");
   const [name, setName] = useState("");
   const [sellerType, setSellerType] = useState("");
@@ -29,6 +32,33 @@ function AddListings() {
   const [dependentOptions, setDependentOptions] = useState([]);
   const [sellerSpecific, setSellerSpecific] = useState("");
   const [price, setPrice] = useState("");
+  const user = auth.currentUser;
+
+  useEffect(() => {
+    const fetchGroupsAndImages = async () => {
+      const groupsCollectionRef = collection(db, "Groups");
+      const data = await getDocs(groupsCollectionRef);
+      const groupsData = data.docs.map((doc) => ({
+        ...doc.data(),
+        id: doc.id,
+      }));
+      const hallsArray = groupsData
+        .filter((group) => group.type === "Hall")
+        .map((group) => group.name);
+        const RCArray = groupsData
+        .filter((group) => group.type === "RC")
+        .map((group) => group.name);
+        const clubsArray = groupsData
+        .filter((group) => group.type === "Club")
+        .map((group) => group.name);
+
+      setHalls(hallsArray);
+      setRC(RCArray);
+      setClubs(clubsArray);
+    };
+
+    fetchGroupsAndImages();
+  }, []);
 
   const handleSellerTypeChange = (event) => {
     const selectedSellerType = event.target.value;
@@ -36,17 +66,11 @@ function AddListings() {
 
     // Update dependent options based on selected seller type
     if (selectedSellerType === "Halls") {
-      setDependentOptions([
-        "Eusoff",
-        "Temasek",
-        "Kent Ridge",
-        "Sheares",
-        "Raffles",
-      ]);
+      setDependentOptions(halls);
     } else if (selectedSellerType === "RC") {
-      setDependentOptions(["CAPT", "RC4", "Ridge View", "Tembusu"]);
+      setDependentOptions(RC);
     } else if (selectedSellerType === "Clubs") {
-      setDependentOptions(["Club 1", "Club 2", "Club 3"]);
+      setDependentOptions(clubs);
     } else {
       setDependentOptions([]);
     }
@@ -83,6 +107,7 @@ function AddListings() {
         sellerType,
         sellerSpecific,
         price,
+        createdBy : user.email,
       });
       await uploadBytes(imageRef, imageUpload);
 

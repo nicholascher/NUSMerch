@@ -107,30 +107,34 @@ function RC() {
       </nav>
       <div className="container mt-5">
         <div className="row row-cols-1 row-cols-md-3 g-4">
-          {sellers.map((seller, index) => (
-            <div className="col" key={seller.id}>
-              <Link
-                to={`/productdisplay/${seller.id}`}
-                state={seller}
-                className="card-link"
-                style={{ textDecoration: "none" }}
-              >
-                <div className="card product h-100">
-                  <img
-                    src={newImages[index]}
-                    className="card-img card-image"
-                    alt="Product Image"
-                  />
-                  <div className="card-body d-flex flex-column">
-                    <div className="d-flex justify-content-between align-items-start">
-                      <h5 className="card-title">{seller.name}</h5>
-                      <p className="card-text">${seller.price}</p>
+          {sellers.length === 0 ? (
+            <blockquote>This seller has no listings!</blockquote>
+          ) : (
+            sellers.map((seller, index) => (
+              <div className="col" key={seller.id}>
+                <Link
+                  to={`/productdisplay/${seller.id}`}
+                  state={seller}
+                  className="card-link"
+                  style={{ textDecoration: "none" }}
+                >
+                  <div className="card product h-100">
+                    <img
+                      src={newImages[index]}
+                      className="card-img card-image"
+                      alt="Product Image"
+                    />
+                    <div className="card-body d-flex flex-column">
+                      <div className="d-flex justify-content-between align-items-start">
+                        <h5 className="card-title">{seller.name}</h5>
+                        <p className="card-text">${seller.price}</p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </Link>
-            </div>
-          ))}
+                </Link>
+              </div>
+            ))
+          )}
         </div>
       </div>
     </>

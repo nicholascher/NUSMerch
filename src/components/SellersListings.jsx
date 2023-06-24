@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { getStorage, ref, getDownloadURL } from "firebase/storage";
-import { db } from "../../firebase/firebase";
+import { db, auth } from "../../firebase/firebase";
 import logo from "../../Images/Logo.png";
 import Signout from "./Signout";
 import { Link, useNavigate } from "react-router-dom";
@@ -11,6 +11,7 @@ function SellersListings() {
   const [sellers, setSellers] = useState([]);
   const [newImages, setNewImages] = useState([]);
   const storage = getStorage();
+  const user = auth.currentUser;
 
   useEffect(() => {
     const getSellers = async () => {
@@ -20,9 +21,15 @@ function SellersListings() {
         ...doc.data(),
         id: doc.id,
       }));
-      setSellers(sellersData);
+      const filteredSellers = sellersData.filter((seller) => {
+        return (
+          seller.createdBy === user.email
+        );
+      });
+      
+      setSellers(filteredSellers);
 
-      const imagePromises = sellersData.map(async (seller) => {
+      const imagePromises = filteredSellers.map(async (seller) => {
         if (seller.imagePath) {
           try {
             const url = await getDownloadURL(ref(storage, seller.imagePath));
@@ -49,22 +56,50 @@ function SellersListings() {
 
   return (
     <>
-      <div className="container mt-5">
-        <div className="row mb-3">
-          <div className="col d-flex text-start">
-            <Link to="/addlistings" className="btn btn-primary me-2">
-              Add Listing
+     <nav className="navbar navbar-expand-lg bg-body-tertiary">
+        <div className="container-fluid">
+          <Link className="navbar-brand" to="/landingpage">
+            <img src={logo} alt="Logo" className="logo smaller" />
+          </Link>
+          <button
+            className="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarTogglerDemo02"
+            aria-controls="navbarTogglerDemo02"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+          >
+            <span className="navbar-toggler-icon"></span>
+          </button>
+          <div className="collapse navbar-collapse" id="navbarTogglerDemo02">
+            <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+              <li className="nav-item">
+                <Link className="nav-link" to="/hallslanding">
+                  Halls
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link className="nav-link" to="/rclanding">
+                  RC
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link className="nav-link" to="/clubslanding">
+                  Clubs
+                </Link>
+              </li>
+            </ul>
+            <Link className="btn btn-primary ms-2" to="/addlistings">
+                Add New Listing
             </Link>
-          </div>
-          <div className="col text-end">
-            <Link to="/landingpage" className="btn btn-primary me-2">
-              Back to Home
-            </Link>
-            <button className="btn btn-primary" onClick={Signout()}>
+            <button className="btn btn-primary ms-2" onClick={Signout()}>
               Sign Out
             </button>
           </div>
         </div>
+      </nav>
+      <div className="container mt-5">
         <div className="row row-cols-1 row-cols-md-3 g-4">
           {sellers.map((seller, index) => (
             <div className="col" key={seller.id}>

@@ -23,7 +23,7 @@ function SellerCheck() {
     if (user != null) {
       const isApprovedSeller = approvedList.some((approved) => approved.email === user.email);
       if (isApprovedSeller) {
-        navigate('/addlistings');
+        navigate('/sellerslistings');
       } else {
         navigate('/notseller');
       }
