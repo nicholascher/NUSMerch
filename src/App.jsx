@@ -29,7 +29,7 @@ function App() {
         <Route path='/forgotpassconfirm' element={<ForgotPassConfirm />}></Route>
         <Route path='/halls/:hall' element={<Halls />}></Route>
         <Route path='/rc/:rctype' element={<RC />}></Route>
-        <Route path='/clubs' element={<Clubs />}></Route>
+        <Route path='/clubs/:club' element={<Clubs />}></Route>
         <Route path='/sellerslistings' element={<SellersListings />}></Route>
         <Route path='/addlistings' element={<AddListings />}></Route>
         <Route path='/notseller' element={<NotSeller />}></Route>

@@ -96,7 +96,7 @@ function ClubsLanding() {
               <div className="card product text-bg-light h-100">
                 <div className="card-body">
                   <h5 className="card-title">{group.name}</h5>
-                  <Link to={`/halls/${group.name}`} className="card-link">
+                  <Link to={`/clubs/${group.name}`} className="card-link">
                     <img
                       src={newImages[index]}
                       className="card-img"
