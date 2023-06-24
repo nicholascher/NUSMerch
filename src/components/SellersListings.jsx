@@ -75,8 +75,10 @@ function SellersListings() {
                   alt="..."
                 />
                 <div className="card-body">
-                  <h5 className="card-title">{seller.name}</h5>
-                  <p className="card-text">{seller.description}</p>
+                  <div className="d-flex justify-content-between align-items-start">
+                    <h5 className="card-title">{seller.name}</h5>
+                    <p className="card-text">${seller.price}</p>
+                  </div>
                   <button
                     className="btn btn-primary"
                     onClick={() => handleEdit(seller.id, seller.imagePath)}

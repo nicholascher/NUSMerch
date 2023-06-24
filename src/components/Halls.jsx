@@ -102,6 +102,7 @@ function Halls() {
                 to={`/productdisplay/${seller.id}`}
                 state={seller}
                 className="card-link"
+                style={{ textDecoration: "none" }}
               >
                 <div className="card product h-100">
                   <img
@@ -112,9 +113,8 @@ function Halls() {
                   <div className="card-body d-flex flex-column">
                     <div className="d-flex justify-content-between align-items-start">
                       <h5 className="card-title">{seller.name}</h5>
-                      <p className="card-text">{seller.price}</p>
+                      <p className="card-text">${seller.price}</p>
                     </div>
-                    <p className="card-text">{seller.description}</p>
                   </div>
                 </div>
               </Link>

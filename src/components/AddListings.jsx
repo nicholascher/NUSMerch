@@ -1,14 +1,15 @@
-import React, { useState } from 'react';
-import { collection, addDoc } from 'firebase/firestore';
-import { db, storage } from '../../firebase/firebase';
-import { ref, uploadBytes } from 'firebase/storage';
-import { Link, useNavigate } from 'react-router-dom';
-import logo from '../../Images/Logo.png';
+import React, { useState } from "react";
+import { collection, addDoc } from "firebase/firestore";
+import { db, storage } from "../../firebase/firebase";
+import { ref, uploadBytes } from "firebase/storage";
+import { Link, useNavigate } from "react-router-dom";
+import logo from "../../Images/Logo.png";
 
 function AddListings() {
   function makeid() {
-    let result = '';
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let result = "";
+    const characters =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     const charactersLength = characters.length;
     let counter = 0;
     while (counter < 14) {
@@ -19,58 +20,77 @@ function AddListings() {
   }
 
   const navigate = useNavigate();
-  const sellersCollectionRef = collection(db, 'Sellers');
+  const sellersCollectionRef = collection(db, "Sellers");
 
-  const [description, setDescription] = useState('');
-  const [name, setName] = useState('');
-  const [sellerType, setSellerType] = useState('');
+  const [description, setDescription] = useState("");
+  const [name, setName] = useState("");
+  const [sellerType, setSellerType] = useState("");
   const [imageUpload, setImageUpload] = useState(null);
   const [dependentOptions, setDependentOptions] = useState([]);
-  const [sellerSpecific, setSellerSpecific] = useState('');
-  const [price, setPrice] = useState('');
+  const [sellerSpecific, setSellerSpecific] = useState("");
+  const [price, setPrice] = useState("");
 
   const handleSellerTypeChange = (event) => {
     const selectedSellerType = event.target.value;
     setSellerType(selectedSellerType);
 
     // Update dependent options based on selected seller type
-    if (selectedSellerType === 'Halls') {
-      setDependentOptions(['Eusoff', 'Temasek', 'Kent Ridge', 'Sheares', 'Raffles']);
-    } else if (selectedSellerType === 'RC') {
-      setDependentOptions(['CAPT', 'RC4', 'Ridge View', 'Tembusu']);
-    } else if (selectedSellerType === 'Clubs') {
-      setDependentOptions(['Club 1', 'Club 2', 'Club 3']);
+    if (selectedSellerType === "Halls") {
+      setDependentOptions([
+        "Eusoff",
+        "Temasek",
+        "Kent Ridge",
+        "Sheares",
+        "Raffles",
+      ]);
+    } else if (selectedSellerType === "RC") {
+      setDependentOptions(["CAPT", "RC4", "Ridge View", "Tembusu"]);
+    } else if (selectedSellerType === "Clubs") {
+      setDependentOptions(["Club 1", "Club 2", "Club 3"]);
     } else {
       setDependentOptions([]);
     }
 
-    setSellerSpecific('');
+    setSellerSpecific("");
   };
 
   const handleSellerSpecificChange = (event) => {
     setSellerSpecific(event.target.value);
   };
 
+  const handlePriceChange = (event) => {
+    const value = event.target.value;
+    const numericValue = value.replace(/[^0-9]/g, "");
+    setPrice(numericValue);
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     if (imageUpload) {
-      const allowedTypes = ['image/jpeg', 'image/png'];
+      const allowedTypes = ["image/jpeg", "image/png"];
       if (!allowedTypes.includes(imageUpload.type)) {
-        alert('Please upload a valid JPG or PNG image.');
+        alert("Please upload a valid JPG or PNG image.");
         return;
       }
 
       const imagePath = `images/${imageUpload.name + makeid()}`;
       const imageRef = ref(storage, imagePath);
-      await addDoc(sellersCollectionRef, { description, name, imagePath, sellerType, sellerSpecific, price });
+      await addDoc(sellersCollectionRef, {
+        description,
+        name,
+        imagePath,
+        sellerType,
+        sellerSpecific,
+        price,
+      });
       await uploadBytes(imageRef, imageUpload);
 
-      alert('Listing added!');
-      setDescription('');
-      setName('');
+      alert("Listing added!");
+      setDescription("");
+      setName("");
       setImageUpload(null);
-      navigate('/addlistings');
+      navigate("/addlistings");
       window.location.reload();
     }
   };
@@ -79,7 +99,12 @@ function AddListings() {
     <div className="container mt-5">
       <div className="d-flex justify-content-between align-items-center mb-3">
         <div>
-          <img src={logo} alt="Logo" className="rounded" style={{ width: '100px', height: 'auto' }} />
+          <img
+            src={logo}
+            alt="Logo"
+            className="rounded"
+            style={{ width: "100px", height: "auto" }}
+          />
         </div>
         <div>
           <Link to="/sellerslistings" className="btn btn-primary">
@@ -130,22 +155,27 @@ function AddListings() {
                 onChange={(event) => {
                   setName(event.target.value);
                 }}
+                maxLength={30}
               />
             </div>
             <div className="mb-3">
               <label htmlFor="productPrice" className="form-label">
                 Price
               </label>
-              <input
-                type="text"
-                className="form-control"
-                id="productPrice"
-                name="price"
-                value={price}
-                onChange={(event) => {
-                  setPrice(event.target.value);
-                }}
-              />
+              <div className="input-group">
+                <span className="input-group-text">$</span>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="productPrice"
+                  name="price"
+                  value={price}
+                  onChange={handlePriceChange}
+                  maxLength={6}
+                  pattern="[0-9]*"
+                  inputMode="numeric"
+                />
+              </div>
             </div>
             <div className="mb-3">
               <label htmlFor="productDescription" className="form-label">
@@ -160,6 +190,7 @@ function AddListings() {
                 onChange={(event) => {
                   setDescription(event.target.value);
                 }}
+                maxLength={2000}
               ></textarea>
             </div>
             <div className="mb-3">
