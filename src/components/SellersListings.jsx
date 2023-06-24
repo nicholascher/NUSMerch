@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { getStorage, ref, getDownloadURL } from "firebase/storage";
 import { db, auth } from "../../firebase/firebase";
-import logo from "../../Images/Logo.png";
+import logo from "../../Images/corner Logo.png";
 import Signout from "./Signout";
 import { Link, useNavigate } from "react-router-dom";
 
