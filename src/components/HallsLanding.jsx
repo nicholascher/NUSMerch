@@ -89,7 +89,7 @@ function HallsLanding() {
           </div>
         </div>
       </nav>
-      <div className="container mt-5">
+      <div className="container mt-5 bottom">
         <div className="row row-cols-1 row-cols-md-3 g-4">
           {groups.map((group, index) => (
             <div className="col" key={group.id}>

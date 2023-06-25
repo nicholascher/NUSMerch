@@ -22,11 +22,9 @@ function SellersListings() {
         id: doc.id,
       }));
       const filteredSellers = sellersData.filter((seller) => {
-        return (
-          seller.createdBy === user.email
-        );
+        return seller.createdBy === user.email;
       });
-      
+
       setSellers(filteredSellers);
 
       const imagePromises = filteredSellers.map(async (seller) => {
@@ -56,7 +54,7 @@ function SellersListings() {
 
   return (
     <>
-     <nav className="navbar navbar-expand-lg bg-body-tertiary">
+      <nav className="navbar navbar-expand-lg bg-body-tertiary">
         <div className="container-fluid">
           <Link className="navbar-brand" to="/landingpage">
             <img src={logo} alt="Logo" className="logo smaller" />
@@ -91,7 +89,7 @@ function SellersListings() {
               </li>
             </ul>
             <Link className="btn btn-primary ms-2" to="/addlistings">
-                Add New Listing
+              Add New Listing
             </Link>
             <button className="btn btn-primary ms-2" onClick={Signout()}>
               Sign Out
@@ -99,7 +97,7 @@ function SellersListings() {
           </div>
         </div>
       </nav>
-      <div className="container mt-5">
+      <div className="container mt-5 bottom">
         <div className="row row-cols-1 row-cols-md-3 g-4">
           {sellers.map((seller, index) => (
             <div className="col" key={seller.id}>

@@ -21,10 +21,10 @@ function AddListings() {
 
   const navigate = useNavigate();
   const sellersCollectionRef = collection(db, "Sellers");
-  const [halls, setHalls ] = useState([]);
-  const [RC, setRC ] = useState([]);
-  const [clubs, setClubs ] = useState([]);
-  
+  const [halls, setHalls] = useState([]);
+  const [RC, setRC] = useState([]);
+  const [clubs, setClubs] = useState([]);
+
   const [description, setDescription] = useState("");
   const [name, setName] = useState("");
   const [sellerType, setSellerType] = useState("");
@@ -45,10 +45,10 @@ function AddListings() {
       const hallsArray = groupsData
         .filter((group) => group.type === "Hall")
         .map((group) => group.name);
-        const RCArray = groupsData
+      const RCArray = groupsData
         .filter((group) => group.type === "RC")
         .map((group) => group.name);
-        const clubsArray = groupsData
+      const clubsArray = groupsData
         .filter((group) => group.type === "Club")
         .map((group) => group.name);
 
@@ -107,7 +107,7 @@ function AddListings() {
         sellerType,
         sellerSpecific,
         price,
-        createdBy : user.email,
+        createdBy: user.email,
       });
       await uploadBytes(imageRef, imageUpload);
 

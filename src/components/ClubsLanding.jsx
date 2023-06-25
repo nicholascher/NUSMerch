@@ -89,17 +89,17 @@ function ClubsLanding() {
           </div>
         </div>
       </nav>
-      <div className="container mt-5">
+      <div className="container mt-5 bottom">
         <div className="row row-cols-1 row-cols-md-3 g-4">
           {groups.map((group, index) => (
             <div className="col" key={group.id}>
               <div className="card product text-bg-light h-100">
                 <div className="card-body">
                   <h5 className="card-title">{group.name}</h5>
-                  <Link to={`/clubs/${group.name}`} className="card-link">
+                  <Link to={`/rc/${group.name}`} className="card-link">
                     <img
                       src={newImages[index]}
-                      className="card-img card-iamge"
+                      className="card-img card-image"
                       alt="Group Image"
                     />
                   </Link>

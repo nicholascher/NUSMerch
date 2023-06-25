@@ -1,26 +1,32 @@
-import React, { useState, useEffect } from 'react';
-import { collection, doc, deleteDoc, updateDoc, getDocs } from 'firebase/firestore';
-import { db, storage, auth } from '../../firebase/firebase';
-import { deleteObject, ref, uploadBytes } from 'firebase/storage';
-import { Link, useParams, useNavigate } from 'react-router-dom';
-import logo from '../../Images/Corner Logo.png';
+import React, { useState, useEffect } from "react";
+import {
+  collection,
+  doc,
+  deleteDoc,
+  updateDoc,
+  getDocs,
+} from "firebase/firestore";
+import { db, storage, auth } from "../../firebase/firebase";
+import { deleteObject, ref, uploadBytes } from "firebase/storage";
+import { Link, useParams, useNavigate } from "react-router-dom";
+import logo from "../../Images/Corner Logo.png";
 
 function DeleteListings() {
   const navigate = useNavigate();
   const { id, imagePath } = useParams();
-  const post = doc(db, 'Sellers', id);
-  const oldimageRef = ref(storage, decodeURIComponent(imagePath))
+  const post = doc(db, "Sellers", id);
+  const oldimageRef = ref(storage, decodeURIComponent(imagePath));
   const user = auth.currentUser;
 
-  const [halls, setHalls ] = useState([]);
-  const [RC, setRC ] = useState([]);
-  const [clubs, setClubs ] = useState([]);
+  const [halls, setHalls] = useState([]);
+  const [RC, setRC] = useState([]);
+  const [clubs, setClubs] = useState([]);
 
-  const [description, setDescription] = useState('');
-  const [name, setName] = useState('');
-  const [sellerType, setSellerType] = useState('');
+  const [description, setDescription] = useState("");
+  const [name, setName] = useState("");
+  const [sellerType, setSellerType] = useState("");
   const [imageUpload, setImageUpload] = useState(null);
-  const [sellerSpecific, setSellerSpecific] = useState('');
+  const [sellerSpecific, setSellerSpecific] = useState("");
   const [dependentOptions, setDependentOptions] = useState([]);
   const [price, setPrice] = useState("");
 
@@ -35,10 +41,10 @@ function DeleteListings() {
       const hallsArray = groupsData
         .filter((group) => group.type === "Hall")
         .map((group) => group.name);
-        const RCArray = groupsData
+      const RCArray = groupsData
         .filter((group) => group.type === "RC")
         .map((group) => group.name);
-        const clubsArray = groupsData
+      const clubsArray = groupsData
         .filter((group) => group.type === "Club")
         .map((group) => group.name);
 
@@ -49,7 +55,6 @@ function DeleteListings() {
 
     fetchGroupsAndImages();
   }, []);
-
 
   const handleSellerTypeChange = (event) => {
     const selectedSellerType = event.target.value;
@@ -83,47 +88,48 @@ function DeleteListings() {
     event.preventDefault();
 
     function makeid() {
-      let result = '';
-      const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      let result = "";
+      const characters =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
       const charactersLength = characters.length;
       let counter = 0;
       while (counter < 14) {
-        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        result += characters.charAt(
+          Math.floor(Math.random() * charactersLength)
+        );
         counter += 1;
       }
       return result;
     }
 
-    
     if (imageUpload) {
-      const newimagePath = `images/${imageUpload.name + makeid()}`
-      const newFields = { 
-        description: description, 
-        name: name, 
-        sellerType: sellerType, 
+      const newimagePath = `images/${imageUpload.name + makeid()}`;
+      const newFields = {
+        description: description,
+        name: name,
+        sellerType: sellerType,
         imagePath: newimagePath,
         sellerSpecific: sellerSpecific,
         createdBy: user.email,
-        price : price, 
-      }
+        price: price,
+      };
       const newimageRef = ref(storage, newimagePath);
-      
-      await updateDoc(post, newFields)
+
+      await updateDoc(post, newFields);
       await uploadBytes(newimageRef, imageUpload);
       await deleteObject(oldimageRef);
-      
-      alert('Updated!')
-      navigate('/sellerslistings')
+
+      alert("Updated!");
+      navigate("/sellerslistings");
     }
-    
   };
 
   const handleDelete = async () => {
     await deleteDoc(post);
     await deleteObject(oldimageRef);
-    alert("Deleted!")
-    navigate('/sellerslistings')
-  }
+    alert("Deleted!");
+    navigate("/sellerslistings");
+  };
 
   return (
     <div className="container mt-5">
@@ -242,7 +248,9 @@ function DeleteListings() {
               <button type="submit" className="btn btn-primary ms-2">
                 Edit Listing
               </button>
-              <button className="btn btn-danger ms-2" onCLick={handleDelete}>Delete Listing</button>
+              <button className="btn btn-danger ms-2" onClick={handleDelete}>
+                Delete Listing
+              </button>
             </div>
           </form>
         </div>

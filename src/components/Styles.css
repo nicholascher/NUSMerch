@@ -53,3 +53,7 @@
   transition: transform 0.3s ease-in-out;
   transform: scale(1.05);
 }
+
+.bottom {
+  margin-bottom: 50px
+}

@@ -81,7 +81,7 @@ function HallsLanding() {
                 </Link>
               </li>
             </ul>
-            <button className="btn btn-success ms-2" onClick={SellerCheck()} >
+            <button className="btn btn-success ms-2" onClick={SellerCheck()}>
               View your Listings
             </button>
             <button className="btn btn-primary ms-2" onClick={Signout()}>
@@ -90,7 +90,7 @@ function HallsLanding() {
           </div>
         </div>
       </nav>
-      <div className="container mt-5">
+      <div className="container mt-5 bottom">
         <div className="row row-cols-1 row-cols-md-3 g-4">
           {groups.map((group, index) => (
             <div className="col" key={group.id}>

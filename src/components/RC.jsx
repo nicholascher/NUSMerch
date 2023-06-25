@@ -105,7 +105,7 @@ function RC() {
           </div>
         </div>
       </nav>
-      <div className="container mt-5">
+      <div className="container mt-5 bottom">
         <div className="row row-cols-1 row-cols-md-3 g-4">
           {sellers.length === 0 ? (
             <blockquote>This seller has no listings!</blockquote>
