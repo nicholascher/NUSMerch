@@ -17,6 +17,7 @@ function ProductDisplay(props) {
   const [averageRating, setAverageRating] = useState(0);
   const storage = getStorage();
   const reviewCollectionRef = collection(db, "Reviews");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const getImageUrl = async () => {
@@ -70,7 +71,7 @@ function ProductDisplay(props) {
     setRating(0);
     setReviewText("");
     alert("Review added!!");
-    window.location.reload();
+    navigate(location.pathname, { state: seller });
   };
 
   return (
