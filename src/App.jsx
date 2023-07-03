@@ -1,5 +1,8 @@
 import Login from "./components/Login"
-import { BrowserRouter, Routes, Route } from "react-router-dom"
+import { 
+  createRoutesFromElements, 
+  createBrowserRouter, 
+  BrowserRouter, Routes, Route } from "react-router-dom"
 import Signup from "./components/Signup"
 import LandingPage from "./components/LandingPage"
 import ForgotPassword from "./components/ForgotPassword"
@@ -21,7 +24,6 @@ function App() {
   return (
   <BrowserRouter>
     <Routes> 
-      <Route>
         <Route path='/' element={<Login />}></Route>
         <Route path='/login' element={<Login />}></Route>
         <Route path='/signup' element={<Signup />}></Route>
@@ -40,9 +42,6 @@ function App() {
         <Route path='/deletelistings/:id/:imagePath' element={<DeleteListings />}></Route>
         <Route path='/productdisplay/:id' element={<ProductDisplay />}></Route>
         <Route path='/profile' element={<Profile />}></Route>
-
-
-      </Route>
     </Routes>
   </BrowserRouter>
   )
