@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { getStorage, ref, getDownloadURL } from "firebase/storage";
-import { db } from "../../firebase/firebase";
+import { db, auth } from "../../firebase/firebase";
 import Signout from "./Signout";
 import { Rate, Input } from "antd";
-import { addDoc, collection, getDocs } from "firebase/firestore";
+import { addDoc, collection, getDocs, doc, updateDoc, arrayUnion } from "firebase/firestore";
 import logo from "../../Images/Corner Logo.png";
 
 function ProductDisplay(props) {
@@ -74,6 +74,16 @@ function ProductDisplay(props) {
     navigate(location.pathname, { state: seller });
   };
 
+
+
+  const handleAddBasket = () => {
+    const user = auth.currentUser;
+    const profileCollectionRef = doc(db, 'Profile', user.email)
+    updateDoc(profileCollectionRef, {
+      basket: arrayUnion(seller.id)
+    })
+  };
+
   return (
     <>
       <nav className="navbar navbar-expand-lg bg-body-tertiary">
@@ -128,6 +138,9 @@ function ProductDisplay(props) {
               <p>No image available</p>
             )}
           </div>
+          <button className="btn btn-primary btn-sm" onClick={handleAddBasket}>
+              Add to Basket
+          </button>
           <div className="col-md-4">
             <h1>{seller.name}</h1>
             <p>Price: ${seller.price}</p>
@@ -157,7 +170,6 @@ function ProductDisplay(props) {
               </strong>
             </p>
 
-            {/* Star component for the reviews I used antd but idt need change much looks okay */}
             <Rate value={rating} onChange={(value) => setRating(value)} />
 
             <div className="mb-3">
@@ -182,7 +194,6 @@ function ProductDisplay(props) {
               Save Review
             </button>
 
-            {/*This part renders all the reviews can make them stack nicer or smth*/}
             <blockquote className="blockquote mt-4">
               {allReviews.length === 0 ? (
                 <p>

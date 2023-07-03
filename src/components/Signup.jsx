@@ -3,7 +3,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { initializeApp } from "firebase/app";
 import { getDatabase } from "firebase/database";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { collection, getDocs, setDoc, doc, updateDoc, arrayUnion } from "firebase/firestore";
 import firebaseConfig from "../../firebase/firebase";
+import { db, auth } from "../../firebase/firebase";
 import logo from "../../Images/Logo.png";
 import Validation from "./SignupValidation";
 import "./Styles.css";
@@ -11,6 +13,7 @@ import "./Styles.css";
 const app = initializeApp(firebaseConfig);
 
 function Signup() {
+  const [name, setName] = useState("");
   const [values, setValues] = useState({
     email: "",
     password: "",
@@ -21,7 +24,6 @@ function Signup() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    const database = getDatabase(app);
     const auth = getAuth(app);
 
     const validationErrors = Validation(values);
@@ -35,6 +37,11 @@ function Signup() {
       createUserWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
           const user = userCredential.user;
+          const profileCollectionRef = doc(db, 'Profile', values.email)
+          setDoc(profileCollectionRef, {name, basket: {}, }, values.email);
+          updateDoc(profileCollectionRef, {
+            basket: arrayUnion("New entry")
+          })
           navigate("/");
         })
         .catch((error) => {
@@ -83,6 +90,20 @@ function Signup() {
                         {errors.email}
                       </span>
                     )}
+                  </div>
+                  <div className="mb-3">
+                    <label
+                      className="form-label login-form-label"
+                    >
+                      Name
+                    </label>
+                    <input
+                      className="form-control form-control-lg"
+                      value= {name}
+                      onChange={(event) => { 
+                        setName(event.target.value )}                   
+                      }
+                    />
                   </div>
                   <div className="form-group mb-4">
                     <label

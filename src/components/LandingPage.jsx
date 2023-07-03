@@ -87,6 +87,9 @@ function HallsLanding() {
             <button className="btn btn-primary ms-2" onClick={Signout()}>
               Sign Out
             </button>
+            <Link className="btn btn-primary ms-2" to="/profile">
+              Profile
+            </Link>
           </div>
         </div>
       </nav>

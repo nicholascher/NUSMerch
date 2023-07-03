@@ -15,6 +15,7 @@ import HallsLanding from "./components/HallsLanding"
 import RCLanding from "./components/RCLanding"
 import ProductDisplay from "./components/ProductDisplay"
 import ClubsLanding from "./components/ClubsLanding"
+import Profile from "./components/Profile"
 
 function App() {
   return (
@@ -38,6 +39,8 @@ function App() {
         <Route path='/clubslanding' element={<ClubsLanding />}></Route>
         <Route path='/deletelistings/:id/:imagePath' element={<DeleteListings />}></Route>
         <Route path='/productdisplay/:id' element={<ProductDisplay />}></Route>
+        <Route path='/profile' element={<Profile />}></Route>
+
 
       </Route>
     </Routes>
