@@ -24,6 +24,7 @@ function AddListings() {
   const [halls, setHalls] = useState([]);
   const [RC, setRC] = useState([]);
   const [clubs, setClubs] = useState([]);
+  const [showAlert, setShowAlert] = useState(false);
 
   const [description, setDescription] = useState("");
   const [name, setName] = useState("");
@@ -111,8 +112,10 @@ function AddListings() {
       });
       await uploadBytes(imageRef, imageUpload);
 
-      alert("Listing added!");
-      navigate("/sellerslistings");
+      alert("Listing Added!")
+
+      navigate('/sellerslistings');
+      
     }
   };
 
@@ -133,6 +136,7 @@ function AddListings() {
           </Link>
         </div>
       </div>
+      <h1 className="text-center mb-6">Add Listing</h1> 
       <div className="row justify-content-center">
         <div className="col-md-6">
           <form onSubmit={handleSubmit}>

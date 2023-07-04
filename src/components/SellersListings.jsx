@@ -5,48 +5,65 @@ import { db, auth } from "../../firebase/firebase";
 import logo from "../../Images/Corner Logo.png";
 import Signout from "./Signout";
 import { Link, useNavigate } from "react-router-dom";
+import { onAuthStateChanged } from "firebase/auth";
 
 function SellersListings() {
   const navigate = useNavigate();
   const [sellers, setSellers] = useState([]);
   const [newImages, setNewImages] = useState([]);
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(true);
   const storage = getStorage();
-  const user = auth.currentUser;
 
   useEffect(() => {
-    const getSellers = async () => {
-      const sellersCollectionRef = collection(db, "Sellers");
-      const data = await getDocs(sellersCollectionRef);
-      const sellersData = data.docs.map((doc) => ({
-        ...doc.data(),
-        id: doc.id,
-      }));
-      const filteredSellers = sellersData.filter((seller) => {
-        return seller.createdBy === user.email;
-      });
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setEmail(user.email);
+      } else {
+        alert("Not Logged in");
+      }
+      setLoading(false);
+    });
 
-      setSellers(filteredSellers);
-
-      const imagePromises = filteredSellers.map(async (seller) => {
-        if (seller.imagePath) {
-          try {
-            const url = await getDownloadURL(ref(storage, seller.imagePath));
-            return url;
-          } catch (error) {
-            console.log(error);
-            return null;
-          }
-        }
-        return Promise.resolve(null);
-      });
-
-      Promise.all(imagePromises)
-        .then((urls) => setNewImages(urls))
-        .catch((error) => console.log(error));
-    };
-
-    getSellers();
+    unsubscribe();
   }, []);
+
+  useEffect(() => {
+    if (!loading) {
+      const getSellers = async () => {
+        const sellersCollectionRef = collection(db, "Sellers");
+        const data = await getDocs(sellersCollectionRef);
+        const sellersData = data.docs.map((doc) => ({
+          ...doc.data(),
+          id: doc.id,
+        }));
+        const filteredSellers = sellersData.filter(
+          (seller) => seller.createdBy === email
+        );
+
+        setSellers(filteredSellers);
+
+        const imagePromises = filteredSellers.map(async (seller) => {
+          if (seller.imagePath) {
+            try {
+              const url = await getDownloadURL(ref(storage, seller.imagePath));
+              return url;
+            } catch (error) {
+              console.log(error);
+              return null;
+            }
+          }
+          return Promise.resolve(null);
+        });
+
+        Promise.all(imagePromises)
+          .then((urls) => setNewImages(urls))
+          .catch((error) => console.log(error));
+      };
+
+      getSellers();
+    }
+  }, [loading, email]);
 
   const handleEdit = (id, imagePath) => {
     navigate(`/deletelistings/${id}/${encodeURIComponent(imagePath)}`);

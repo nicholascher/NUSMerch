@@ -13,7 +13,6 @@ function Profile() {
 
   const user = auth.currentUser;
   const profileRef = doc(db, "Profile", user.email);
-  const sellerCollectionRef = collection(db, "Sellers");
   const [profileData, setProfileData] = useState(null);
 
   useEffect(() => {
@@ -114,7 +113,8 @@ function Profile() {
           </div>
         </div>
       </nav>
-      <div className="container">
+      <section className="container md-8">
+      <div className="container mt-5 bottom">
         <div className="row justify-content-center">
           <div className="col-md-8">
             <div className="card">
@@ -128,8 +128,8 @@ function Profile() {
             </div>
           </div>
         </div>
-        <div className="row justify-content-center mt-4">
-          <div className="col-md-8">
+        <div className="container mt-5 bottom">
+          <div className="row justify-content-center md-3">
             <div className="card">
               <div className="card-body">
                 <h2>Favourites</h2>
@@ -164,6 +164,7 @@ function Profile() {
           </div>
         </div>
       </div>
+      </section>
     </>
   );
 }
