@@ -37,7 +37,7 @@ function App() {
         <Route path='/hallslanding' element={<HallsLanding />}></Route>
         <Route path='/RClanding' element={<RCLanding />}></Route>
         <Route path='/clubslanding' element={<ClubsLanding />}></Route>
-        <Route path='/deletelistings/:id/:imagePath' element={<DeleteListings />}></Route>
+        <Route path='/deletelistings/:id/' element={<DeleteListings />}></Route>
         <Route path='/productdisplay/:id' element={<ProductDisplay />}></Route>
         <Route path='/profile' element={<Profile />}></Route>
 
