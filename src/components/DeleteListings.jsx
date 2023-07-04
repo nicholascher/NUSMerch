@@ -5,6 +5,7 @@ import {
   deleteDoc,
   updateDoc,
   getDocs,
+  getDoc, 
 } from "firebase/firestore";
 import { db, storage, auth } from "../../firebase/firebase";
 import { deleteObject, ref, uploadBytes } from "firebase/storage";
@@ -31,7 +32,7 @@ function DeleteListings() {
   const [price, setPrice] = useState("");
 
   useEffect(() => {
-    const fetchGroupsAndImages = async () => {
+    const fetchGroups = async () => {
       const groupsCollectionRef = collection(db, "Groups");
       const data = await getDocs(groupsCollectionRef);
       const groupsData = data.docs.map((doc) => ({
@@ -53,9 +54,39 @@ function DeleteListings() {
       setClubs(clubsArray);
     };
 
-    fetchGroupsAndImages();
+    fetchGroups();
   }, []);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      const postDoc = await getDoc(post);
+      if (postDoc.exists()) {
+        const postData = postDoc.data();
+        setDescription(postData.description || "");
+        setName(postData.name || "");
+        setSellerType(postData.sellerType || "");
+        setPrice(postData.price || "");
+
+        if (postData.sellerType === "Halls") {
+          setDependentOptions(halls);
+        } else if (postData.sellerType === "RC") {
+          setDependentOptions(RC);
+        } else if (postData.sellerType === "Clubs") {
+          setDependentOptions(clubs);
+        } else {
+          setDependentOptions([]);
+        }
+        setSellerSpecific(postData.sellerSpecific || "");
+
+
+      }
+    };
+
+    fetchData();
+  }, [halls, RC, clubs]);
+
+
+  
   const handleSellerTypeChange = (event) => {
     const selectedSellerType = event.target.value;
     setSellerType(selectedSellerType);
@@ -148,6 +179,7 @@ function DeleteListings() {
           </Link>
         </div>
       </div>
+      <h1 className="text-center mb-6">Edit Listing</h1> 
       <div className="row justify-content-center">
         <div className="col-md-6">
           <form onSubmit={handleSubmit}>

@@ -9,8 +9,6 @@ import logo from "../../Images/Corner Logo.png";
 function HallsLanding() {
   const [groups, setGroups] = useState([]);
   const [newImages, setNewImages] = useState([]);
-  const { hall } = useParams();
-  console.log(hall);
   const storage = getStorage();
 
   useEffect(() => {

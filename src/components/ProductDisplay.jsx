@@ -3,11 +3,21 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { getStorage, ref, getDownloadURL } from "firebase/storage";
 import { db, auth } from "../../firebase/firebase";
 import Signout from "./Signout";
-import { Rate, Input } from "antd";
-import { addDoc, collection, getDocs, doc, updateDoc, arrayUnion } from "firebase/firestore";
+import { Rate, Alert, Button } from "antd";
+import { HeartOutlined, HeartFilled } from "@ant-design/icons";
+import {
+  addDoc,
+  collection,
+  getDocs,
+  getDoc,
+  doc,
+  updateDoc,
+  arrayUnion,
+  arrayRemove,
+} from "firebase/firestore";
 import logo from "../../Images/Corner Logo.png";
 
-function ProductDisplay(props) {
+function ProductDisplay() {
   const location = useLocation();
   const seller = location.state;
   const [imageUrl, setImageUrl] = useState(null);
@@ -18,6 +28,8 @@ function ProductDisplay(props) {
   const storage = getStorage();
   const reviewCollectionRef = collection(db, "Reviews");
   const navigate = useNavigate();
+
+  const [favorite, setFavorite] = useState(false);
 
   useEffect(() => {
     const getImageUrl = async () => {
@@ -35,32 +47,44 @@ function ProductDisplay(props) {
     };
 
     const getReviews = async () => {
-      const data = await getDocs(reviewCollectionRef);
+      const data = await getDocs(
+        query(reviewCollectionRef, where("postId", "==", seller.id))
+      );
       const reviewsData = data.docs.map((doc) => ({
         ...doc.data(),
         id: doc.id,
       }));
-      const filteredReviews = reviewsData.filter(
-        (review) => review.postId === seller.id
-      );
-      setAllReviews(filteredReviews);
+      setAllReviews(reviewsData);
 
-      if (filteredReviews.length > 0) {
-        const sumRating = filteredReviews.reduce(
+      if (reviewsData.length > 0) {
+        const sumRating = reviewsData.reduce(
           (total, review) => total + review.rating,
           0
         );
-        const averageRating = sumRating / filteredReviews.length;
+        const averageRating = sumRating / reviewsData.length;
         setAverageRating(averageRating);
       } else {
         setAverageRating(0);
       }
     };
 
+    const checkFavoriteStatus = async () => {
+      const user = auth.currentUser;
+      const profileDocRef = doc(db, "Profile", user.email);
+      const profileDocSnap = await getDoc(profileDocRef);
+      if (profileDocSnap.exists()) {
+        const userData = profileDocSnap.data();
+        const favoriteProducts = userData.basket;
+        if (favoriteProducts.includes(seller.id)) {
+          setFavorite(true);
+        }
+      }
+    };
+
     getImageUrl();
     getReviews();
+    checkFavoriteStatus();
   }, [seller, storage]);
-
 
   const handleSaveReview = async () => {
     await addDoc(reviewCollectionRef, {
@@ -74,14 +98,20 @@ function ProductDisplay(props) {
     navigate(location.pathname, { state: seller });
   };
 
-
-
-  const handleAddBasket = () => {
+  const handleAddToFavorites = () => {
+    setFavorite(!favorite);
     const user = auth.currentUser;
-    const profileCollectionRef = doc(db, 'Profile', user.email)
-    updateDoc(profileCollectionRef, {
-      basket: arrayUnion(seller.id)
-    })
+    const profileCollectionRef = doc(db, "Profile", user.email);
+
+    if (!favorite) {
+      updateDoc(profileCollectionRef, {
+        basket: arrayUnion(seller.id),
+      });
+    } else {
+      updateDoc(profileCollectionRef, {
+        basket: arrayRemove(seller.id),
+      });
+    }
   };
 
   return (
@@ -138,15 +168,17 @@ function ProductDisplay(props) {
               <p>No image available</p>
             )}
           </div>
-          <button className="btn btn-primary btn-sm" onClick={handleAddBasket}>
-              Add to Basket
-          </button>
           <div className="col-md-4">
             <h1>{seller.name}</h1>
             <p>Price: ${seller.price}</p>
             <p>
               Average Rating: <Rate value={averageRating} disabled />
             </p>
+            <Button
+              icon={favorite ?  <HeartFilled /> : <HeartOutlined /> }
+              onClick={handleAddToFavorites}
+            >
+            </Button>
           </div>
         </div>
         <p
