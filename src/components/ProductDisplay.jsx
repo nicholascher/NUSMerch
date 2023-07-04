@@ -20,6 +20,7 @@ import logo from "../../Images/Corner Logo.png";
 function ProductDisplay() {
   const location = useLocation();
   const seller = location.state;
+
   const [imageUrl, setImageUrl] = useState(null);
   const [rating, setRating] = useState(0);
   const [reviewText, setReviewText] = useState("");
@@ -30,6 +31,7 @@ function ProductDisplay() {
   const navigate = useNavigate();
 
   const [favorite, setFavorite] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const getImageUrl = async () => {
@@ -79,6 +81,7 @@ function ProductDisplay() {
           setFavorite(true);
         }
       }
+      setLoading(false);
     };
 
     getImageUrl();
@@ -101,14 +104,14 @@ function ProductDisplay() {
   const handleAddToFavorites = () => {
     setFavorite(!favorite);
     const user = auth.currentUser;
-    const profileCollectionRef = doc(db, "Profile", user.email);
+    const profileDocRef = doc(db, "Profile", user.email);
 
     if (!favorite) {
-      updateDoc(profileCollectionRef, {
+      updateDoc(profileDocRef, {
         basket: arrayUnion(seller.id),
       });
     } else {
-      updateDoc(profileCollectionRef, {
+      updateDoc(profileDocRef, {
         basket: arrayRemove(seller.id),
       });
     }
@@ -175,7 +178,7 @@ function ProductDisplay() {
               Average Rating: <Rate value={averageRating} disabled />
             </p>
             <Button
-              icon={favorite ?  <HeartFilled /> : <HeartOutlined /> }
+              icon={loading ? null : favorite ? <HeartFilled /> : <HeartOutlined />}
               onClick={handleAddToFavorites}
             >
             </Button>

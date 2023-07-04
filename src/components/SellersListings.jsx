@@ -129,12 +129,13 @@ function SellersListings() {
                     <h5 className="card-title">{seller.name}</h5>
                     <p className="card-text">${seller.price}</p>
                   </div>
-                  <button
+                  <Link
                     className="btn btn-primary"
-                    onClick={() => handleEdit(seller.id, seller.imagePath)}
+                    to={`/deletelistings/${seller.id}`}
+                    state={ seller }
                   >
                     Edit
-                  </button>
+                  </Link>
                 </div>
               </div>
             </div>

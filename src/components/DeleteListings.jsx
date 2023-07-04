@@ -5,18 +5,20 @@ import {
   deleteDoc,
   updateDoc,
   getDocs,
-  getDoc, 
+  getDoc,
+  arrayRemove, 
 } from "firebase/firestore";
 import { db, storage, auth } from "../../firebase/firebase";
 import { deleteObject, ref, uploadBytes } from "firebase/storage";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import logo from "../../Images/Corner Logo.png";
 
 function DeleteListings() {
   const navigate = useNavigate();
-  const { id, imagePath } = useParams();
-  const post = doc(db, "Sellers", id);
-  const oldimageRef = ref(storage, decodeURIComponent(imagePath));
+  const location = useLocation();
+  const seller = location.state;
+  const post = doc(db, "Sellers", seller.id);
+  const oldimageRef = ref(storage, seller.imagePath);
   const user = auth.currentUser;
 
   const [halls, setHalls] = useState([]);
@@ -156,8 +158,12 @@ function DeleteListings() {
   };
 
   const handleDelete = async () => {
+    const profileDocRef = doc(db, "Profile", user.email);
     await deleteDoc(post);
     await deleteObject(oldimageRef);
+    updateDoc(profileDocRef, {
+      basket: arrayRemove(seller.id),
+    });
     alert("Deleted!");
     navigate("/sellerslistings");
   };
