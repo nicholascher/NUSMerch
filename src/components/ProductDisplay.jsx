@@ -5,15 +5,18 @@ import { db, auth } from "../../firebase/firebase";
 import Signout from "./Signout";
 import { Rate, Alert, Button } from "antd";
 import { HeartOutlined, HeartFilled } from "@ant-design/icons";
+import { onAuthStateChanged } from "firebase/auth";
 import {
   addDoc,
   collection,
   getDocs,
   getDoc,
   doc,
+  query,
   updateDoc,
   arrayUnion,
   arrayRemove,
+  where,
 } from "firebase/firestore";
 import logo from "../../Images/Corner Logo.png";
 
@@ -28,10 +31,29 @@ function ProductDisplay() {
   const [averageRating, setAverageRating] = useState(0);
   const storage = getStorage();
   const reviewCollectionRef = collection(db, "Reviews");
+  const sellerDoc = doc(db, "Sellers", seller.id)
   const navigate = useNavigate();
 
-  const [favorite, setFavorite] = useState(false);
+  const [favourite, setFavourite] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  const [profileDocRef, setProfileRef] = useState(null);
+  const [email, setEmail] = useState("");
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setEmail(user.email);
+        const ref = doc(db, "Profile", user.email);
+        setProfileRef(ref)
+      } else {
+        alert("Not Logged in");
+      }
+    });
+
+    unsubscribe();
+  }, []);
+
 
   useEffect(() => {
     const getImageUrl = async () => {
@@ -49,14 +71,13 @@ function ProductDisplay() {
     };
 
     const getReviews = async () => {
-      const data = await getDocs(
-        query(reviewCollectionRef, where("postId", "==", seller.id))
-      );
+      const data = await getDocs(reviewCollectionRef);
       const reviewsData = data.docs.map((doc) => ({
         ...doc.data(),
         id: doc.id,
       }));
-      setAllReviews(reviewsData);
+      const filteredData = reviewsData.filter((review) => review.postId === seller.id)
+      setAllReviews(filteredData);
 
       if (reviewsData.length > 0) {
         const sumRating = reviewsData.reduce(
@@ -70,43 +91,37 @@ function ProductDisplay() {
       }
     };
 
-    const checkFavoriteStatus = async () => {
-      const user = auth.currentUser;
-      const profileDocRef = doc(db, "Profile", user.email);
+    const checkFavouriteStatus = async () => {
       const profileDocSnap = await getDoc(profileDocRef);
       if (profileDocSnap.exists()) {
         const userData = profileDocSnap.data();
-        const favoriteProducts = userData.basket;
-        if (favoriteProducts.includes(seller.id)) {
-          setFavorite(true);
+        const favouriteProducts = userData.basket;  
+        if (favouriteProducts.includes(seller.id)) {
+          setFavourite(true);
         }
       }
-      setLoading(false);
     };
 
     getImageUrl();
     getReviews();
-    checkFavoriteStatus();
-  }, [seller, storage]);
+    checkFavouriteStatus();
+  }, [seller, storage, profileDocRef]);
 
   const handleSaveReview = async () => {
-    await addDoc(reviewCollectionRef, {
-      postId: seller.id,
-      rating: rating,
-      review: reviewText,
-    });
+    await updateDoc(sellerDoc, {
+      reviews: arrayUnion(reviewText)
+    })
     setRating(0);
     setReviewText("");
     alert("Review added!!");
     navigate(location.pathname, { state: seller });
   };
 
-  const handleAddToFavorites = () => {
-    setFavorite(!favorite);
-    const user = auth.currentUser;
-    const profileDocRef = doc(db, "Profile", user.email);
 
-    if (!favorite) {
+  const handleAddToFavourites = () => {
+    setFavourite(!favourite);
+
+    if (!favourite) {
       updateDoc(profileDocRef, {
         basket: arrayUnion(seller.id),
       });
@@ -136,19 +151,19 @@ function ProductDisplay() {
             <span className="navbar-toggler-icon"></span>
           </button>
           <div className="collapse navbar-collapse" id="navbarTogglerDemo02">
-            <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+          <ul className="navbar-nav me-auto mb-2 mb-lg-0">
               <li className="nav-item">
-                <Link className="nav-link" to="/hallslanding">
+                <Link className="nav-link" to="/filteredsellers/Hall">
                   Halls
                 </Link>
               </li>
               <li className="nav-item">
-                <Link className="nav-link" to="/rclanding">
+                <Link className="nav-link" to="/filteredsellers/RC">
                   RC
                 </Link>
               </li>
               <li className="nav-item">
-                <Link className="nav-link" to="/clubslanding">
+                <Link className="nav-link" to="/filteredsellers/Club">
                   Clubs
                 </Link>
               </li>
@@ -178,8 +193,8 @@ function ProductDisplay() {
               Average Rating: <Rate value={averageRating} disabled />
             </p>
             <Button
-              icon={loading ? null : favorite ? <HeartFilled /> : <HeartOutlined />}
-              onClick={handleAddToFavorites}
+              icon={favourite ? <HeartFilled /> : <HeartOutlined />}
+              onClick={handleAddToFavourites}
             >
             </Button>
           </div>

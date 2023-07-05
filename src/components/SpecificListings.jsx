@@ -3,33 +3,37 @@ import { Link, useParams } from "react-router-dom";
 import { collection, getDocs } from "firebase/firestore";
 import { getStorage, ref, getDownloadURL } from "firebase/storage";
 import { db } from "../../firebase/firebase";
-import Signout from "./Signout";
 import logo from "../../Images/Corner Logo.png";
+import Signout from "./Signout";
 
-function RCLanding() {
-  const [groups, setGroups] = useState([]);
+function SpecificListings() {
+  const [sellers, setSellers] = useState([]);
   const [newImages, setNewImages] = useState([]);
-  const { hall } = useParams();
-  console.log(hall);
+  const [search, setSearch] = useState("");
+  const { type } = useParams();
   const storage = getStorage();
 
   useEffect(() => {
-    const fetchGroupsAndImages = async () => {
-      const groupsCollectionRef = collection(db, "Groups");
-      const data = await getDocs(groupsCollectionRef);
-      const groupsData = data.docs.map((doc) => ({
+    const getSellers = async () => {
+      const sellersCollectionRef = collection(db, "Sellers");
+      const data = await getDocs(sellersCollectionRef);
+      const sellersData = data.docs.map((doc) => ({
         ...doc.data(),
         id: doc.id,
       }));
-      const filteredGroups = groupsData.filter((group) => {
-        return group.type === "RC";
+      const filteredSellers = sellersData.filter((seller) => {
+        return (
+          seller.sellerSpecific === type &&
+          seller.name.toLowerCase().includes(search.toLowerCase())
+        );
       });
-      setGroups(filteredGroups);
 
-      const imagePromises = filteredGroups.map(async (group) => {
-        if (group.imagePath) {
+      setSellers(filteredSellers);
+
+      const imagePromises = filteredSellers.map(async (seller) => {
+        if (seller.imagePath) {
           try {
-            const url = await getDownloadURL(ref(storage, group.imagePath));
+            const url = await getDownloadURL(ref(storage, seller.imagePath));
             return url;
           } catch (error) {
             console.log(error);
@@ -44,7 +48,7 @@ function RCLanding() {
         .catch((error) => console.log(error));
     };
 
-    fetchGroupsAndImages();
+    getSellers();
   }, []);
 
   return (
@@ -68,17 +72,17 @@ function RCLanding() {
           <div className="collapse navbar-collapse" id="navbarTogglerDemo02">
             <ul className="navbar-nav me-auto mb-2 mb-lg-0">
               <li className="nav-item">
-                <Link className="nav-link" to="/hallslanding">
+                <Link className="nav-link" to="/filteredsellers/Hall">
                   Halls
                 </Link>
               </li>
               <li className="nav-item">
-                <Link className="nav-link" to="/rclanding">
+                <Link className="nav-link" to="/filteredsellers/RC">
                   RC
                 </Link>
               </li>
               <li className="nav-item">
-                <Link className="nav-link" to="/clubslanding">
+                <Link className="nav-link" to="/filteredsellers/Club">
                   Clubs
                 </Link>
               </li>
@@ -91,26 +95,38 @@ function RCLanding() {
       </nav>
       <div className="container mt-5 bottom">
         <div className="row row-cols-1 row-cols-md-3 g-4">
-          {groups.map((group, index) => (
-            <div className="col" key={group.id}>
-              <div className="card product text-bg-light h-100">
-                <div className="card-body">
-                  <h5 className="card-title">{group.name}</h5>
-                  <Link to={`/rc/${group.name}`} className="card-link">
+          {sellers.length === 0 ? (
+            <blockquote>This seller has no listings!</blockquote>
+          ) : (
+            sellers.map((seller, index) => (
+              <div className="col" key={seller.id}>
+                <Link
+                  to={`/productdisplay/${seller.id}`}
+                  state={seller}
+                  className="card-link"
+                  style={{ textDecoration: "none" }}
+                >
+                  <div className="card product h-100">
                     <img
                       src={newImages[index]}
                       className="card-img card-image"
-                      alt="Group Image"
+                      alt="Product Image"
                     />
-                  </Link>
-                </div>
+                    <div className="card-body d-flex flex-column">
+                      <div className="d-flex justify-content-between align-items-start">
+                        <h5 className="card-title">{seller.name}</h5>
+                        <p className="card-text">${seller.price}</p>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </div>
     </>
   );
 }
 
-export default RCLanding;
+export default SpecificListings;

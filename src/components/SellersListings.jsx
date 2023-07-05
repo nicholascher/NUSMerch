@@ -88,19 +88,19 @@ function SellersListings() {
             <span className="navbar-toggler-icon"></span>
           </button>
           <div className="collapse navbar-collapse" id="navbarTogglerDemo02">
-            <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+          <ul className="navbar-nav me-auto mb-2 mb-lg-0">
               <li className="nav-item">
-                <Link className="nav-link" to="/hallslanding">
+                <Link className="nav-link" to="/filteredsellers/Hall">
                   Halls
                 </Link>
               </li>
               <li className="nav-item">
-                <Link className="nav-link" to="/rclanding">
+                <Link className="nav-link" to="/filteredsellers/RC">
                   RC
                 </Link>
               </li>
               <li className="nav-item">
-                <Link className="nav-link" to="/clubslanding">
+                <Link className="nav-link" to="/filteredsellers/Club">
                   Clubs
                 </Link>
               </li>

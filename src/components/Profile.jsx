@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { collection, getDoc, setDoc, doc } from "firebase/firestore";
 import { getStorage, ref, getDownloadURL } from "firebase/storage";
 import { db, auth } from "../../firebase/firebase";
+import { onAuthStateChanged } from "firebase/auth";
 import Signout from "./Signout";
 import SellerCheck from "./SellerCheck";
 import logo from "../../Images/Corner Logo.png";
@@ -10,10 +11,24 @@ import logo from "../../Images/Corner Logo.png";
 function Profile() {
   const [basketListings, setBasketListings] = useState([]);
   const [newImages, setNewImages] = useState([]);
-
-  const user = auth.currentUser;
-  const profileRef = doc(db, "Profile", user.email);
+  const [email, setEmail] = useState("");
   const [profileData, setProfileData] = useState(null);
+  const [profileRef, setProfileRef] = useState(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setEmail(user.email);
+        const ref = doc(db, "Profile", user.email);
+        setProfileRef(ref)
+      } else {
+        alert("Not Logged in");
+      }
+    });
+
+    unsubscribe();
+  }, []);
+
 
   useEffect(() => {
     const getBasketListings = async () => {
@@ -84,19 +99,19 @@ function Profile() {
             <span className="navbar-toggler-icon"></span>
           </button>
           <div className="collapse navbar-collapse" id="navbarTogglerDemo02">
-            <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+          <ul className="navbar-nav me-auto mb-2 mb-lg-0">
               <li className="nav-item">
-                <Link className="nav-link" to="/hallslanding">
+                <Link className="nav-link" to="/filteredsellers/Hall">
                   Halls
                 </Link>
               </li>
               <li className="nav-item">
-                <Link className="nav-link" to="/rclanding">
+                <Link className="nav-link" to="/filteredsellers/RC">
                   RC
                 </Link>
               </li>
               <li className="nav-item">
-                <Link className="nav-link" to="/clubslanding">
+                <Link className="nav-link" to="/filteredsellers/Club">
                   Clubs
                 </Link>
               </li>
@@ -121,7 +136,7 @@ function Profile() {
               <div className="card-body">
                 <h1 className="card-title">Profile</h1>
                 <div>
-                  <p>Email: {user.email}</p>
+                  <p>Email: {email}</p>
                   <p>Name: {profileData?.name}</p>
                 </div>
               </div>

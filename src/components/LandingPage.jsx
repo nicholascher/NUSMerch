@@ -10,7 +10,6 @@ import SellerCheck from "./SellerCheck";
 function HallsLanding() {
   const [groups, setGroups] = useState([]);
   const [newImages, setNewImages] = useState([]);
-  const { hall } = useParams();
   const storage = getStorage();
 
   useEffect(() => {
@@ -65,17 +64,17 @@ function HallsLanding() {
           <div className="collapse navbar-collapse" id="navbarTogglerDemo02">
             <ul className="navbar-nav me-auto mb-2 mb-lg-0">
               <li className="nav-item">
-                <Link className="nav-link" to="/hallslanding">
+                <Link className="nav-link" to="/filteredsellers/Hall">
                   Halls
                 </Link>
               </li>
               <li className="nav-item">
-                <Link className="nav-link" to="/rclanding">
+                <Link className="nav-link" to="/filteredsellers/RC">
                   RC
                 </Link>
               </li>
               <li className="nav-item">
-                <Link className="nav-link" to="/clubslanding">
+                <Link className="nav-link" to="/filteredsellers/Club">
                   Clubs
                 </Link>
               </li>
@@ -99,7 +98,7 @@ function HallsLanding() {
               <div className="card product text-bg-light h-100">
                 <div className="card-body">
                   <h5 className="card-title">{group.name}</h5>
-                  <Link to={`/halls/${group.name}`} className="card-link">
+                  <Link to={`/specificlistings/${group.name}`} className="card-link">
                     <img
                       src={newImages[index]}
                       className="card-img card-image"

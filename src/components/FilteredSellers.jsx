@@ -3,15 +3,16 @@ import { Link, useParams } from "react-router-dom";
 import { collection, getDocs } from "firebase/firestore";
 import { getStorage, ref, getDownloadURL } from "firebase/storage";
 import { db } from "../../firebase/firebase";
-import logo from "../../Images/Corner Logo.png";
 import Signout from "./Signout";
+import logo from "../../Images/Corner Logo.png";
 
-function ClubsLanding() {
+function FilteredSellers() {
+
   const [groups, setGroups] = useState([]);
   const [newImages, setNewImages] = useState([]);
-  const { hall } = useParams();
-  console.log(hall);
   const storage = getStorage();
+  const { type } = useParams();
+  
 
   useEffect(() => {
     const fetchGroupsAndImages = async () => {
@@ -22,7 +23,7 @@ function ClubsLanding() {
         id: doc.id,
       }));
       const filteredGroups = groupsData.filter((group) => {
-        return group.type === "Club";
+        return group.type === type;
       });
       setGroups(filteredGroups);
 
@@ -45,7 +46,7 @@ function ClubsLanding() {
     };
 
     fetchGroupsAndImages();
-  }, []);
+  }, [type]);
 
   return (
     <>
@@ -68,17 +69,17 @@ function ClubsLanding() {
           <div className="collapse navbar-collapse" id="navbarTogglerDemo02">
             <ul className="navbar-nav me-auto mb-2 mb-lg-0">
               <li className="nav-item">
-                <Link className="nav-link" to="/hallslanding">
+                <Link className="nav-link" to="/filteredsellers/Hall">
                   Halls
                 </Link>
               </li>
               <li className="nav-item">
-                <Link className="nav-link" to="/rclanding">
+                <Link className="nav-link" to="/filteredsellers/RC">
                   RC
                 </Link>
               </li>
               <li className="nav-item">
-                <Link className="nav-link" to="/clubslanding">
+                <Link className="nav-link" to="/filteredsellers/Club">
                   Clubs
                 </Link>
               </li>
@@ -96,7 +97,7 @@ function ClubsLanding() {
               <div className="card product text-bg-light h-100">
                 <div className="card-body">
                   <h5 className="card-title">{group.name}</h5>
-                  <Link to={`/rc/${group.name}`} className="card-link">
+                  <Link to={`/specificlistings/${group.name}`} className="card-link">
                     <img
                       src={newImages[index]}
                       className="card-img card-image"
@@ -113,4 +114,4 @@ function ClubsLanding() {
   );
 }
 
-export default ClubsLanding;
+export default FilteredSellers;
