@@ -19,6 +19,8 @@ import {
   where,
 } from "firebase/firestore";
 import logo from "../../Images/Corner Logo.png";
+import insta from "../../Images/Instagram Icon.png"
+import tele from "../../Images/Telegram Icon.png"
 
 function ProductDisplay() {
   const location = useLocation();
@@ -35,7 +37,6 @@ function ProductDisplay() {
   const navigate = useNavigate();
 
   const [favourite, setFavourite] = useState(false);
-  const [loading, setLoading] = useState(true);
 
   const [profileDocRef, setProfileRef] = useState(null);
   const [email, setEmail] = useState("");
@@ -79,12 +80,12 @@ function ProductDisplay() {
       const filteredData = reviewsData.filter((review) => review.postId === seller.id)
       setAllReviews(filteredData);
 
-      if (reviewsData.length > 0) {
-        const sumRating = reviewsData.reduce(
+      if (filteredData.length > 0) {
+        const sumRating = filteredData.reduce(
           (total, review) => total + review.rating,
           0
         );
-        const averageRating = sumRating / reviewsData.length;
+        const averageRating = sumRating / filteredData.length;
         setAverageRating(averageRating);
       } else {
         setAverageRating(0);
@@ -197,6 +198,20 @@ function ProductDisplay() {
               onClick={handleAddToFavourites}
             >
             </Button>
+            <p></p>
+            {seller.instagram && <img src={insta} style={{ width: "30px", height: "auto" }}></img>}
+            <span className="ms-2">{seller.instagram}</span>
+            <p></p>
+            {seller.telegram && <img src={tele} style={{ width: "30px", height: "auto" }}></img>}
+            <span className="ms-2">{seller.telegram}</span>
+            <p></p>
+              <Link 
+              className="btn btn-primary" 
+              to={`/purchasing/${seller.id}`}
+              state={ seller }
+              >
+                Buy Now!
+              </Link>
           </div>
         </div>
         <p

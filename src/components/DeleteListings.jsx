@@ -11,7 +11,28 @@ import {
 import { db, storage, auth } from "../../firebase/firebase";
 import { deleteObject, ref, uploadBytes } from "firebase/storage";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Form, Button, Input } from "antd"
+import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import logo from "../../Images/Corner Logo.png";
+
+const formItemLayout = {
+  labelCol: {
+    xs: { span: 30 },
+    sm: { span: 4 },
+  },
+  wrapperCol: {
+    xs: { span: 24 },
+    sm: { span: 30 },
+  },
+};
+
+const formItemLayoutWithOutLabel = {
+  wrapperCol: {
+    xs: { span: 24, offset: 0 },
+    sm: { span: 20, offset: 0 },
+  },
+};
+
 
 function DeleteListings() {
   const navigate = useNavigate();
@@ -19,6 +40,7 @@ function DeleteListings() {
   const seller = location.state;
   const post = doc(db, "Sellers", seller.id);
   const oldimageRef = ref(storage, seller.imagePath);
+  const oldQRRef = ref(storage, seller.QRpath);
   const user = auth.currentUser;
 
   const [halls, setHalls] = useState([]);
@@ -29,9 +51,11 @@ function DeleteListings() {
   const [name, setName] = useState("");
   const [sellerType, setSellerType] = useState("");
   const [imageUpload, setImageUpload] = useState(null);
+  const [QRUpload, setQRUpload] = useState(null)
   const [sellerSpecific, setSellerSpecific] = useState("");
   const [dependentOptions, setDependentOptions] = useState([]);
   const [price, setPrice] = useState("");
+  const [questions, setQuestions] = useState([]);
 
   useEffect(() => {
     const fetchGroups = async () => {
@@ -79,7 +103,7 @@ function DeleteListings() {
           setDependentOptions([]);
         }
         setSellerSpecific(postData.sellerSpecific || "");
-
+        setQuestions(postData.questions);
 
       }
     };
@@ -117,8 +141,7 @@ function DeleteListings() {
     setPrice(numericValue);
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  const onFinish = async (values) => {
 
     function makeid() {
       let result = "";
@@ -135,22 +158,28 @@ function DeleteListings() {
       return result;
     }
 
-    if (imageUpload) {
+    if (imageUpload && QRUpload) {
       const newimagePath = `images/${imageUpload.name + makeid()}`;
+      const newQRPath = `QRCodes/${QRUpload.name + makeid()}`;
+
       const newFields = {
         description: description,
         name: name,
         sellerType: sellerType,
         imagePath: newimagePath,
+        QRPath: newQRPath,
         sellerSpecific: sellerSpecific,
         createdBy: user.email,
         price: price,
       };
       const newimageRef = ref(storage, newimagePath);
+      const newQRRef = ref(storage, newQRPath)
 
       await updateDoc(post, newFields);
       await uploadBytes(newimageRef, imageUpload);
+      await uploadBytes(newQRRef, QRUpload);
       await deleteObject(oldimageRef);
+      await deleteObject(oldQRRef);
 
       alert("Updated!");
       navigate("/sellerslistings");
@@ -168,6 +197,7 @@ function DeleteListings() {
     navigate("/sellerslistings");
   };
 
+  console.log(questions);
   return (
     <div className="container mt-5">
       <div className="d-flex justify-content-between align-items-center mb-3">
@@ -188,7 +218,7 @@ function DeleteListings() {
       <h1 className="text-center mb-6">Edit Listing</h1> 
       <div className="row justify-content-center">
         <div className="col-md-6">
-          <form onSubmit={handleSubmit}>
+          <form>
             <select
               className="form-select"
               aria-label="Default select example"
@@ -282,15 +312,100 @@ function DeleteListings() {
                 }}
               />
             </div>
-            <div className="text-center">
-              <button type="submit" className="btn btn-primary ms-2">
-                Edit Listing
-              </button>
-              <button className="btn btn-danger ms-2" onClick={handleDelete}>
-                Delete Listing
-              </button>
+            <div className="mb-3">
+              <label htmlFor="productImage" className="form-label">
+                Payment QR code {'(Paylah! or PayNow)'}
+              </label>
+              <input
+                type="file"
+                accept=".jpg, .png"
+                className="form-control"
+                id="productImage"
+                name="image"
+                onChange={(event) => {
+                  setQRUpload(event.target.files[0]);
+                }}
+              />
             </div>
           </form>
+          <h2 className="text-center mb-10">Additional Questions</h2>
+          <Form
+            name="dynamic_form_item"
+            {...formItemLayoutWithOutLabel}
+            onFinish={onFinish}
+            style={{ maxWidth: "800px" }}
+          >
+            <Form.List
+              name="questions"
+              rules={[
+                {
+                  validator: async (_, names) => {
+                    if (!names || names.length < 1) {
+                      return Promise.reject(new Error('At least 1 Additional Question'));
+                    }
+                    if (!description || !imageUpload || !name || 
+                      !price || !sellerSpecific || !sellerType || !QRUpload ) {
+                      return Promise.reject(new Error('Please fill in all required fields'))
+                    }
+                  },
+                },
+              ]}
+            >
+              {(fields, { add, remove }, { errors }) => (
+                <>
+                  {fields.map((field, index) => (
+                    <Form.Item
+                      {...(index === 0 ? formItemLayout : formItemLayoutWithOutLabel)}
+                      required={false}
+                      key={field.key}
+                    >
+                      <Form.Item
+                        {...field}
+                        validateTrigger={['onChange', 'onBlur']}
+                        rules={[
+                          {
+                            required: true,
+                            whitespace: true,
+                            message: "Please input a question",
+                          },
+                        ]}
+                        noStyle
+                      >
+                        <Input placeholder="Additional questions" style={{ width: '80%', marginRight: '10px' }} />
+                      </Form.Item>
+                      {fields.length > 1 ? (
+                        <MinusCircleOutlined
+                          className="dynamic-delete-button"
+                          onClick={() => remove(field.name)}
+                        />
+                      ) : null}
+                    </Form.Item>
+                  ))}
+                  <Form.Item>
+                    <Button
+                      type="dashed"
+                      onClick={() => add()}
+                      style={{ width: '60%' }}
+                      icon={<PlusOutlined />}
+                    >
+                      Add question
+                    </Button>
+                    <Form.ErrorList errors={errors} />
+                  </Form.Item>
+                </>
+              )}
+            </Form.List>
+            <Form.Item>
+              <div className="text-center">
+              <Button type="primary" htmlType="submit">
+                Submit
+              </Button>
+              <Button type="primary ms-2" danger onClick={handleDelete}>
+                Delete Listing
+              </Button>
+              </div>
+            </Form.Item>
+          </Form>
         </div>
       </div>
     </div>

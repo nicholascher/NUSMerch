@@ -15,6 +15,8 @@ import ProductDisplay from "./components/ProductDisplay"
 import Profile from "./components/Profile"
 import FilteredSellers from "./components/FilteredSellers"
 import SpecificListings from "./components/SpecificListings"
+import Purchasing from "./components/Purchasing"
+import Orders from "./components/Orders"
 
 function App() {
   return (
@@ -29,11 +31,13 @@ function App() {
         <Route path='/sellerslistings' element={<SellersListings />}></Route>
         <Route path='/addlistings' element={<AddListings />}></Route>
         <Route path='/notseller' element={<NotSeller />}></Route>
-        <Route path='/deletelistings/:id/' element={<DeleteListings />}></Route>
+        <Route path='/deletelistings/:id' element={<DeleteListings />}></Route>
         <Route path='/productdisplay/:id' element={<ProductDisplay />}></Route>
         <Route path='/profile' element={<Profile />}></Route>
         <Route path='/filteredsellers/:type' element={<FilteredSellers />}></Route>
         <Route path='/specificlistings/:type' element={<SpecificListings />}></Route>
+        <Route path='/purchasing/:id' element={<Purchasing />}></Route>
+        <Route path='/orders/:id' element={<Orders />}></Route>
     </Routes>
   </BrowserRouter>
   )

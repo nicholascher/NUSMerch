@@ -37,9 +37,9 @@ function Signup() {
       createUserWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
           const user = userCredential.user;
-          const profileCollectionRef = doc(db, 'Profile', values.email)
-          setDoc(profileCollectionRef, {name, basket: {}, }, values.email);
-          updateDoc(profileCollectionRef, {
+          const profileDocRef = doc(db, 'Profile', values.email)
+          setDoc(profileDocRef, {name, basket: {}, }, values.email);
+          updateDoc(profileDocRef, {
             basket: arrayUnion("New entry")
           })
           navigate("/");
