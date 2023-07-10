@@ -136,6 +136,13 @@ function SellersListings() {
                   >
                     Edit
                   </Link>
+                  <Link
+                    className="btn btn-success ms-2"
+                    to={`/orders/${seller.id}`}
+                    state={ seller }
+                  >
+                    View Orders
+                  </Link>
                 </div>
               </div>
             </div>

@@ -4,6 +4,9 @@ import { db, storage, auth } from "../../firebase/firebase";
 import { ref, uploadBytes } from "firebase/storage";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../../Images/Corner Logo.png";
+import { onAuthStateChanged } from "firebase/auth";
+import { Form, Button, Input } from "antd"
+import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 
 function AddListings() {
   function makeid() {
@@ -19,21 +22,40 @@ function AddListings() {
     return result;
   }
 
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setEmail(user.email);
+        const ref = doc(db, "Profile", user.email);
+        setProfileRef(ref)
+      } else {
+        alert("Not Logged in");
+      }
+    });
+
+    unsubscribe();
+  }, []);
+
   const navigate = useNavigate();
   const sellersCollectionRef = collection(db, "Sellers");
   const [halls, setHalls] = useState([]);
   const [RC, setRC] = useState([]);
   const [clubs, setClubs] = useState([]);
-  const [showAlert, setShowAlert] = useState(false);
+  
 
   const [description, setDescription] = useState("");
   const [name, setName] = useState("");
   const [sellerType, setSellerType] = useState("");
   const [imageUpload, setImageUpload] = useState(null);
+  const [QRUpload, setQRUpload] = useState(null);
   const [dependentOptions, setDependentOptions] = useState([]);
   const [sellerSpecific, setSellerSpecific] = useState("");
   const [price, setPrice] = useState("");
-  const user = auth.currentUser;
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [paymentOption, setPaymentOption] = useState("");
+  const [email, setEmail] = useState("");
+  const [instagram, setInstagram] = useState("");
+  const [telegram, setTelegram] = useState("");
 
   useEffect(() => {
     const fetchGroupsAndImages = async () => {
@@ -89,9 +111,32 @@ function AddListings() {
     setPrice(numericValue);
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  const handlePhoneNumber = (event) => {
+    const value = event.target.value;
+    const numericValue = value.replace(/[^0-9]/g, "");
+    setPhoneNumber(numericValue);
+  }
 
+
+  const formItemLayout = {
+    labelCol: {
+      xs: { span: 30 },
+      sm: { span: 4 },
+    },
+    wrapperCol: {
+      xs: { span: 24 },
+      sm: { span: 30 },
+    },
+  };
+  
+  const formItemLayoutWithOutLabel = {
+    wrapperCol: {
+      xs: { span: 24, offset: 0 },
+      sm: { span: 20, offset: 0 },
+    },
+  };
+
+  const onFinish = async (values) => {
     if (imageUpload) {
       const allowedTypes = ["image/jpeg", "image/png"];
       if (!allowedTypes.includes(imageUpload.type)) {
@@ -101,16 +146,27 @@ function AddListings() {
 
       const imagePath = `images/${imageUpload.name + makeid()}`;
       const imageRef = ref(storage, imagePath);
+
+      const QRpath = `QRCodes/${QRUpload.name + makeid()}`;
+      const QRref = ref(storage, QRpath);
+
       await addDoc(sellersCollectionRef, {
         description,
         name,
         imagePath,
+        QRpath, 
         sellerType,
         sellerSpecific,
         price,
-        createdBy: user.email,
+        createdBy: email,
+        paymentOption,
+        phoneNumber,
+        questions: values.questions, 
+        telegram, 
+        instagram, 
       });
       await uploadBytes(imageRef, imageUpload);
+      await uploadBytes(QRref, QRUpload);
 
       alert("Listing Added!")
 
@@ -118,6 +174,7 @@ function AddListings() {
       
     }
   };
+  
 
   return (
     <div className="container mt-5">
@@ -139,7 +196,7 @@ function AddListings() {
       <h1 className="text-center mb-6">Add Listing</h1> 
       <div className="row justify-content-center">
         <div className="col-md-6">
-          <form onSubmit={handleSubmit}>
+          <form>
             <select
               className="form-select"
               aria-label="Default select example"
@@ -233,12 +290,167 @@ function AddListings() {
                 }}
               />
             </div>
-            <div className="text-center">
-              <button type="submit" className="btn btn-primary">
-                Submit
-              </button>
+            <h2 className="text-center">Payment Details</h2>
+            <select
+              className="form-select mb-3"
+              aria-label="Default select example"
+              onChange={(event) => {
+                setPaymentOption(event.target.value)
+              }}
+              value={paymentOption}
+            >
+              <option defaultValue>Payment Options</option>
+              <option value="PayNow">PayNow</option>
+              <option value="PayLah!">PayLah!</option>
+            </select>
+            <div className="mb-3">
+              <label htmlFor="phoneNumber" className="form-label">
+                Phone Number
+              </label>
+              <div className="input-group">
+                <input
+                  type="text"
+                  className="form-control"
+                  id="phoneNumber"
+                  name="phoneNumber"
+                  value={phoneNumber}
+                  onChange={handlePhoneNumber}
+                  maxLength={15}
+                  pattern="[0-9]*"
+                  inputMode="numeric"
+                />
+              </div>
+            </div>
+            <div className="mb-3">
+              <label htmlFor="QRcode" className="form-label">
+                Payment QR code {'(Paylah! or PayNow)'}
+              </label>
+              <input
+                type="file"
+                accept=".jpg, .png"
+                className="form-control"
+                id="QRCode"
+                name="QRcode"
+                onChange={(event) => {
+                  setQRUpload(event.target.files[0]);
+                }}
+              />
+            </div>
+            <h2 className="text-center">Contact Details</h2>
+            <div className="mb-3">
+              <label htmlFor="productName" className="form-label">
+                Instagram Handle
+              </label>
+              <input
+                type="text"
+                className="form-control"
+                id="instagram"
+                name="instagram"
+                value={instagram}
+                onChange={(event) => {
+                  setInstagram(event.target.value);
+                }}
+                maxLength={32}
+              />
+            </div>
+            <div className="mb-3">
+              <label htmlFor="productName" className="form-label">
+                Telegram Handle
+              </label>
+              <input
+                type="text"
+                className="form-control"
+                id="telegram"
+                name="telegram"
+                value={telegram}
+                onChange={(event) => {
+                  setTelegram(event.target.value);
+                }}
+                maxLength={32}
+              />
             </div>
           </form>
+
+
+          <h2 className="text-center">Additional Questions</h2>
+          <p className="text-center mb-10"><small>{'e.g shirt sizes, Room number'}</small></p>
+          <Form
+            name="dynamic_form_item"
+            {...formItemLayoutWithOutLabel}
+            onFinish={onFinish}
+            style={{ maxWidth: "800px" }}
+          >
+            <Form.List
+              name="questions"
+              rules={[
+                {
+                  validator: async (_, names) => {
+                    if (!names || names.length < 1) {
+                      return Promise.reject(new Error('At least 1 Additional Question'));
+                    }
+                    if (!description || !imageUpload || !name || 
+                      !price || !sellerSpecific || !sellerType || !QRUpload ||
+                      !paymentOption || !QRUpload || !phoneNumber) {
+                      return Promise.reject(new Error('Please fill in all required fields'))
+                    }
+
+                    if (!instagram && !telegram) {
+                      return Promise.reject(new Error('Please fill in at least one of the contact details'))
+                    }
+                  },
+                },
+              ]}
+            >
+              {(fields, { add, remove }, { errors }) => (
+                <>
+                  {fields.map((field, index) => (
+                    <Form.Item
+                      {...(index === 0 ? formItemLayout : formItemLayoutWithOutLabel)}
+                      required={false}
+                      key={field.key}
+                    >
+                      <Form.Item
+                        {...field}
+                        validateTrigger={['onChange', 'onBlur']}
+                        rules={[
+                          {
+                            required: true,
+                            whitespace: true,
+                            message: "Please input a question",
+                          },
+                        ]}
+                        noStyle
+                      >
+                        <Input placeholder="Additional questions" style={{ width: '80%', marginRight: '10px' }} />
+                      </Form.Item>
+                      {fields.length > 1 ? (
+                        <MinusCircleOutlined
+                          className="dynamic-delete-button"
+                          onClick={() => remove(field.name)}
+                        />
+                      ) : null}
+                    </Form.Item>
+                  ))}
+                  <Form.Item>
+                    <Button
+                      type="dashed"
+                      onClick={() => add()}
+                      style={{ width: '60%' }}
+                      icon={<PlusOutlined />}
+                    >
+                      Add question
+                    </Button>
+                    <Form.ErrorList errors={errors} />
+                  </Form.Item>
+                </>
+              )}
+            </Form.List>
+            <Form.Item>
+              <Button type="primary" htmlType="submit">
+                Submit
+              </Button>
+            </Form.Item>
+          </Form>
         </div>
       </div>
     </div>
