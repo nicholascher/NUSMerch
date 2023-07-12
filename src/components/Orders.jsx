@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { getStorage, ref, getDownloadURL, uploadBytes} from "firebase/storage";
+import { getStorage, ref, getDownloadURL, deleteObject} from "firebase/storage";
 import { db, auth } from "../../firebase/firebase";
 import Signout from "./Signout";
 import { Pagination } from "antd";
-import { HeartOutlined, HeartFilled } from "@ant-design/icons";
+import { HeartOutlined, HeartFilled, CloudServerOutlined } from "@ant-design/icons";
 import { onAuthStateChanged } from "firebase/auth";
 import {
   addDoc,
@@ -12,112 +12,113 @@ import {
   getDocs,
   getDoc,
   doc,
-  connectFirestoreEmulator,
-
+  deleteDoc,
 } from "firebase/firestore";
-import SellerCheck from "./SellerCheck";
-import logo from "../../Images/Corner Logo.png";
+import Navbar from "./Navbar";
 
 
 
 function Orders() {
   const location = useLocation();
   const seller = location.state;
+  const storage = getStorage();
+  const navigate = useNavigate();
 
-  const [currentPageNum, setCurrentPageNum] = useState(0);
   const [totalOrders, setTotalOrders] = useState(0);
   const [currentItem, setCurrentItem] = useState(null);
   const [purchases, setPurchases] = useState([]);
-  const [paidUrl, setPaidUrl] = useState(null);
-  const storage = getStorage();
   const [questions, setQuestions] = useState([]);
-
-
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [answers, setAnswers] = useState('');
-  const [price, setPrice] = useState('');
+  const [newImages, setNewImages] = useState([]);
+  const [currentImage, setCurrentImage] = useState('');
+  const [orderDeleted, setOrderDeleted] = useState(false);
 
   useEffect(() => {
     const fetchPurchases = async () => {
-      try {
-        const purchasesCollectionRef = collection(db, "Purchased");
-        const purchasedData = await getDocs(purchasesCollectionRef);
-        const purchasesTotal = purchasedData.docs.map((doc) => doc.data());
-        const purchases = purchasesTotal.filter((purchase) => {
-          return purchase.postId === seller.id;
-        })
-        setTotalOrders(purchases.length);
-        setPurchases(purchases);
-        setCurrentItem(purchases[currentPageNum]);
-        
-      } catch (error) {
-        console.error("Error fetching purchases:", error);
-      }
-    };
+      const purchasesCollectionRef = collection(db, "Purchased");
+      const purchasedData = await getDocs(purchasesCollectionRef);
+      const purchasesTotal = purchasedData.docs.map((doc) => ({
+        ...doc.data(),
+        id: doc.id,
+      }));
+      const purchasesSpecific = purchasesTotal.filter((purchase) => {
+        return purchase.postId === seller.id;
+      })
 
-    const getPaidUrl = async () => {
-      if (currentItem?.paidPath) {
-        try {
-          const url = await getDownloadURL(ref(storage, currentItem?.paidPath));
-          setPaidUrl(url);
-        } catch (error) {
-          console.log(error);
-          setPaidUrl(null);
+      const imagePromises = purchasesSpecific.map(async (purchase) => {
+        if (purchase.paidPath) {
+          try {
+            const url = await getDownloadURL(ref(storage, purchase.paidPath));
+            return url;
+          } catch (error) {
+            console.log(error);
+            return null;
+          }
         }
-      } else {
-        setPaidUrl(null);
+        return Promise.resolve(null);
+      });
+
+      Promise.all(imagePromises)
+        .then((urls) => setNewImages(urls))
+        .catch((error) => console.log(error));
+
+      
+      setTotalOrders(purchasesSpecific.length);
+      setPurchases(purchasesSpecific);
+      setCurrentItem(purchasesSpecific[0]);
+      setQuestions(seller.questions)
+
+      if (purchasesSpecific.paidPath) {
+        try {
+          const url = await getDownloadURL(ref(storage, purchasesSpecific[0]?.paidPath));
+          setCurrentImage(url);
+        } catch (e) {
+          console.log(e);
+          setCurrentImage(null);
+        }
+
       }
-    };
+
+    }
 
     
 
     fetchPurchases();
-    getPaidUrl();
-
-    if (currentItem) {
-      setAnswers(currentItem.answers);
-      setName(currentItem.name);
-      setEmail(currentItem.email);
-      setPrice(currentItem.price);
-      setQuestions(seller.questions);
-    }
+  }, [orderDeleted]);
 
 
-  }, [totalOrders, currentItem, currentPageNum]);
+
 
   const handleFullfilled = async () => {
-    const profileDocRef = doc(db, "Profile", user.email);
-    await deleteDoc(post);
-    await deleteObject(oldimageRef);
-    updateDoc(profileDocRef, {
-      basket: arrayRemove(seller.id),
-    });
-    alert("Deleted!");
-    navigate("/sellerslistings");
+    const paidRef = ref(storage, currentItem?.paidPath);
+    const purchaseRef = doc(db, 'Purchased', currentItem?.id)
+    await deleteObject(paidRef);
+    await deleteDoc(purchaseRef);
+    setOrderDeleted(!orderDeleted);
+    alert("Order Fulfilled!");
   }
 
-  const pageChange = (current) => {
-    setCurrentPageNum(current - 1);
+  const pageChange = async (current) => {
+    setCurrentItem(purchases[current - 1])
+    setCurrentImage(newImages[current - 1]);
   }
-
 
 return (
   <>
+  <Navbar />
   {totalOrders === 0 ? (
     <div>This order has no purchases!</div>
   ) : (
     <div className="justify-content-center">
       <div>
         <div>
-          <p>email: {email}</p>
-          <p>Buyer name: {name}</p>
-          <p>price: {price}</p>
+          <p>email: {currentItem.email}</p>
+          <p>Buyer name: {currentItem.name}</p>
+          <p>price: {currentItem.price}</p>
         </div>
       </div>
       <div className="col-md-7" style={{ marginLeft: "20px" }}>
-        {paidUrl ? (
-          <img className="card-image" src={paidUrl} alt="Seller" />
+        {currentImage ? (
+          <img className="card-image" src={currentImage} alt="Seller" />
         ) : (
           <p>Choose an order to view</p>
         )}
@@ -127,12 +128,12 @@ return (
         {questions.map((question, index) => (
           <div className="mb-3" key={index}>
             <strong>{question}</strong>
-            <p>{answers[index]}</p>
+            <p>{currentItem.answers[index]}</p>
           </div>
         ))}
       </div>
       <button className="btn btn-primary mb-3" onClick={handleFullfilled}>
-        Order fulfilled
+        Remove Order
       </button>
       <Pagination
         total={totalOrders}

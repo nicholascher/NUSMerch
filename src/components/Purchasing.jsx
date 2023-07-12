@@ -14,8 +14,7 @@ import {
   doc,
 
 } from "firebase/firestore";
-import SellerCheck from "./SellerCheck";
-import logo from "../../Images/Corner Logo.png";
+import Navbar from "./Navbar";
 
 
 function Purchasing() {
@@ -132,113 +131,66 @@ function Purchasing() {
 
   return (
     <>
-      <nav className="navbar navbar-expand-lg bg-body-tertiary">
-        <div className="container-fluid">
-          <Link className="navbar-brand" to="/landingpage">
-            <img src={logo} alt="Logo" className="logo smaller" />
-          </Link>
-          <button
-            className="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbarTogglerDemo02"
-            aria-controls="navbarTogglerDemo02"
-            aria-expanded="false"
-            aria-label="Toggle navigation"
-          >
-            <span className="navbar-toggler-icon"></span>
-          </button>
-          <div className="collapse navbar-collapse" id="navbarTogglerDemo02">
-            <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-              <li className="nav-item">
-                <Link className="nav-link" to="/filteredsellers/Hall">
-                  Halls
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link className="nav-link" to="/filteredsellers/RC">
-                  RC
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link className="nav-link" to="/filteredsellers/Club">
-                  Clubs
-                </Link>
-              </li>
-            </ul>
-            <button className="btn btn-success ms-2" onClick={SellerCheck()}>
-              View your Listings
-            </button>
-            <button className="btn btn-primary ms-2" onClick={Signout()}>
-              Sign Out
-            </button>
-            <Link className="btn btn-primary ms-2" to="/profile">
-              Profile
-            </Link>
-          </div>
-        </div>
-      </nav>
-          <div className="col-md-7" style={{ marginLeft: "20px" }}>
-            {imageUrl ? (
-              <img className="card-image" src={imageUrl} alt="Seller" />
-            ) : (
-              <p>No image available</p>
-            )}
-          </div>
-          <form>
-            <div className="mb-3">
-              <strong style={{ fontSize: "1.2rem" }}>Questions:</strong>
-              {questions.map((question, index) => (
-                <div className="mb-3" key={index}>
-                  <label htmlFor={`answer-${index}`} className="form-label">
-                    {question}
-                  </label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    id={`answer-${index}`}
-                    name={`answer-${index}`}
-                    value={answers[index] || ""}
-                    onChange={(event) => {
-                      const updatedAnswers = [...answers];
-                      updatedAnswers[index] = event.target.value;
-                      setAnswers(updatedAnswers);
-                    }}
-                  />
-                </div>
-              ))}
-            </div>
-          </form>
-
-          <div className="col-md-7 text-center">
-          
-          <h2 className="text-center">Payment QR Code</h2>
-          <span>{seller.paymentOption} :</span>
-            {QRUrl ? (
-              <img className="card-image" src={QRUrl} alt="Seller" stlye={{marginLeft: "100px"}}/>
-            ) : (
-              <p>No image available</p>
-            )}
-           <p>Phone Number: {seller.phoneNumber}</p>
-          </div>
-          <div className="mb-3">
-              <label htmlFor="paidImage" className="form-label">
-                Payment Verfication Screenshot
+     <Navbar/>
+      <div className="col-md-7" style={{ marginLeft: "20px" }}>
+        {imageUrl ? (
+          <img className="card-image" src={imageUrl} alt="Seller" />
+        ) : (
+          <p>No image available</p>
+        )}
+      </div>
+      <form>
+        <div className="mb-3">
+          <strong style={{ fontSize: "1.2rem" }}>Questions:</strong>
+          {questions.map((question, index) => (
+            <div className="mb-3" key={index}>
+              <label htmlFor={`answer-${index}`} className="form-label">
+                {question}
               </label>
               <input
-                type="file"
-                accept=".jpg, .png"
+                type="text"
                 className="form-control"
-                id="paidImage"
-                name="image"
+                id={`answer-${index}`}
+                name={`answer-${index}`}
+                value={answers[index] || ""}
                 onChange={(event) => {
-                  setPaid(event.target.files[0]);
+                  const updatedAnswers = [...answers];
+                  updatedAnswers[index] = event.target.value;
+                  setAnswers(updatedAnswers);
                 }}
               />
             </div>
-          <button className="btn btn-primary" onClick={handleSubmit}>
-            Purchase!
-          </button>
+          ))}
+        </div>
+      </form>
+      <div className="col-md-7 text-center">
+      <h2 className="text-center">Payment QR Code</h2>
+      <span>{seller.paymentOption} :</span>
+        {QRUrl ? (
+          <img className="card-image" src={QRUrl} alt="Seller" stlye={{marginLeft: "100px"}}/>
+        ) : (
+          <p>No image available</p>
+        )}
+       <p>Phone Number: {seller.phoneNumber}</p>
+      </div>
+      <div className="mb-3">
+          <label htmlFor="paidImage" className="form-label">
+            Payment Verfication Screenshot
+          </label>
+          <input
+            type="file"
+            accept=".jpg, .png"
+            className="form-control"
+            id="paidImage"
+            name="image"
+            onChange={(event) => {
+              setPaid(event.target.files[0]);
+            }}
+          />
+        </div>
+      <button className="btn btn-primary" onClick={handleSubmit}>
+        Purchase!
+      </button>
     </>
   );
 

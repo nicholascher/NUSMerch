@@ -12,15 +12,15 @@ import {
   getDocs,
   getDoc,
   doc,
-  query,
   updateDoc,
   arrayUnion,
   arrayRemove,
-  where,
+  deleteDoc, 
 } from "firebase/firestore";
-import logo from "../../Images/Corner Logo.png";
+import Navbar from "./Navbar";
 import insta from "../../Images/Instagram Icon.png"
 import tele from "../../Images/Telegram Icon.png"
+import "./Styles.css";
 
 function ProductDisplay() {
   const location = useLocation();
@@ -30,11 +30,12 @@ function ProductDisplay() {
   const [rating, setRating] = useState(0);
   const [reviewText, setReviewText] = useState("");
   const [allReviews, setAllReviews] = useState([]);
+  const [ratings, setRatings] = useState([]);
   const [averageRating, setAverageRating] = useState(0);
   const storage = getStorage();
-  const reviewCollectionRef = collection(db, "Reviews");
-  const sellerDoc = doc(db, "Sellers", seller.id)
+  const reviewRef = collection(db, "Sellers", seller.id, "Review")
   const navigate = useNavigate();
+  const [update, setUpdate] = useState(false);
 
   const [favourite, setFavourite] = useState(false);
 
@@ -53,7 +54,7 @@ function ProductDisplay() {
     });
 
     unsubscribe();
-  }, []);
+  }, [update]);
 
 
   useEffect(() => {
@@ -72,51 +73,61 @@ function ProductDisplay() {
     };
 
     const getReviews = async () => {
-      const data = await getDocs(reviewCollectionRef);
+      const data = await getDocs(reviewRef);
       const reviewsData = data.docs.map((doc) => ({
         ...doc.data(),
         id: doc.id,
       }));
-      const filteredData = reviewsData.filter((review) => review.postId === seller.id)
-      setAllReviews(filteredData);
+      setAllReviews(reviewsData)
 
-      if (filteredData.length > 0) {
-        const sumRating = filteredData.reduce(
-          (total, review) => total + review.rating,
-          0
-        );
-        const averageRating = sumRating / filteredData.length;
-        setAverageRating(averageRating);
-      } else {
-        setAverageRating(0);
+      if (reviewsData.length > 0) {
+        const sumRating = reviewsData.reduce(
+          (total, review) => total + review.rating, 0
+        )
+        
+        setAverageRating(Math.round(sumRating/reviewsData.length))
       }
+      
     };
 
     const checkFavouriteStatus = async () => {
-      const profileDocSnap = await getDoc(profileDocRef);
-      if (profileDocSnap.exists()) {
-        const userData = profileDocSnap.data();
+
+      if (profileDocRef) {
+        const profileDocSnap = await getDoc(profileDocRef);
+        const userData = await profileDocSnap.data();
         const favouriteProducts = userData.basket;  
         if (favouriteProducts.includes(seller.id)) {
           setFavourite(true);
         }
+        
       }
+
     };
 
     getImageUrl();
     getReviews();
     checkFavouriteStatus();
-  }, [seller, storage, profileDocRef]);
+  }, [seller, storage, profileDocRef, update]);
 
   const handleSaveReview = async () => {
-    await updateDoc(sellerDoc, {
-      reviews: arrayUnion(reviewText)
+    await addDoc(reviewRef, {
+      review: reviewText,
+      rating: rating, 
+      createdBy: email, 
     })
     setRating(0);
     setReviewText("");
+    setUpdate(!update);
     alert("Review added!!");
-    navigate(location.pathname, { state: seller });
   };
+
+  const handleDeleteReview = async (reviewId) => {
+    const reviewRef = doc(db, "Sellers", seller.id, "Review", reviewId);
+    await deleteDoc(reviewRef);
+    setUpdate(!update);
+    alert("Review Deleted!")
+  }
+
 
 
   const handleAddToFavourites = () => {
@@ -135,46 +146,7 @@ function ProductDisplay() {
 
   return (
     <>
-      <nav className="navbar navbar-expand-lg bg-body-tertiary">
-        <div className="container-fluid">
-          <Link className="navbar-brand" to="/landingpage">
-            <img src={logo} alt="Logo" className="logo smaller" />
-          </Link>
-          <button
-            className="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbarTogglerDemo02"
-            aria-controls="navbarTogglerDemo02"
-            aria-expanded="false"
-            aria-label="Toggle navigation"
-          >
-            <span className="navbar-toggler-icon"></span>
-          </button>
-          <div className="collapse navbar-collapse" id="navbarTogglerDemo02">
-          <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-              <li className="nav-item">
-                <Link className="nav-link" to="/filteredsellers/Hall">
-                  Halls
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link className="nav-link" to="/filteredsellers/RC">
-                  RC
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link className="nav-link" to="/filteredsellers/Club">
-                  Clubs
-                </Link>
-              </li>
-            </ul>
-            <button className="btn btn-primary ms-2" onClick={Signout()}>
-              Sign Out
-            </button>
-          </div>
-        </div>
-      </nav>
+     <Navbar/>
       <div
         className="card mx-auto"
         style={{ marginTop: "20px", marginBottom: "20px", width: "1300px" }}
@@ -261,15 +233,23 @@ function ProductDisplay() {
 
             <blockquote className="blockquote mt-4">
               {allReviews.length === 0 ? (
-                <p>
-                  No reviews available! Liked the product? Leave a review now!
-                </p>
+                <div>No reviews available! Liked the product? Leave a review now!</div>
               ) : (
                 allReviews.map((review) => (
-                  <blockquote key={review.id} className="blockquote">
-                    <Rate value={review.rating} disabled />
-                    <p>{review.review}</p>
-                  </blockquote>
+                  <div key={review.id} className="review-container">
+                    <div className="review-content">
+                      <Rate value={review.rating} disabled />
+                      <p>{review.review}</p>
+                    </div>
+                    {review.createdBy === email && (
+                      <button
+                        className="btn btn-danger delete-review-button"
+                        onClick={() => handleDeleteReview(review.id)}
+                      >
+                        Delete Review
+                      </button>
+                    )}
+                  </div>
                 ))
               )}
             </blockquote>
