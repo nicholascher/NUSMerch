@@ -57,3 +57,16 @@
 .bottom {
   margin-bottom: 50px
 }
+
+.review-container {
+  display: flex;
+  align-items: center;
+}
+
+.review-content {
+  flex: 1;
+}
+
+.delete-review-button {
+  margin-left: auto;
+}
