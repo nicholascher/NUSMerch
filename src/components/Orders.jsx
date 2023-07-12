@@ -67,22 +67,14 @@ function Orders() {
       setCurrentItem(purchasesSpecific[0]);
       setQuestions(seller.questions)
 
-      if (purchasesSpecific.paidPath) {
-        try {
-          const url = await getDownloadURL(ref(storage, purchasesSpecific[0]?.paidPath));
-          setCurrentImage(url);
-        } catch (e) {
-          console.log(e);
-          setCurrentImage(null);
-        }
-
-      }
+      const url = await getDownloadURL(ref(storage, purchasesSpecific[0]?.paidPath));
+      setCurrentImage(url);
 
     }
 
     
-
     fetchPurchases();
+    console.log("hre")
   }, [orderDeleted]);
 
 
@@ -118,9 +110,9 @@ return (
       </div>
       <div className="col-md-7" style={{ marginLeft: "20px" }}>
         {currentImage ? (
-          <img className="card-image" src={currentImage} alt="Seller" />
+          <img className="card-image" src={currentImage} alt="Paid Image" />
         ) : (
-          <p>Choose an order to view</p>
+          <div>No image available</div>
         )}
       </div>
       <div className="mb-3">
