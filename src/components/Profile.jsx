@@ -76,7 +76,6 @@ function Profile() {
     
 
     getBasketListings();
-    console.log("here")
 
   }, [profileRef, update]);
 
@@ -107,7 +106,6 @@ function Profile() {
       }
       return result;
     }
-    console.log(file);
 
     if(profileData?.profilePic) {
       await deleteObject(ref(storage, profileData?.profilePic));
@@ -162,6 +160,7 @@ function Profile() {
                     onChange={(event) => {
                       event.preventDefault();
                       let files = event.target.files[0];
+                      console.log(files)
                       handleUpload(files);
                     }}
                     />

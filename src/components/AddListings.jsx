@@ -7,6 +7,7 @@ import logo from "../../Images/Corner Logo.png";
 import { onAuthStateChanged } from "firebase/auth";
 import { Form, Button, Input } from "antd"
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import "./Styles.css";
 
 function AddListings() {
   function makeid() {
@@ -26,8 +27,6 @@ function AddListings() {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setEmail(user.email);
-        const ref = doc(db, "Profile", user.email);
-        setProfileRef(ref)
       } else {
         alert("Not Logged in");
       }
@@ -35,7 +34,6 @@ function AddListings() {
 
     unsubscribe();
   }, []);
-  const [profileRef, setProfileRef] = useState(null);
 
   const navigate = useNavigate();
   const sellersCollectionRef = collection(db, "Sellers");
@@ -57,6 +55,7 @@ function AddListings() {
   const [email, setEmail] = useState("");
   const [instagram, setInstagram] = useState("");
   const [telegram, setTelegram] = useState("");
+  const [additionalImages, setAdditionalImages] = useState([]);
 
   useEffect(() => {
     const fetchGroupsAndImages = async () => {
@@ -138,7 +137,6 @@ function AddListings() {
   };
 
   const onFinish = async (values) => {
-    console.log(imageUpload)
     if (imageUpload) {
       const allowedTypes = ["image/jpeg", "image/png"];
       if (!allowedTypes.includes(imageUpload.type)) {
@@ -152,11 +150,22 @@ function AddListings() {
       const QRpath = `QRCodes/${QRUpload.name + makeid()}`;
       const QRref = ref(storage, QRpath);
 
+      const additionalPaths = additionalImages.map((image) => {
+        const path = `images/${image.name + makeid()}`
+        return path;
+      });
+
+      for (let i = 0; i < additionalPaths.length; i++) {
+        let addtionalRef = ref(storage, additionalPaths[i])
+        await uploadBytes(addtionalRef, additionalImages[i]);
+      }
+
       await addDoc(sellersCollectionRef, {
         description,
         name,
         imagePath,
         QRpath, 
+        additionalPaths,
         sellerType,
         sellerSpecific,
         price,
@@ -279,7 +288,7 @@ function AddListings() {
             </div>
             <div className="mb-3">
               <label htmlFor="productImage" className="form-label">
-                Product Image
+                Product Display Image
               </label>
               <input
                 type="file"
@@ -289,6 +298,24 @@ function AddListings() {
                 name="image"
                 onChange={(event) => {
                   setImageUpload(event.target.files[0]);
+                }}
+              />
+            </div>
+            <div className="mb-3">
+              <label htmlFor="form-file-multiple" className="form-label">
+                Additional Product Images
+              </label>
+              <input
+                type="file"
+                accept=".jpg, .png"
+                className="form-control"
+                id="additional images"
+                name="image"
+                multiple
+                onChange={(event) => {
+                  const filesArray = Array.from(event.target.files);
+                  console.log(filesArray);
+                  setAdditionalImages(filesArray);
                 }}
               />
             </div>

@@ -36,11 +36,14 @@ function ProductDisplay() {
   const reviewRef = collection(db, "Sellers", seller.id, "Review")
   const navigate = useNavigate();
   const [update, setUpdate] = useState(false);
+  const [additionalImages, setAdditionalImages] = useState([]);
 
   const [favourite, setFavourite] = useState(false);
 
   const [profileDocRef, setProfileRef] = useState(null);
   const [email, setEmail] = useState("");
+
+  const additionalPaths = seller.additionalPaths;
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -104,9 +107,23 @@ function ProductDisplay() {
 
     };
 
+    const getAdditionalImages = async () => {
+      const addrefs = additionalPaths.map((path) => ref(storage, path))
+      let addImages = [];
+      for (let i = 0; i < addrefs.length; i++) {
+        const oldAddUrl = await getDownloadURL(addrefs[i]);
+        addImages.push(oldAddUrl);
+      }
+  
+      setAdditionalImages(addImages);
+    }
+
+
+    
     getImageUrl();
     getReviews();
     checkFavouriteStatus();
+    getAdditionalImages();
   }, [seller, storage, profileDocRef, update]);
 
   const handleSaveReview = async () => {
@@ -152,13 +169,37 @@ function ProductDisplay() {
         style={{ marginTop: "20px", marginBottom: "20px", width: "1300px" }}
       >
         <div className="row" style={{ marginTop: "20px" }}>
-          <div className="col-md-7" style={{ marginLeft: "20px" }}>
-            {imageUrl ? (
-              <img className="card-image" src={imageUrl} alt="Seller" />
-            ) : (
-              <p>No image available</p>
-            )}
+        {additionalImages.length === 0 ? (
+          <div id="carouselExampleFade" className="carousel slide" style={{ width: '35%', height: 'auto', marginLeft: '20px', marginRight: '300px'}}>
+            <div className="carousel-inner">
+              <div className="carousel-item active">
+                <img src={imageUrl} className="d-block w-100" alt="product image" />
+              </div>
+            </div>
           </div>
+        ) : (
+          <div id="carouselExampleFade" className="carousel slide col-md-7" style={{ width: '35%', height: 'auto', marginLeft: '20px', marginRight: '300px'}}>
+            <div className="carousel-inner" >
+              <div className="carousel-item active">
+                <img src={imageUrl} className="d-block w-100" alt="product image" />
+              </div>
+              {additionalImages.map((image, index) => (
+                <div className="carousel-item" key={index} >
+                  <img src={image} className="d-block w-100" alt="..." />
+                </div>
+              ))}
+            </div>
+            <button className="carousel-control-prev" type="button" data-bs-target="#carouselExampleFade" data-bs-slide="prev">
+              <span className="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span className="visually-hidden">Previous</span>
+            </button>
+            <button className="carousel-control-next" type="button" data-bs-target="#carouselExampleFade" data-bs-slide="next">
+              <span className="carousel-control-next-icon" aria-hidden="true"></span>
+              <span className="visually-hidden">Next</span>
+            </button>
+          </div>
+        )}
+
           <div className="col-md-4">
             <h1>{seller.name}</h1>
             <p>Price: ${seller.price}</p>

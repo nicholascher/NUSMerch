@@ -105,3 +105,9 @@ input[id="file-upload"] {
   height: 25px;
   margin-right: 5px;
 }
+
+.old-display {
+  width: 100px;
+  height: auto; 
+
+}
