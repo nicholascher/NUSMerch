@@ -166,9 +166,12 @@ function ProductDisplay() {
               Average Rating: <Rate value={averageRating} disabled />
             </p>
             <Button
-              icon={favourite ? <HeartFilled /> : <HeartOutlined />}
+              type="text"
+              icon={favourite ? <HeartFilled style={{ display: 'inline-flex', alignItems: 'center' }} /> : 
+              <HeartOutlined style={{ display: 'inline-flex', alignItems: 'center' }}/>}
               onClick={handleAddToFavourites}
             >
+              Add to Favourites
             </Button>
             <p></p>
             {seller.instagram && <img src={insta} style={{ width: "30px", height: "auto" }}></img>}

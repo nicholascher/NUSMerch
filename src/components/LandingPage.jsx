@@ -45,6 +45,7 @@ function LandingPage() {
     <>
       <Navbar/>
       <div className="container mt-5 bottom">
+      <h1>All Sellers</h1>
         <div className="row row-cols-1 row-cols-md-3 g-4">
           {groups.map((group, index) => (
             <div className="col" key={group.id}>

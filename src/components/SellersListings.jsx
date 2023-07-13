@@ -74,8 +74,15 @@ function SellersListings() {
     <>
      <Navbar/>
       <div className="container mt-5 bottom">
+      <h1 classname="mb-2">Your Listings</h1>
+      <Link className="btn btn-primary mb-2" to="/addlistings">
+        Add new Listing
+      </Link>
         <div className="row row-cols-1 row-cols-md-3 g-4">
-          {sellers.map((seller, index) => (
+        {sellers.length === 0 ? (
+            <blockquote>You have no Lisitings! Add one now!</blockquote>
+          ) : (
+          sellers.map((seller, index) => (
             <div className="col" key={seller.id}>
               <div className="card product h-100">
                 <img
@@ -105,7 +112,8 @@ function SellersListings() {
                 </div>
               </div>
             </div>
-          ))}
+          ))
+          )}
         </div>
       </div>
     </>

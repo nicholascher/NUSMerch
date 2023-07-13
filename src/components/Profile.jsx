@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
-import { collection, getDoc, setDoc, doc } from "firebase/firestore";
-import { getStorage, ref, getDownloadURL } from "firebase/storage";
-import { db, auth } from "../../firebase/firebase";
+import { Link, useParams, useNavigate, useLocation } from "react-router-dom";
+import { collection, getDoc, updateDoc, doc, deleteDoc } from "firebase/firestore";
+import { getStorage, ref, getDownloadURL, uploadBytes, deleteObject } from "firebase/storage";
+import { db, auth, storage } from "../../firebase/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import Navbar from "./Navbar";
+import "./Styles.css";
+import ProfileDefault from "../../Images/Profile Default.png"
+import UploadIcon from "../../Images/Upload Icon.png"
+import { UploadOutlined } from '@ant-design/icons';
+import { Button, message, Upload } from 'antd';
 
 function Profile() {
   const [basketListings, setBasketListings] = useState([]);
@@ -12,6 +17,11 @@ function Profile() {
   const [email, setEmail] = useState("");
   const [profileData, setProfileData] = useState(null);
   const [profileRef, setProfileRef] = useState(null);
+  const [update, setUpdate] = useState(false);
+  const [profileUrl, setProfileUrl] = useState("");
+  const navigate = useNavigate();
+  const location = useLocation();
+
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -33,7 +43,12 @@ function Profile() {
       const profileDoc = await getDoc(profileRef);
       const profileData = profileDoc.data();
       setProfileData(profileData);
-    
+
+      if(profileData?.profilePic) {
+        const url = await getDownloadURL(ref(storage, profileData?.profilePic))
+        setProfileUrl(url)  
+      }
+
       if (profileData && profileData.basket) {
         const basketIds = profileData.basket;
         const basketListings = [];
@@ -61,10 +76,11 @@ function Profile() {
     
 
     getBasketListings();
-  }, [profileRef]);
+    console.log("here")
+
+  }, [profileRef, update]);
 
   const loadImages = async (listings) => {
-    const storage = getStorage();
     const imagePromises = listings.map((seller) =>
       getDownloadURL(ref(storage, seller.imagePath))
     );
@@ -77,6 +93,48 @@ function Profile() {
       setNewImages([]);
     }
   };
+
+  const handleUpload = async (file) => {
+    function makeid() {
+      let result = "";
+      const characters =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+      const charactersLength = characters.length;
+      let counter = 0;
+      while (counter < 14) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        counter += 1;
+      }
+      return result;
+    }
+    console.log(file);
+
+    if(profileData?.profilePic) {
+      await deleteObject(ref(storage, profileData?.profilePic));
+    }
+
+    if (file) {
+      const allowedTypes = ["image/jpeg", "image/png"];
+      if (!allowedTypes.includes(file.type)) {
+        alert("Please upload a valid JPG or PNG image.");
+        return false;
+      }
+
+      const imagePath = `Profile/${file.name + makeid()}`;
+      const imageRef = ref(storage, imagePath);
+
+      updateDoc(profileRef, {
+        profilePic: imagePath,
+      })
+      await uploadBytes(imageRef, file);
+
+      setUpdate(!update);
+      alert("Profile updated Added!")
+      navigate('/profile');
+      
+    }
+  }
+
 
   return (
     <>
@@ -91,7 +149,22 @@ function Profile() {
                 <div>
                   <p>Email: {email}</p>
                   <p>Name: {profileData?.name}</p>
+                  {profileData?.profilePic ? 
+                    <img src={profileUrl} alt="profile" className="avatar"/>
+                  : <img src={ProfileDefault} alt="profile" className="avatar"/>}
                 </div>
+                <label for="file-upload" class="custom-file-upload mt-2">
+                      <img src={UploadIcon} alt={".."} className="upload-icon" /> 
+                      Upload profile picture
+                  </label>
+                  <input id="file-upload" 
+                    type="file"
+                    onChange={(event) => {
+                      event.preventDefault();
+                      let files = event.target.files[0];
+                      handleUpload(files);
+                    }}
+                    />
               </div>
             </div>
           </div>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { collection, addDoc, getDocs } from "firebase/firestore";
+import { collection, addDoc, getDocs, doc } from "firebase/firestore";
 import { db, storage, auth } from "../../firebase/firebase";
 import { ref, uploadBytes } from "firebase/storage";
 import { Link, useNavigate } from "react-router-dom";
@@ -35,6 +35,7 @@ function AddListings() {
 
     unsubscribe();
   }, []);
+  const [profileRef, setProfileRef] = useState(null);
 
   const navigate = useNavigate();
   const sellersCollectionRef = collection(db, "Sellers");
@@ -120,8 +121,8 @@ function AddListings() {
 
   const formItemLayout = {
     labelCol: {
-      xs: { span: 30 },
-      sm: { span: 4 },
+      xs: { span: 20 },
+      sm: { span: 24},
     },
     wrapperCol: {
       xs: { span: 24 },
@@ -137,6 +138,7 @@ function AddListings() {
   };
 
   const onFinish = async (values) => {
+    console.log(imageUpload)
     if (imageUpload) {
       const allowedTypes = ["image/jpeg", "image/png"];
       if (!allowedTypes.includes(imageUpload.type)) {

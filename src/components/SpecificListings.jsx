@@ -8,7 +8,6 @@ import Navbar from "./Navbar";
 function SpecificListings() {
   const [sellers, setSellers] = useState([]);
   const [newImages, setNewImages] = useState([]);
-  const [search, setSearch] = useState("");
   const { type } = useParams();
   const storage = getStorage();
 
@@ -22,8 +21,7 @@ function SpecificListings() {
       }));
       const filteredSellers = sellersData.filter((seller) => {
         return (
-          seller.sellerSpecific === type &&
-          seller.name.toLowerCase().includes(search.toLowerCase())
+          seller.sellerSpecific === type
         );
       });
 
