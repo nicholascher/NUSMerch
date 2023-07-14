@@ -17,6 +17,7 @@ import FilteredSellers from "./components/FilteredSellers"
 import SpecificListings from "./components/SpecificListings"
 import Purchasing from "./components/Purchasing"
 import Orders from "./components/Orders"
+import ChatWindow from "./components/ChatWindow"
 
 function App() {
   return (
@@ -38,6 +39,7 @@ function App() {
         <Route path='/specificlistings/:type' element={<SpecificListings />}></Route>
         <Route path='/purchasing/:id' element={<Purchasing />}></Route>
         <Route path='/orders/:id' element={<Orders />}></Route>
+        <Route path='/chatwindow' element={<ChatWindow />}></Route>
     </Routes>
   </BrowserRouter>
   )

@@ -12,10 +12,11 @@ import {
   getDocs,
   getDoc,
   doc,
+  setDoc,
   updateDoc,
   arrayUnion,
   arrayRemove,
-  deleteDoc, 
+  deleteDoc,
 } from "firebase/firestore";
 import Navbar from "./Navbar";
 import insta from "../../Images/Instagram Icon.png"
@@ -84,10 +85,10 @@ function ProductDisplay() {
         const sumRating = reviewsData.reduce(
           (total, review) => total + review.rating, 0
         )
-        
-        setAverageRating(Math.round(sumRating/reviewsData.length))
+
+        setAverageRating(Math.round(sumRating / reviewsData.length))
       }
-      
+
     };
 
     const checkFavouriteStatus = async () => {
@@ -95,11 +96,11 @@ function ProductDisplay() {
       if (profileDocRef) {
         const profileDocSnap = await getDoc(profileDocRef);
         const userData = await profileDocSnap.data();
-        const favouriteProducts = userData.basket;  
+        const favouriteProducts = userData.basket;
         if (favouriteProducts.includes(seller.id)) {
           setFavourite(true);
         }
-        
+
       }
 
     };
@@ -112,8 +113,8 @@ function ProductDisplay() {
   const handleSaveReview = async () => {
     await addDoc(reviewRef, {
       review: reviewText,
-      rating: rating, 
-      createdBy: email, 
+      rating: rating,
+      createdBy: email,
     })
     setRating(0);
     setReviewText("");
@@ -128,7 +129,20 @@ function ProductDisplay() {
     alert("Review Deleted!")
   }
 
+  const handleCreateRoom = async () => {
+    const ref = doc(db, "Profile", seller.createdBy);
+    const docRef = await getDoc(ref);
+    const docData = docRef.data();
+    const roomRef = doc(db, "Rooms", `${email}_${seller.createdBy}`);
+    const userRef = await getDoc(profileDocRef);
+    const userData = userRef.data();
 
+    const newRoom = {
+      participants: [email, seller.createdBy],
+      username: [userData.name, docData.name]
+    };
+    await setDoc(roomRef, newRoom, `${email}_${seller.createdBy}`);
+  }
 
   const handleAddToFavourites = () => {
     setFavourite(!favourite);
@@ -146,7 +160,7 @@ function ProductDisplay() {
 
   return (
     <>
-     <Navbar/>
+      <Navbar />
       <div
         className="card mx-auto"
         style={{ marginTop: "20px", marginBottom: "20px", width: "1300px" }}
@@ -167,8 +181,8 @@ function ProductDisplay() {
             </p>
             <Button
               type="text"
-              icon={favourite ? <HeartFilled style={{ display: 'inline-flex', alignItems: 'center' }} /> : 
-              <HeartOutlined style={{ display: 'inline-flex', alignItems: 'center' }}/>}
+              icon={favourite ? <HeartFilled style={{ display: 'inline-flex', alignItems: 'center' }} /> :
+                <HeartOutlined style={{ display: 'inline-flex', alignItems: 'center' }} />}
               onClick={handleAddToFavourites}
             >
               Add to Favourites
@@ -180,13 +194,20 @@ function ProductDisplay() {
             {seller.telegram && <img src={tele} style={{ width: "30px", height: "auto" }}></img>}
             <span className="ms-2">{seller.telegram}</span>
             <p></p>
-              <Link 
-              className="btn btn-primary" 
+            <Link
+              className="btn btn-primary"
               to={`/purchasing/${seller.id}`}
-              state={ seller }
-              >
-                Buy Now!
-              </Link>
+              state={seller}
+            >
+              Buy Now!
+            </Link>
+            <Link className="btn btn-primary ms-2"
+              to={`/chatwindow`}
+              state={seller}
+              onClick={handleCreateRoom}
+            >
+              Chat With
+            </Link>
           </div>
         </div>
         <p

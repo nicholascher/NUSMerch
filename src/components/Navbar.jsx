@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { doc,getDoc, } from "firebase/firestore";
+import { doc, getDoc, } from "firebase/firestore";
 import { db, storage, auth } from "../../firebase/firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import logo from "../../Images/Corner Logo.png";
@@ -15,14 +15,14 @@ function Navbar() {
   const [profileDocRef, setProfileRef] = useState(null);
   const [email, setEmail] = useState("");
 
-  useEffect (() => {
+  useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setEmail(user.email);
         const profileRef = doc(db, "Profile", user.email);
         const profileDoc = await getDoc(profileRef);
         const profileData = profileDoc.data();
-        const imageUrl = await getDownloadURL(ref(storage, profileData.profilePic))
+        const imageUrl = await getDownloadURL(ref(storage, profileData?.profilePic))
         setProfilePic(imageUrl);
       } else {
         alert("Not Logged in");
@@ -68,6 +68,9 @@ function Navbar() {
               </Link>
             </li>
           </ul>
+          <Link to="/chatwindow" className="btn btn-success ms-2">
+            Messages
+          </Link>
           <button className="btn btn-success ms-2" onClick={SellerCheck()}>
             Seller Center
           </button>
@@ -75,9 +78,9 @@ function Navbar() {
             Sign Out
           </button>
           <Link className="btn ms-2" to='/profile'>
-            {profilePic ? 
-              <img src={profilePic} alt="profile" className="avatar"/>
-            : <img src={ProfileDefault} alt="profile" className="avatar"/>}
+            {profilePic ?
+              <img src={profilePic} alt="profile" className="avatar" />
+              : <img src={ProfileDefault} alt="profile" className="avatar" />}
           </Link>
         </div>
       </div>
