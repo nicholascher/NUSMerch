@@ -108,6 +108,7 @@ return (
           <p>price: {currentItem.price}</p>
         </div>
       </div>
+      <strong>Payment Confirmation</strong>
       <div className="col-md-7" style={{ marginLeft: "20px" }}>
         {currentImage ? (
           <img className="card-image" src={currentImage} alt="Paid Image" />

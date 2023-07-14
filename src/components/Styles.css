@@ -162,3 +162,9 @@ input[id="file-upload"] {
   border: none;
   cursor: pointer;
 }
+
+.old-display {
+  width: 100px;
+  height: auto;
+
+}
