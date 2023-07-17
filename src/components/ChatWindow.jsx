@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { db, auth } from "../../firebase/firebase";
 import {
   collection,
@@ -11,17 +11,17 @@ import {
   orderBy,
   getDoc,
   doc,
+  updateDoc,
+  increment,
 } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
+import Navbar from "./Navbar";
 
 function ChatWindow() {
-  const location = useLocation();
-  const seller = location.state;
   const [email, setEmail] = useState("");
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [chats, setChats] = useState([]);
-  const [name, setName] = useState("");
   const [selectedChatId, setSelectedChatId] = useState(null);
   const messagesEndRef = useRef(null);
 
@@ -34,22 +34,27 @@ function ChatWindow() {
       }
     });
 
-    const fetchName = async () => {
-      const ref = doc(db, "Profile", email);
-      const docRef = await getDoc(ref);
-      const docData = docRef.data();
-      setName(docData.name);
-    };
-
     unsubscribe();
-    fetchName();
   }, []);
 
-  const handleChatClick = (chatId) => {
+  const handleChatClick = async (chatId) => {
     setSelectedChatId(chatId);
 
+    const roomRef = doc(db, "Rooms", chatId);
     const msgRef = collection(db, "Rooms", chatId, "Messages");
     const queryMessages = query(msgRef, orderBy("createdAt"));
+
+    const roomSnapshot = await getDoc(roomRef);
+    if (roomSnapshot.exists()) {
+      const roomData = roomSnapshot.data();
+      const unread = roomData.unread || {};
+      unread[email] = 0;
+
+      await updateDoc(roomRef, {
+        unread: unread,
+      });
+    }
+
     onSnapshot(queryMessages, (snapshot) => {
       let messages = [];
       snapshot.forEach((doc) => {
@@ -61,7 +66,10 @@ function ChatWindow() {
 
   useEffect(() => {
     const chatsRef = collection(db, "Rooms");
-    const queryChats = query(chatsRef, where("participants", "array-contains", email));
+    const queryChats = query(
+      chatsRef,
+      where("participants", "array-contains", email)
+    );
 
     const unsubscribe = onSnapshot(queryChats, (snapshot) => {
       let chatList = [];
@@ -95,6 +103,22 @@ function ChatWindow() {
           user: userName,
         });
       }
+      const chat = chats.find((chat) => chat.id === selectedChatId);
+      const otherUserEmail = chat.participants.find(
+        (participant) => participant !== email
+      );
+      const roomRef = doc(db, "Rooms", selectedChatId);
+      const roomSnapshot = await getDoc(roomRef);
+      if (roomSnapshot.exists()) {
+        const roomData = roomSnapshot.data();
+        const unread = roomData.unread || {};
+        unread[email] = 0;
+        unread[otherUserEmail] = (unread[otherUserEmail] || 0) + 1;
+
+        await updateDoc(roomRef, {
+          unread: unread,
+        });
+      }
     }
 
     setNewMessage("");
@@ -117,47 +141,58 @@ function ChatWindow() {
   }, [selectedChatId]);
 
   return (
-    <div className="chat-app">
-      <div className="chat-list-container">
-        <div className="chat-list">
-          {chats.map((chat) => (
-            <div
-              key={chat.id}
-              className="chat-item"
-              onClick={() =>
-                handleChatClick(`${chat.participants[0]}_${chat.participants[1]}`)
-              }
-            >
-              <span className="chat-name">
-                {chat.participants[0] === email ? chat.username[1] : chat.username[0]}
-              </span>
-            </div>
-          ))}
+    <>
+      <Navbar />
+      <div className="chat-app">
+        <div className="chat-list-container">
+          <div className="chat-list">
+            {chats.map((chat) => (
+              <div
+                key={chat.id}
+                className="chat-item"
+                onClick={() =>
+                  handleChatClick(
+                    `${chat.participants[0]}_${chat.participants[1]}`
+                  )
+                }
+              >
+                <img src={chat.profilePictureUrl} />
+                <span className="chat-name">
+                  {chat.participants[0] === email
+                    ? chat.username[1]
+                    : chat.username[0]}
+                </span>
+                {chat.unread && chat.unread[email] > 0 && (
+                  <span>{chat.unread[email]}</span>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="chatbox-container">
+          <div className="messages">
+            {messages.map((message) => (
+              <div key={message.id} className="message">
+                <span className="user">{message.user}:</span> {message.text}
+              </div>
+            ))}
+            <div ref={messagesEndRef} />
+          </div>
+          <form onSubmit={handleSubmit} className="new-message-form">
+            <input
+              type="text"
+              value={newMessage}
+              onChange={(event) => setNewMessage(event.target.value)}
+              className="new-message-input"
+              placeholder="Type your message here..."
+            />
+            <button type="submit" className="send-button">
+              Send
+            </button>
+          </form>
         </div>
       </div>
-      <div className="chatbox-container">
-        <div className="messages">
-          {messages.map((message) => (
-            <div key={message.id} className="message">
-              <span className="user">{message.user}:</span> {message.text}
-            </div>
-          ))}
-          <div ref={messagesEndRef} />
-        </div>
-        <form onSubmit={handleSubmit} className="new-message-form">
-          <input
-            type="text"
-            value={newMessage}
-            onChange={(event) => setNewMessage(event.target.value)}
-            className="new-message-input"
-            placeholder="Type your message here..."
-          />
-          <button type="submit" className="send-button">
-            Send
-          </button>
-        </form>
-      </div>
-    </div>
+    </>
   );
 }
 

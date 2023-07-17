@@ -19,8 +19,8 @@ import {
   deleteDoc,
 } from "firebase/firestore";
 import Navbar from "./Navbar";
-import insta from "../../Images/Instagram Icon.png"
-import tele from "../../Images/Telegram Icon.png"
+import insta from "../../Images/Instagram Icon.png";
+import tele from "../../Images/Telegram Icon.png";
 import "./Styles.css";
 
 function ProductDisplay() {
@@ -34,7 +34,7 @@ function ProductDisplay() {
   const [ratings, setRatings] = useState([]);
   const [averageRating, setAverageRating] = useState(0);
   const storage = getStorage();
-  const reviewRef = collection(db, "Sellers", seller.id, "Review")
+  const reviewRef = collection(db, "Sellers", seller.id, "Review");
   const navigate = useNavigate();
   const [update, setUpdate] = useState(false);
   const [additionalImages, setAdditionalImages] = useState([]);
@@ -51,7 +51,7 @@ function ProductDisplay() {
       if (user) {
         setEmail(user.email);
         const ref = doc(db, "Profile", user.email);
-        setProfileRef(ref)
+        setProfileRef(ref);
       } else {
         alert("Not Logged in");
       }
@@ -59,7 +59,6 @@ function ProductDisplay() {
 
     unsubscribe();
   }, [update]);
-
 
   useEffect(() => {
     const getImageUrl = async () => {
@@ -82,20 +81,19 @@ function ProductDisplay() {
         ...doc.data(),
         id: doc.id,
       }));
-      setAllReviews(reviewsData)
+      setAllReviews(reviewsData);
 
       if (reviewsData.length > 0) {
         const sumRating = reviewsData.reduce(
-          (total, review) => total + review.rating, 0
-        )
+          (total, review) => total + review.rating,
+          0
+        );
 
-        setAverageRating(Math.round(sumRating / reviewsData.length))
+        setAverageRating(Math.round(sumRating / reviewsData.length));
       }
-
     };
 
     const checkFavouriteStatus = async () => {
-
       if (profileDocRef) {
         const profileDocSnap = await getDoc(profileDocRef);
         const userData = await profileDocSnap.data();
@@ -103,24 +101,20 @@ function ProductDisplay() {
         if (favouriteProducts.includes(seller.id)) {
           setFavourite(true);
         }
-
       }
-
     };
 
     const getAdditionalImages = async () => {
-      const addrefs = additionalPaths.map((path) => ref(storage, path))
+      const addrefs = additionalPaths.map((path) => ref(storage, path));
       let addImages = [];
       for (let i = 0; i < addrefs.length; i++) {
         const oldAddUrl = await getDownloadURL(addrefs[i]);
         addImages.push(oldAddUrl);
       }
-  
+
       setAdditionalImages(addImages);
-    }
+    };
 
-
-    
     getImageUrl();
     getReviews();
     checkFavouriteStatus();
@@ -132,7 +126,7 @@ function ProductDisplay() {
       review: reviewText,
       rating: rating,
       createdBy: email,
-    })
+    });
     setRating(0);
     setReviewText("");
     setUpdate(!update);
@@ -143,8 +137,8 @@ function ProductDisplay() {
     const reviewRef = doc(db, "Sellers", seller.id, "Review", reviewId);
     await deleteDoc(reviewRef);
     setUpdate(!update);
-    alert("Review Deleted!")
-  }
+    alert("Review Deleted!");
+  };
 
   const handleCreateRoom = async () => {
     const ref = doc(db, "Profile", seller.createdBy);
@@ -156,10 +150,14 @@ function ProductDisplay() {
 
     const newRoom = {
       participants: [email, seller.createdBy],
-      username: [userData.name, docData.name]
+      username: [userData.name, docData.name],
+      unread: {
+        [email]: 0,
+        [seller.createdBy]: 0,
+      },
     };
     await setDoc(roomRef, newRoom, `${email}_${seller.createdBy}`);
-  }
+  };
 
   const handleAddToFavourites = () => {
     setFavourite(!favourite);
@@ -183,36 +181,78 @@ function ProductDisplay() {
         style={{ marginTop: "20px", marginBottom: "20px", width: "1300px" }}
       >
         <div className="row" style={{ marginTop: "20px" }}>
-        {additionalImages.length === 0 ? (
-          <div id="carouselExampleFade" className="carousel slide" style={{ width: '35%', height: 'auto', marginLeft: '20px', marginRight: '300px'}}>
-            <div className="carousel-inner">
-              <div className="carousel-item active">
-                <img src={imageUrl} className="d-block w-100" alt="product image" />
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div id="carouselExampleFade" className="carousel slide col-md-7" style={{ width: '35%', height: 'auto', marginLeft: '20px', marginRight: '300px'}}>
-            <div className="carousel-inner" >
-              <div className="carousel-item active">
-                <img src={imageUrl} className="d-block w-100" alt="product image" />
-              </div>
-              {additionalImages.map((image, index) => (
-                <div className="carousel-item" key={index} >
-                  <img src={image} className="d-block w-100" alt="..." />
+          {additionalImages.length === 0 ? (
+            <div
+              id="carouselExampleFade"
+              className="carousel slide"
+              style={{
+                width: "35%",
+                height: "auto",
+                marginLeft: "20px",
+                marginRight: "300px",
+              }}
+            >
+              <div className="carousel-inner">
+                <div className="carousel-item active">
+                  <img
+                    src={imageUrl}
+                    className="d-block w-100"
+                    alt="product image"
+                  />
                 </div>
-              ))}
+              </div>
             </div>
-            <button className="carousel-control-prev" type="button" data-bs-target="#carouselExampleFade" data-bs-slide="prev">
-              <span className="carousel-control-prev-icon" aria-hidden="true"></span>
-              <span className="visually-hidden">Previous</span>
-            </button>
-            <button className="carousel-control-next" type="button" data-bs-target="#carouselExampleFade" data-bs-slide="next">
-              <span className="carousel-control-next-icon" aria-hidden="true"></span>
-              <span className="visually-hidden">Next</span>
-            </button>
-          </div>
-        )}
+          ) : (
+            <div
+              id="carouselExampleFade"
+              className="carousel slide col-md-7"
+              style={{
+                width: "35%",
+                height: "auto",
+                marginLeft: "20px",
+                marginRight: "300px",
+              }}
+            >
+              <div className="carousel-inner">
+                <div className="carousel-item active">
+                  <img
+                    src={imageUrl}
+                    className="d-block w-100"
+                    alt="product image"
+                  />
+                </div>
+                {additionalImages.map((image, index) => (
+                  <div className="carousel-item" key={index}>
+                    <img src={image} className="d-block w-100" alt="..." />
+                  </div>
+                ))}
+              </div>
+              <button
+                className="carousel-control-prev"
+                type="button"
+                data-bs-target="#carouselExampleFade"
+                data-bs-slide="prev"
+              >
+                <span
+                  className="carousel-control-prev-icon"
+                  aria-hidden="true"
+                ></span>
+                <span className="visually-hidden">Previous</span>
+              </button>
+              <button
+                className="carousel-control-next"
+                type="button"
+                data-bs-target="#carouselExampleFade"
+                data-bs-slide="next"
+              >
+                <span
+                  className="carousel-control-next-icon"
+                  aria-hidden="true"
+                ></span>
+                <span className="visually-hidden">Next</span>
+              </button>
+            </div>
+          )}
 
           <div className="col-md-4">
             <h1>{seller.name}</h1>
@@ -222,17 +262,30 @@ function ProductDisplay() {
             </p>
             <Button
               type="text"
-              icon={favourite ? <HeartFilled style={{ display: 'inline-flex', alignItems: 'center' }} /> :
-                <HeartOutlined style={{ display: 'inline-flex', alignItems: 'center' }} />}
+              icon={
+                favourite ? (
+                  <HeartFilled
+                    style={{ display: "inline-flex", alignItems: "center" }}
+                  />
+                ) : (
+                  <HeartOutlined
+                    style={{ display: "inline-flex", alignItems: "center" }}
+                  />
+                )
+              }
               onClick={handleAddToFavourites}
             >
               Add to Favourites
             </Button>
             <p></p>
-            {seller.instagram && <img src={insta} style={{ width: "30px", height: "auto" }}></img>}
+            {seller.instagram && (
+              <img src={insta} style={{ width: "30px", height: "auto" }}></img>
+            )}
             <span className="ms-2">{seller.instagram}</span>
             <p></p>
-            {seller.telegram && <img src={tele} style={{ width: "30px", height: "auto" }}></img>}
+            {seller.telegram && (
+              <img src={tele} style={{ width: "30px", height: "auto" }}></img>
+            )}
             <span className="ms-2">{seller.telegram}</span>
             <p></p>
             <Link
@@ -242,7 +295,8 @@ function ProductDisplay() {
             >
               Buy Now!
             </Link>
-            <Link className="btn btn-primary ms-2"
+            <Link
+              className="btn btn-primary ms-2"
               to={`/chatwindow`}
               state={seller}
               onClick={handleCreateRoom}
@@ -298,7 +352,9 @@ function ProductDisplay() {
 
             <blockquote className="blockquote mt-4">
               {allReviews.length === 0 ? (
-                <div>No reviews available! Liked the product? Leave a review now!</div>
+                <div>
+                  No reviews available! Liked the product? Leave a review now!
+                </div>
               ) : (
                 allReviews.map((review) => (
                   <div key={review.id} className="review-container">
