@@ -168,3 +168,169 @@ input[id="file-upload"] {
   height: auto;
 
 }
+
+.chat-pic {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.chat-app {
+  display: flex;
+  height: 80vh;
+}
+
+.chat-list-container {
+  width: 25%;
+  border-right: 1px solid #ccc;
+  overflow-y: auto;
+}
+
+.chatbox-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.other-user-info {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+}
+
+.chat-pic {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.other-user-name {
+  font-weight: bold;
+}
+
+.chat-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-item {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.chat-item.active {
+  background-color: #f0f0f0;
+}
+
+.chat-name {
+  flex: 1;
+}
+
+.messages {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.message {
+  display: inline-block;
+  padding: 5px 10px;
+  margin: 5px 0;
+  border-radius: 10px;
+  max-width: 70%;
+  word-wrap: break-word;
+}
+
+
+.user-message {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.other-message {
+  background-color: #f0f0f0;
+  color: #000;
+}
+
+.message-right {
+  align-self: flex-end !important;
+  background-color: #007bff !important;
+  color: #fff !important;
+}
+
+.message-left {
+  align-self: flex-start !important;
+  background-color: #f0f0f0 !important;
+  color: #000 !important;
+}
+
+.new-message-form {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-top: 1px solid #ccc;
+}
+
+.new-message-input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  margin-right: 10px;
+}
+
+.send-button {
+  padding: 8px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.send-button:hover {
+  background-color: #0056b3;
+}
+
+.unread-count {
+  position: absolute;
+  top: 10px;
+  right: -200px;
+  background-color: red;
+  color: #fff;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+}
+
+.chat-pic-container {
+  position: relative;
+}
+
+.chat-pic {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.chat-name {
+  flex: 1;
+}

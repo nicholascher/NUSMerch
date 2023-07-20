@@ -16,19 +16,32 @@ import {
 } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import Navbar from "./Navbar";
+import ProfileDefault from "../../Images/Profile Default.png"
+import { getStorage, ref, getDownloadURL, uploadBytes, deleteObject } from "firebase/storage";
+import { storage } from "../../firebase/firebase";
 
 function ChatWindow() {
   const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [chats, setChats] = useState([]);
   const [selectedChatId, setSelectedChatId] = useState(null);
+  const [profilePictures, setProfilePictures] = useState({}); // Modified state
+  const [otherUserData, setOtherUserData] = useState(null);
+
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setEmail(user.email);
+        const userRef = doc(db, "Profile", user.email);
+        const userSnapshot = await getDoc(userRef);
+        const userData = userSnapshot.data();
+        const userName = userData.name;
+        setName(userName);
+        console.log(name)
       } else {
         alert("Not Logged in");
       }
@@ -140,6 +153,65 @@ function ChatWindow() {
     }
   }, [selectedChatId]);
 
+  useEffect(() => {
+    const unsubscribe = onSnapshot(collection(db, "Profile"), async (snapshot) => {
+      let profiles = {};
+      snapshot.forEach((doc) => {
+        const email = doc.id;
+        const profilePic = doc.data().profilePic;
+        profiles[email] = profilePic;
+      });
+
+      const downloadURLs = await Promise.all(
+        Object.values(profiles).map(async (profilePic) => {
+          if (profilePic) {
+            const storageRef = ref(storage, profilePic);
+            return getDownloadURL(storageRef);
+          }
+          return ProfileDefault;
+        })
+      );
+
+      const updatedProfilePictures = {};
+      Object.keys(profiles).forEach((key, index) => {
+        updatedProfilePictures[key] = downloadURLs[index];
+      });
+
+      setProfilePictures(updatedProfilePictures);
+    });
+
+    return unsubscribe;
+  }, [email]);
+
+  useEffect(() => {
+    if (selectedChatId) {
+      const chat = chats.find((chat) => chat.id === selectedChatId);
+      const otherUserEmail = chat.participants.find(
+        (participant) => participant !== email
+      );
+
+      const otherUser = {
+        username: chat.username[chat.participants.indexOf(otherUserEmail)],
+        profilePic: profilePictures[otherUserEmail],
+      };
+
+      setOtherUserData(otherUser);
+    }
+  }, [selectedChatId, chats, email, profilePictures]);
+
+  const renderMessage = (message) => {
+
+    const isUserMessage = message.user === name;
+    const messageClass = isUserMessage ? "user-message" : "other-message";
+    const alignClass = isUserMessage ? "message-right" : "message-left";
+
+    return (
+      <div key={message.id} className={`message ${messageClass} ${alignClass}`}>
+        {message.text}
+      </div>
+    );
+  };
+
   return (
     <>
       <Navbar />
@@ -149,33 +221,34 @@ function ChatWindow() {
             {chats.map((chat) => (
               <div
                 key={chat.id}
-                className="chat-item"
-                onClick={() =>
-                  handleChatClick(
-                    `${chat.participants[0]}_${chat.participants[1]}`
-                  )
-                }
+                className={`chat-item ${chat.id === selectedChatId ? "active" : ""}`}
+                onClick={() => handleChatClick(`${chat.participants[0]}_${chat.participants[1]}`)}
               >
-                <img src={chat.profilePictureUrl} />
-                <span className="chat-name">
-                  {chat.participants[0] === email
-                    ? chat.username[1]
-                    : chat.username[0]}
-                </span>
-                {chat.unread && chat.unread[email] > 0 && (
-                  <span>{chat.unread[email]}</span>
+                {chat.participants[1] !== email && (
+                  <div className="chat-pic-container">
+                    <img src={profilePictures[chat.participants[1]]} className="chat-pic" />
+                    {chat.unread && chat.unread[email] > 0 && <div className="unread-count">{chat.unread[email]}</div>}
+                  </div>
                 )}
+                <span className="chat-name">
+                  {chat.participants[0] === email ? chat.username[1] : chat.username[0]}
+                </span>
               </div>
             ))}
+
           </div>
         </div>
         <div className="chatbox-container">
+          <div>
+            {otherUserData && (
+              <>
+                <img src={otherUserData.profilePic} alt="Other user" className="chat-pic" />
+                <span className="other-user-name">{otherUserData.username}</span>
+              </>
+            )}
+          </div>
           <div className="messages">
-            {messages.map((message) => (
-              <div key={message.id} className="message">
-                <span className="user">{message.user}:</span> {message.text}
-              </div>
-            ))}
+            {messages.map((message) => renderMessage(message))}
             <div ref={messagesEndRef} />
           </div>
           <form onSubmit={handleSubmit} className="new-message-form">
