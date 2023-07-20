@@ -8,8 +8,6 @@ import Navbar from "./Navbar";
 import "./Styles.css";
 import ProfileDefault from "../../Images/Profile Default.png"
 import UploadIcon from "../../Images/Upload Icon.png"
-import { UploadOutlined } from '@ant-design/icons';
-import { Button, message, Upload } from 'antd';
 
 function Profile() {
   const [basketListings, setBasketListings] = useState([]);
@@ -19,8 +17,9 @@ function Profile() {
   const [profileRef, setProfileRef] = useState(null);
   const [update, setUpdate] = useState(false);
   const [profileUrl, setProfileUrl] = useState("");
+  const [editName, setEditName] = useState(false);
+  const [nameInput, setNameInput] = useState("");
   const navigate = useNavigate();
-  const location = useLocation();
 
 
   useEffect(() => {
@@ -76,8 +75,8 @@ function Profile() {
     
 
     getBasketListings();
-
-  }, [profileRef, update]);
+    console.log("here")
+  }, [profileRef, update, editName]);
 
   const loadImages = async (listings) => {
     const imagePromises = listings.map((seller) =>
@@ -92,6 +91,21 @@ function Profile() {
       setNewImages([]);
     }
   };
+
+  const handleNameEdit = () => {
+    if (editName) {
+      // Save changes
+      updateDoc(profileRef, {
+        name: nameInput,
+      })
+      setEditName(false);
+    } else {
+      // Enable editing
+      setEditName(true);
+      setNameInput(profileData?.name || "");
+    }
+  };
+
 
   const handleUpload = async (file) => {
     function makeid() {
@@ -145,25 +159,40 @@ function Profile() {
               <div className="card-body">
                 <h1 className="card-title">Profile</h1>
                 <div>
-                  <p>Email: {email}</p>
-                  <p>Name: {profileData?.name}</p>
+                  <p>
+                    Email: {email}
+                  </p>
+                  <p>Username: {editName ? (
+                    <input
+                      className="form-control"
+                      type="text"
+                      value={nameInput}
+                      onChange={(e) => setNameInput(e.target.value)}
+                    />
+                  ) : (
+                    profileData?.name
+                  )}
+                  </p>
                   {profileData?.profilePic ? 
                     <img src={profileUrl} alt="profile" className="avatar"/>
                   : <img src={ProfileDefault} alt="profile" className="avatar"/>}
                 </div>
-                <label for="file-upload" class="custom-file-upload mt-2">
-                      <img src={UploadIcon} alt={".."} className="upload-icon" /> 
-                      Upload profile picture
-                  </label>
-                  <input id="file-upload" 
-                    type="file"
-                    onChange={(event) => {
-                      event.preventDefault();
-                      let files = event.target.files[0];
-                      console.log(files)
-                      handleUpload(files);
-                    }}
-                    />
+                <button className="btn btn-primary" onClick={handleNameEdit}>
+                    {editName ? "Save Name" : "Edit Name"}
+                </button>
+                <label for="file-upload" className="custom-file-upload mt-2 ms-2">
+                  <img src={UploadIcon} alt={".."} className="upload-icon" /> 
+                  Upload profile picture
+                </label>
+                <input id="file-upload" 
+                  type="file"
+                  onChange={(event) => {
+                    event.preventDefault();
+                    let files = event.target.files[0];
+                    console.log(files)
+                    handleUpload(files);
+                  }}
+                />
               </div>
             </div>
           </div>

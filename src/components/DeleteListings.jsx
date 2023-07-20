@@ -126,14 +126,17 @@ function DeleteListings() {
         const oldQRUrl = await getDownloadURL(oldQRRef);
         setCurrentQR(oldQRUrl);
 
-        const oldAddrefs = oldAdditionalPaths.map((path) => ref(storage, path))
-        let oldAddImages = [];
-        for (let i = 0; i < oldAddrefs.length; i++) {
-          const oldAddUrl = await getDownloadURL(oldAddrefs[i]);
-          oldAddImages.push(oldAddUrl);
+        if (oldAdditionalPaths !== undefined) {
+          const oldAddrefs = oldAdditionalPaths.map((path) => ref(storage, path))
+          let oldAddImages = [];
+          for (let i = 0; i < oldAddrefs.length; i++) {
+            const oldAddUrl = await getDownloadURL(oldAddrefs[i]);
+            oldAddImages.push(oldAddUrl);
+          }
+  
+          setOldAddtionalImages(oldAddImages);
         }
 
-        setOldAddtionalImages(oldAddImages);
         
 
         if (postData.sellerType === "Halls") {
@@ -254,15 +257,49 @@ function DeleteListings() {
 
   const handleDelete = async () => {
     const profileDocRef = doc(db, "Profile", user.email);
+
+    const subcollectionRef = collection(post, "Review");
+    const subcollectionDocs = await getDocs(subcollectionRef);
+  
+    const deleteSubcollectionPromises = subcollectionDocs.docs.map((doc) =>
+      deleteDoc(doc.ref)
+    );
+    await Promise.all(deleteSubcollectionPromises);
+
     await deleteDoc(post);
     await deleteObject(oldimageRef);
     await deleteObject(oldQRRef);
 
-    for (let i = 0; i < oldAdditionalPaths.length; i++) {
-      let addtionalRef = ref(storage, oldAdditionalPaths[i])
-      await deleteObject(addtionalRef);
+    if (oldAdditionalPaths !== undefined ) {
+      for (let i = 0; i < oldAdditionalPaths.length; i++) {
+        let addtionalRef = ref(storage, oldAdditionalPaths[i])
+        await deleteObject(addtionalRef);
+      }
     }
 
+
+    const purchasedCollectionRef = collection(db, "Purchased")
+    const purchaseData = await getDocs(purchasedCollectionRef);
+    const filteredPurchases = purchaseData.docs.filter(
+      (purchase) => purchase.data().postId === seller.id
+    );
+
+    const paidImages = filteredPurchases.map((purchaseDoc) => {
+      return purchaseDoc.data().paidPath;
+    })
+
+    if (paidImages !== undefined ) {
+      for (let i = 0; i < paidImages.length; i++) {
+        let paidRef = ref(storage, paidImages[i])
+        await deleteObject(paidRef);
+      }
+    }
+  
+    const deletePromises = filteredPurchases.map((purchaseDoc) =>
+      deleteDoc(purchaseDoc.ref)
+    );
+    await Promise.all(deletePromises);
+  
     updateDoc(profileDocRef, {
       basket: arrayRemove(seller.id),
     });

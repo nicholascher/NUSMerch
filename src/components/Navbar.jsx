@@ -12,7 +12,6 @@ import { onAuthStateChanged } from "firebase/auth";
 
 function Navbar() {
   const [profilePic, setProfilePic] = useState("");
-  const [profileDocRef, setProfileRef] = useState(null);
   const [email, setEmail] = useState("");
 
   useEffect(() => {
@@ -68,7 +67,7 @@ function Navbar() {
               </Link>
             </li>
           </ul>
-          <Link to="/chatwindow" className="btn btn-success ms-2">
+          <Link to="/chatwindow" className="btn btn-secondary ms-2">
             Messages
           </Link>
           <button className="btn btn-success ms-2" onClick={SellerCheck()}>
