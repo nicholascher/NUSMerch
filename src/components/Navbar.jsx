@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { doc, getDoc, } from "firebase/firestore";
+import { doc, getDoc, collection, getDocs, query, where } from "firebase/firestore";
 import { db, storage, auth } from "../../firebase/firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import logo from "../../Images/Corner Logo.png";
@@ -14,6 +14,7 @@ function Navbar() {
   const [profilePic, setProfilePic] = useState("");
   const [profileDocRef, setProfileRef] = useState(null);
   const [email, setEmail] = useState("");
+  const [hasUnread, setHasUnread] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -24,6 +25,19 @@ function Navbar() {
         const profileData = profileDoc.data();
         const imageUrl = await getDownloadURL(ref(storage, profileData?.profilePic))
         setProfilePic(imageUrl);
+
+        const roomsRef = collection(db, "Rooms");
+        const queryRooms = query(roomsRef, where("participants", "array-contains", user.email));
+        const roomsSnapshot = await getDocs(queryRooms);
+
+        for (const doc of roomsSnapshot.docs) {
+          const roomData = doc.data();
+          if (roomData.unread && roomData.unread[user.email] && roomData.unread[user.email] > 0) {
+            setHasUnread(true);
+            break;
+          }
+        }
+
       } else {
         alert("Not Logged in");
       }
@@ -31,7 +45,6 @@ function Navbar() {
 
     unsubscribe()
   }, []);
-
 
   return (
     <nav className="navbar navbar-expand-lg bg-body-tertiary">
@@ -71,6 +84,9 @@ function Navbar() {
           <Link to="/chatwindow" className="btn btn-success ms-2">
             Messages
           </Link>
+          {hasUnread && (
+            <span className="notification-badge"></span>
+          )}
           <button className="btn btn-success ms-2" onClick={SellerCheck()}>
             Seller Center
           </button>

@@ -41,7 +41,6 @@ function ChatWindow() {
         const userData = userSnapshot.data();
         const userName = userData.name;
         setName(userName);
-        console.log(name)
       } else {
         alert("Not Logged in");
       }
@@ -224,6 +223,13 @@ function ChatWindow() {
                 className={`chat-item ${chat.id === selectedChatId ? "active" : ""}`}
                 onClick={() => handleChatClick(`${chat.participants[0]}_${chat.participants[1]}`)}
               >
+                {chat.participants[0] !== email && (
+                  <div className="chat-pic-container">
+                    <img src={profilePictures[chat.participants[0]]} className="chat-pic" />
+                    {chat.unread && chat.unread[email] > 0 && <div className="unread-count">{chat.unread[email]}</div>}
+                  </div>
+                )}
+
                 {chat.participants[1] !== email && (
                   <div className="chat-pic-container">
                     <img src={profilePictures[chat.participants[1]]} className="chat-pic" />
