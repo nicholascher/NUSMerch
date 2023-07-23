@@ -23,6 +23,7 @@ import insta from "../../Images/Instagram Icon.png"
 import tele from "../../Images/Telegram Icon.png"
 import "./Styles.css";
 
+
 function ProductDisplay() {
   const location = useLocation();
   const seller = location.state;
@@ -128,6 +129,11 @@ function ProductDisplay() {
   }, [seller, storage, profileDocRef, update]);
 
   const handleSaveReview = async () => {
+
+    if (reviewText === "") {
+      alert('Please provide a review for the product')
+      return;
+    }
     await addDoc(reviewRef, {
       review: reviewText,
       rating: rating,
