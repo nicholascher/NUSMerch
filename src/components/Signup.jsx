@@ -3,7 +3,14 @@ import { Link, useNavigate } from "react-router-dom";
 import { initializeApp } from "firebase/app";
 import { getDatabase } from "firebase/database";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
-import { collection, getDocs, setDoc, doc, updateDoc, arrayUnion } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  setDoc,
+  doc,
+  updateDoc,
+  arrayUnion,
+} from "firebase/firestore";
 import firebaseConfig from "../../firebase/firebase";
 import { db, auth } from "../../firebase/firebase";
 import logo from "../../Images/Logo.png";
@@ -37,11 +44,11 @@ function Signup() {
       createUserWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
           const user = userCredential.user;
-          const profileDocRef = doc(db, 'Profile', values.email)
-          setDoc(profileDocRef, {name, basket: {}, }, values.email);
+          const profileDocRef = doc(db, "Profile", values.email);
+          setDoc(profileDocRef, { name, basket: {} }, values.email);
           updateDoc(profileDocRef, {
-            basket: arrayUnion("New entry")
-          })
+            basket: arrayUnion("New entry"),
+          });
           navigate("/");
         })
         .catch((error) => {
@@ -92,17 +99,13 @@ function Signup() {
                     )}
                   </div>
                   <div className="mb-3">
-                    <label
-                      className="form-label login-form-label"
-                    >
-                      Name
-                    </label>
+                    <label className="form-label login-form-label">Name</label>
                     <input
                       className="form-control form-control-lg"
-                      value= {name}
-                      onChange={(event) => { 
-                        setName(event.target.value )}                   
-                      }
+                      value={name}
+                      onChange={(event) => {
+                        setName(event.target.value);
+                      }}
                     />
                   </div>
                   <div className="form-group mb-4">

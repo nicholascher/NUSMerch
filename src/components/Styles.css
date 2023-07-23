@@ -109,6 +109,7 @@
   height: 50px;
   border-radius: 50%;
   overflow: hidden;
+  object-fit: contain;
 
   img {
     width: 100%;
@@ -423,4 +424,41 @@ input[id="file-upload"] {
 .add-to-favorites-container {
   display: flex;
   align-items: center;
+}
+
+.container {
+  margin: 20px;
+}
+
+.order-image {
+  width: 400px;
+  height: 400px;
+  object-fit: contain;
+}
+
+.questions-section {
+  margin-top: 20px;
+}
+
+.question-input {
+  margin-bottom: 10px;
+}
+
+.payment-qr-section {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.paid-image-input {
+  margin-top: 20px;
+}
+
+.purchase-button {
+  margin-top: 20px;
+}
+
+.image-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
 }

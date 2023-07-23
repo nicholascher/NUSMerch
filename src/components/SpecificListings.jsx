@@ -20,9 +20,7 @@ function SpecificListings() {
         id: doc.id,
       }));
       const filteredSellers = sellersData.filter((seller) => {
-        return (
-          seller.sellerSpecific === type
-        );
+        return seller.sellerSpecific === type;
       });
 
       setSellers(filteredSellers);
@@ -50,9 +48,9 @@ function SpecificListings() {
 
   return (
     <>
-     <Navbar/>
+      <Navbar />
       <div className="container mt-5 bottom">
-      <h1>{type + "'s Listings"}</h1>
+        <h1>{type + "'s Listings"}</h1>
         <div className="row row-cols-1 row-cols-md-3 g-4">
           {sellers.length === 0 ? (
             <blockquote>This seller has no listings!</blockquote>

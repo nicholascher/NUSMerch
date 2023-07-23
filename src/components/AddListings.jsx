@@ -5,8 +5,9 @@ import { ref, uploadBytes } from "firebase/storage";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../../Images/Corner Logo.png";
 import { onAuthStateChanged } from "firebase/auth";
-import { Form, Button, Input } from "antd"
-import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import { Form, Button, Input } from "antd";
+import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
+import { message } from "antd";
 import "./Styles.css";
 
 function AddListings() {
@@ -28,7 +29,7 @@ function AddListings() {
       if (user) {
         setEmail(user.email);
       } else {
-        alert("Not Logged in");
+        message.error("Not Logged in");
       }
     });
 
@@ -40,7 +41,6 @@ function AddListings() {
   const [halls, setHalls] = useState([]);
   const [RC, setRC] = useState([]);
   const [clubs, setClubs] = useState([]);
-  
 
   const [description, setDescription] = useState("");
   const [name, setName] = useState("");
@@ -87,7 +87,6 @@ function AddListings() {
     const selectedSellerType = event.target.value;
     setSellerType(selectedSellerType);
 
-    // Update dependent options based on selected seller type
     if (selectedSellerType === "Halls") {
       setDependentOptions(halls);
     } else if (selectedSellerType === "RC") {
@@ -115,20 +114,19 @@ function AddListings() {
     const value = event.target.value;
     const numericValue = value.replace(/[^0-9]/g, "");
     setPhoneNumber(numericValue);
-  }
-
+  };
 
   const formItemLayout = {
     labelCol: {
       xs: { span: 20 },
-      sm: { span: 24},
+      sm: { span: 24 },
     },
     wrapperCol: {
       xs: { span: 24 },
       sm: { span: 30 },
     },
   };
-  
+
   const formItemLayoutWithOutLabel = {
     wrapperCol: {
       xs: { span: 24, offset: 0 },
@@ -140,7 +138,7 @@ function AddListings() {
     if (imageUpload) {
       const allowedTypes = ["image/jpeg", "image/png"];
       if (!allowedTypes.includes(imageUpload.type)) {
-        alert("Please upload a valid JPG or PNG image.");
+        message.error("Please upload a valid JPG or PNG image.");
         return;
       }
 
@@ -151,12 +149,12 @@ function AddListings() {
       const QRref = ref(storage, QRpath);
 
       const additionalPaths = additionalImages.map((image) => {
-        const path = `images/${image.name + makeid()}`
+        const path = `images/${image.name + makeid()}`;
         return path;
       });
 
       for (let i = 0; i < additionalPaths.length; i++) {
-        let addtionalRef = ref(storage, additionalPaths[i])
+        let addtionalRef = ref(storage, additionalPaths[i]);
         await uploadBytes(addtionalRef, additionalImages[i]);
       }
 
@@ -164,7 +162,7 @@ function AddListings() {
         description,
         name,
         imagePath,
-        QRpath, 
+        QRpath,
         additionalPaths,
         sellerType,
         sellerSpecific,
@@ -172,20 +170,18 @@ function AddListings() {
         createdBy: email,
         paymentOption,
         phoneNumber,
-        questions: values.questions, 
-        telegram, 
-        instagram, 
+        questions: values.questions,
+        telegram,
+        instagram,
       });
       await uploadBytes(imageRef, imageUpload);
       await uploadBytes(QRref, QRUpload);
 
-      alert("Listing Added!")
+      message.success("Listing Added!");
 
-      navigate('/sellerslistings');
-      
+      navigate("/sellerslistings");
     }
   };
-  
 
   return (
     <div className="container mt-5">
@@ -204,7 +200,7 @@ function AddListings() {
           </Link>
         </div>
       </div>
-      <h1 className="text-center mb-6">Add Listing</h1> 
+      <h1 className="text-center mb-6">Add Listing</h1>
       <div className="row justify-content-center">
         <div className="col-md-6">
           <form>
@@ -314,7 +310,6 @@ function AddListings() {
                 multiple
                 onChange={(event) => {
                   const filesArray = Array.from(event.target.files);
-                  console.log(filesArray);
                   setAdditionalImages(filesArray);
                 }}
               />
@@ -324,7 +319,7 @@ function AddListings() {
               className="form-select mb-3"
               aria-label="Default select example"
               onChange={(event) => {
-                setPaymentOption(event.target.value)
+                setPaymentOption(event.target.value);
               }}
               value={paymentOption}
             >
@@ -352,7 +347,7 @@ function AddListings() {
             </div>
             <div className="mb-3">
               <label htmlFor="QRcode" className="form-label">
-                Payment QR code {'(Paylah! or PayNow)'}
+                Payment QR code {"(Paylah! or PayNow)"}
               </label>
               <input
                 type="file"
@@ -400,9 +395,10 @@ function AddListings() {
             </div>
           </form>
 
-
           <h2 className="text-center">Additional Questions</h2>
-          <p className="text-center mb-10"><small>{'e.g shirt sizes, Room number'}</small></p>
+          <p className="text-center mb-10">
+            <small>{"e.g shirt sizes, Room number"}</small>
+          </p>
           <Form
             name="dynamic_form_item"
             {...formItemLayoutWithOutLabel}
@@ -415,16 +411,33 @@ function AddListings() {
                 {
                   validator: async (_, names) => {
                     if (!names || names.length < 1) {
-                      return Promise.reject(new Error('At least 1 Additional Question'));
+                      return Promise.reject(
+                        new Error("At least 1 Additional Question")
+                      );
                     }
-                    if (!description || !imageUpload || !name || 
-                      !price || !sellerSpecific || !sellerType || !QRUpload ||
-                      !paymentOption || !QRUpload || !phoneNumber) {
-                      return Promise.reject(new Error('Please fill in all required fields'))
+                    if (
+                      !description ||
+                      !imageUpload ||
+                      !name ||
+                      !price ||
+                      !sellerSpecific ||
+                      !sellerType ||
+                      !QRUpload ||
+                      !paymentOption ||
+                      !QRUpload ||
+                      !phoneNumber
+                    ) {
+                      return Promise.reject(
+                        new Error("Please fill in all required fields")
+                      );
                     }
 
                     if (!instagram && !telegram) {
-                      return Promise.reject(new Error('Please fill in at least one of the contact details'))
+                      return Promise.reject(
+                        new Error(
+                          "Please fill in at least one of the contact details"
+                        )
+                      );
                     }
                   },
                 },
@@ -434,13 +447,15 @@ function AddListings() {
                 <>
                   {fields.map((field, index) => (
                     <Form.Item
-                      {...(index === 0 ? formItemLayout : formItemLayoutWithOutLabel)}
+                      {...(index === 0
+                        ? formItemLayout
+                        : formItemLayoutWithOutLabel)}
                       required={false}
                       key={field.key}
                     >
                       <Form.Item
                         {...field}
-                        validateTrigger={['onChange', 'onBlur']}
+                        validateTrigger={["onChange", "onBlur"]}
                         rules={[
                           {
                             required: true,
@@ -450,7 +465,10 @@ function AddListings() {
                         ]}
                         noStyle
                       >
-                        <Input placeholder="Additional questions" style={{ width: '80%', marginRight: '10px' }} />
+                        <Input
+                          placeholder="Additional questions"
+                          style={{ width: "80%", marginRight: "10px" }}
+                        />
                       </Form.Item>
                       {fields.length > 1 ? (
                         <MinusCircleOutlined
@@ -464,7 +482,7 @@ function AddListings() {
                     <Button
                       type="dashed"
                       onClick={() => add()}
-                      style={{ width: '60%' }}
+                      style={{ width: "60%" }}
                       icon={<PlusOutlined />}
                     >
                       Add question

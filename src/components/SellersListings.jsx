@@ -7,6 +7,7 @@ import Signout from "./Signout";
 import { Link, useNavigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import Navbar from "./Navbar";
+import { message } from "antd";
 
 function SellersListings() {
   const navigate = useNavigate();
@@ -21,7 +22,7 @@ function SellersListings() {
       if (user) {
         setEmail(user.email);
       } else {
-        alert("Not Logged in");
+        message.error("Not Logged in");
       }
       setLoading(false);
     });
@@ -72,47 +73,47 @@ function SellersListings() {
 
   return (
     <>
-     <Navbar/>
+      <Navbar />
       <div className="container mt-5 bottom">
-      <h1 classname="mb-2">Your Listings</h1>
-      <Link className="btn btn-primary mb-2" to="/addlistings">
-        Add new Listing
-      </Link>
+        <h1 classname="mb-2">Your Listings</h1>
+        <Link className="btn btn-primary mb-2" to="/addlistings">
+          Add new Listing
+        </Link>
         <div className="row row-cols-1 row-cols-md-3 g-4">
-        {sellers.length === 0 ? (
+          {sellers.length === 0 ? (
             <blockquote>You have no Lisitings! Add one now!</blockquote>
           ) : (
-          sellers.map((seller, index) => (
-            <div className="col" key={seller.id}>
-              <div className="card product h-100">
-                <img
-                  src={newImages[index]}
-                  className="card-img card-image"
-                  alt="..."
-                />
-                <div className="card-body">
-                  <div className="d-flex justify-content-between align-items-start">
-                    <h5 className="card-title">{seller.name}</h5>
-                    <p className="card-text">${seller.price}</p>
+            sellers.map((seller, index) => (
+              <div className="col" key={seller.id}>
+                <div className="card product h-100">
+                  <img
+                    src={newImages[index]}
+                    className="card-img card-image"
+                    alt="..."
+                  />
+                  <div className="card-body">
+                    <div className="d-flex justify-content-between align-items-start">
+                      <h5 className="card-title">{seller.name}</h5>
+                      <p className="card-text">${seller.price}</p>
+                    </div>
+                    <Link
+                      className="btn btn-primary"
+                      to={`/deletelistings/${seller.id}`}
+                      state={seller}
+                    >
+                      Edit
+                    </Link>
+                    <Link
+                      className="btn btn-success ms-2"
+                      to={`/orders/${seller.id}`}
+                      state={seller}
+                    >
+                      View Orders
+                    </Link>
                   </div>
-                  <Link
-                    className="btn btn-primary"
-                    to={`/deletelistings/${seller.id}`}
-                    state={ seller }
-                  >
-                    Edit
-                  </Link>
-                  <Link
-                    className="btn btn-success ms-2"
-                    to={`/orders/${seller.id}`}
-                    state={ seller }
-                  >
-                    View Orders
-                  </Link>
                 </div>
               </div>
-            </div>
-          ))
+            ))
           )}
         </div>
       </div>

@@ -16,8 +16,15 @@ import {
 } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import Navbar from "./Navbar";
-import ProfileDefault from "../../Images/Profile Default.png"
-import { getStorage, ref, getDownloadURL, uploadBytes, deleteObject } from "firebase/storage";
+import ProfileDefault from "../../Images/Profile Default.png";
+import { message } from "antd";
+import {
+  getStorage,
+  ref,
+  getDownloadURL,
+  uploadBytes,
+  deleteObject,
+} from "firebase/storage";
 import { storage } from "../../firebase/firebase";
 
 function ChatWindow() {
@@ -27,7 +34,7 @@ function ChatWindow() {
   const [newMessage, setNewMessage] = useState("");
   const [chats, setChats] = useState([]);
   const [selectedChatId, setSelectedChatId] = useState(null);
-  const [profilePictures, setProfilePictures] = useState({}); // Modified state
+  const [profilePictures, setProfilePictures] = useState({});
   const [otherUserData, setOtherUserData] = useState(null);
 
   const messagesEndRef = useRef(null);
@@ -42,7 +49,7 @@ function ChatWindow() {
         const userName = userData.name;
         setName(userName);
       } else {
-        alert("Not Logged in");
+        message.error("Not Logged in");
       }
     });
 
@@ -153,31 +160,34 @@ function ChatWindow() {
   }, [selectedChatId]);
 
   useEffect(() => {
-    const unsubscribe = onSnapshot(collection(db, "Profile"), async (snapshot) => {
-      let profiles = {};
-      snapshot.forEach((doc) => {
-        const email = doc.id;
-        const profilePic = doc.data().profilePic;
-        profiles[email] = profilePic;
-      });
+    const unsubscribe = onSnapshot(
+      collection(db, "Profile"),
+      async (snapshot) => {
+        let profiles = {};
+        snapshot.forEach((doc) => {
+          const email = doc.id;
+          const profilePic = doc.data().profilePic;
+          profiles[email] = profilePic;
+        });
 
-      const downloadURLs = await Promise.all(
-        Object.values(profiles).map(async (profilePic) => {
-          if (profilePic) {
-            const storageRef = ref(storage, profilePic);
-            return getDownloadURL(storageRef);
-          }
-          return ProfileDefault;
-        })
-      );
+        const downloadURLs = await Promise.all(
+          Object.values(profiles).map(async (profilePic) => {
+            if (profilePic) {
+              const storageRef = ref(storage, profilePic);
+              return getDownloadURL(storageRef);
+            }
+            return ProfileDefault;
+          })
+        );
 
-      const updatedProfilePictures = {};
-      Object.keys(profiles).forEach((key, index) => {
-        updatedProfilePictures[key] = downloadURLs[index];
-      });
+        const updatedProfilePictures = {};
+        Object.keys(profiles).forEach((key, index) => {
+          updatedProfilePictures[key] = downloadURLs[index];
+        });
 
-      setProfilePictures(updatedProfilePictures);
-    });
+        setProfilePictures(updatedProfilePictures);
+      }
+    );
 
     return unsubscribe;
   }, [email]);
@@ -199,7 +209,6 @@ function ChatWindow() {
   }, [selectedChatId, chats, email, profilePictures]);
 
   const renderMessage = (message) => {
-
     const isUserMessage = message.user === name;
     const messageClass = isUserMessage ? "user-message" : "other-message";
     const alignClass = isUserMessage ? "message-right" : "message-left";
@@ -220,36 +229,59 @@ function ChatWindow() {
             {chats.map((chat) => (
               <div
                 key={chat.id}
-                className={`chat-item ${chat.id === selectedChatId ? "active" : ""}`}
-                onClick={() => handleChatClick(`${chat.participants[0]}_${chat.participants[1]}`)}
+                className={`chat-item ${
+                  chat.id === selectedChatId ? "active" : ""
+                }`}
+                onClick={() =>
+                  handleChatClick(
+                    `${chat.participants[0]}_${chat.participants[1]}`
+                  )
+                }
               >
                 {chat.participants[0] !== email && (
                   <div className="chat-pic-container">
-                    <img src={profilePictures[chat.participants[0]]} className="chat-pic" />
-                    {chat.unread && chat.unread[email] > 0 && <div className="unread-count">{chat.unread[email]}</div>}
+                    <img
+                      src={profilePictures[chat.participants[0]]}
+                      className="chat-pic"
+                    />
+                    {chat.unread && chat.unread[email] > 0 && (
+                      <div className="unread-count">{chat.unread[email]}</div>
+                    )}
                   </div>
                 )}
 
                 {chat.participants[1] !== email && (
                   <div className="chat-pic-container">
-                    <img src={profilePictures[chat.participants[1]]} className="chat-pic" />
-                    {chat.unread && chat.unread[email] > 0 && <div className="unread-count">{chat.unread[email]}</div>}
+                    <img
+                      src={profilePictures[chat.participants[1]]}
+                      className="chat-pic"
+                    />
+                    {chat.unread && chat.unread[email] > 0 && (
+                      <div className="unread-count">{chat.unread[email]}</div>
+                    )}
                   </div>
                 )}
                 <span className="chat-name">
-                  {chat.participants[0] === email ? chat.username[1] : chat.username[0]}
+                  {chat.participants[0] === email
+                    ? chat.username[1]
+                    : chat.username[0]}
                 </span>
               </div>
             ))}
-
           </div>
         </div>
         <div className="chatbox-container">
           <div>
             {otherUserData && (
               <>
-                <img src={otherUserData.profilePic} alt="Other user" className="chat-pic" />
-                <span className="other-user-name">{otherUserData.username}</span>
+                <img
+                  src={otherUserData.profilePic}
+                  alt="Other user"
+                  className="chat-pic"
+                />
+                <span className="other-user-name">
+                  {otherUserData.username}
+                </span>
               </>
             )}
           </div>

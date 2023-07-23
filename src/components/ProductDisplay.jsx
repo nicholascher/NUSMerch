@@ -17,13 +17,13 @@ import {
   arrayUnion,
   arrayRemove,
   deleteDoc,
-  onSnapshot
+  onSnapshot,
 } from "firebase/firestore";
 import Navbar from "./Navbar";
 import insta from "../../Images/Instagram Icon.png";
 import tele from "../../Images/Telegram Icon.png";
 import "./Styles.css";
-import ProfileDefault from "../../Images/Profile Default.png"
+import ProfileDefault from "../../Images/Profile Default.png";
 
 function ProductDisplay() {
   const location = useLocation();
@@ -178,45 +178,47 @@ function ProductDisplay() {
   };
 
   useEffect(() => {
-    const unsubscribe = onSnapshot(collection(db, "Profile"), async (snapshot) => {
-      let profiles = {};
-      snapshot.forEach((doc) => {
-        const email = doc.id;
-        const profilePic = doc.data().profilePic;
-        const name = doc.data().name;
-        profiles[email] = {
-          profilePic: profilePic,
-          name: name,
-        };
-      });
+    const unsubscribe = onSnapshot(
+      collection(db, "Profile"),
+      async (snapshot) => {
+        let profiles = {};
+        snapshot.forEach((doc) => {
+          const email = doc.id;
+          const profilePic = doc.data().profilePic;
+          const name = doc.data().name;
+          profiles[email] = {
+            profilePic: profilePic,
+            name: name,
+          };
+        });
 
-      const downloadURLs = await Promise.all(
-        Object.values(profiles).map(async (profile) => {
-          if (profile.profilePic) {
-            const storageRef = ref(storage, profile.profilePic);
-            return getDownloadURL(storageRef);
-          }
-          return ProfileDefault;
-        })
-      );
+        const downloadURLs = await Promise.all(
+          Object.values(profiles).map(async (profile) => {
+            if (profile.profilePic) {
+              const storageRef = ref(storage, profile.profilePic);
+              return getDownloadURL(storageRef);
+            }
+            return ProfileDefault;
+          })
+        );
 
-      const updatedProfilePictures = {};
-      Object.keys(profiles).forEach((key, index) => {
-        updatedProfilePictures[key] = downloadURLs[index];
-      });
+        const updatedProfilePictures = {};
+        Object.keys(profiles).forEach((key, index) => {
+          updatedProfilePictures[key] = downloadURLs[index];
+        });
 
-      setProfilePictures(updatedProfilePictures);
+        setProfilePictures(updatedProfilePictures);
 
-      const updatedUsernames = {};
-      Object.keys(profiles).forEach((key) => {
-        updatedUsernames[key] = profiles[key].name;
-      });
-      setUsernames(updatedUsernames);
-    });
+        const updatedUsernames = {};
+        Object.keys(profiles).forEach((key) => {
+          updatedUsernames[key] = profiles[key].name;
+        });
+        setUsernames(updatedUsernames);
+      }
+    );
 
     return unsubscribe;
   }, []);
-
 
   const getProfilePictureUrl = (createdByEmail) => {
     return profilePictures[createdByEmail] || ProfileDefault;
@@ -232,7 +234,12 @@ function ProductDisplay() {
         <div className="row" style={{ marginTop: "20px" }}>
           <div
             className="carousel-container"
-            style={{ width: "400px", height: "400px", marginLeft: "20px", marginRight: "300px" }}
+            style={{
+              width: "400px",
+              height: "400px",
+              marginLeft: "20px",
+              marginRight: "300px",
+            }}
           >
             <div
               id="carouselExampleFade"
@@ -249,8 +256,11 @@ function ProductDisplay() {
                 </div>
                 {additionalImages.map((image, index) => (
                   <div className="carousel-item" key={index}>
-                    <img src={image} className="d-block w-100 display-pic"
-                      alt="..." />
+                    <img
+                      src={image}
+                      className="d-block w-100 display-pic"
+                      alt="..."
+                    />
                   </div>
                 ))}
               </div>
@@ -299,12 +309,20 @@ function ProductDisplay() {
             </div>
             <p></p>
             {seller.instagram && (
-              <img src={insta} style={{ width: "30px", height: "auto" }} alt="Instagram" />
+              <img
+                src={insta}
+                style={{ width: "30px", height: "auto" }}
+                alt="Instagram"
+              />
             )}
             <span className="ms-2">{seller.instagram}</span>
             <p></p>
             {seller.telegram && (
-              <img src={tele} style={{ width: "30px", height: "auto" }} alt="Telegram" />
+              <img
+                src={tele}
+                style={{ width: "30px", height: "auto" }}
+                alt="Telegram"
+              />
             )}
             <span className="ms-2">{seller.telegram}</span>
             <p></p>
@@ -345,13 +363,13 @@ function ProductDisplay() {
                 Rating and reviews{" "}
               </strong>
             </p>
-
-            <Rate value={rating} onChange={(value) => setRating(value)} />
-
+            <label htmlFor="productDescription" className="form-label">
+              Leave a Review!
+            </label>
+            <p>
+              <Rate value={rating} onChange={(value) => setRating(value)} />
+            </p>
             <div className="mb-3 review-textarea">
-              <label htmlFor="productDescription" className="form-label">
-                Leave a Review!
-              </label>
               <textarea
                 className="form-control"
                 id="productDescription"
@@ -393,13 +411,13 @@ function ProductDisplay() {
                           >
                             Delete Review
                           </button>
-                        )}</span>
+                        )}
+                      </span>
                       <div>
                         <Rate value={review.rating} disabled />
                       </div>
                       <p className="review-text">{review.review}</p>
                     </div>
-
                   </div>
                 ))
               )}

@@ -8,12 +8,10 @@ import logo from "../../Images/Corner Logo.png";
 import Navbar from "./Navbar";
 
 function FilteredSellers() {
-
   const [groups, setGroups] = useState([]);
   const [newImages, setNewImages] = useState([]);
   const storage = getStorage();
   const { type } = useParams();
-  
 
   useEffect(() => {
     const fetchGroupsAndImages = async () => {
@@ -51,7 +49,7 @@ function FilteredSellers() {
 
   return (
     <>
-      <Navbar/>
+      <Navbar />
       <div className="container mt-5 bottom">
         <h1>{type + "s"}</h1>
         <div className="row row-cols-1 row-cols-md-3 g-4">
@@ -60,7 +58,10 @@ function FilteredSellers() {
               <div className="card product text-bg-light h-100">
                 <div className="card-body">
                   <h5 className="card-title">{group.name}</h5>
-                  <Link to={`/specificlistings/${group.name}`} className="card-link">
+                  <Link
+                    to={`/specificlistings/${group.name}`}
+                    className="card-link"
+                  >
                     <img
                       src={newImages[index]}
                       className="card-img card-image"

@@ -1,13 +1,26 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams, useNavigate, useLocation } from "react-router-dom";
-import { collection, getDoc, updateDoc, doc, deleteDoc } from "firebase/firestore";
-import { getStorage, ref, getDownloadURL, uploadBytes, deleteObject } from "firebase/storage";
+import {
+  collection,
+  getDoc,
+  updateDoc,
+  doc,
+  deleteDoc,
+} from "firebase/firestore";
+import {
+  getStorage,
+  ref,
+  getDownloadURL,
+  uploadBytes,
+  deleteObject,
+} from "firebase/storage";
 import { db, auth, storage } from "../../firebase/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import Navbar from "./Navbar";
 import "./Styles.css";
-import ProfileDefault from "../../Images/Profile Default.png"
-import UploadIcon from "../../Images/Upload Icon.png"
+import ProfileDefault from "../../Images/Profile Default.png";
+import UploadIcon from "../../Images/Upload Icon.png";
+import { message } from "antd";
 
 function Profile() {
   const [basketListings, setBasketListings] = useState([]);
@@ -21,21 +34,19 @@ function Profile() {
   const [nameInput, setNameInput] = useState("");
   const navigate = useNavigate();
 
-
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setEmail(user.email);
         const ref = doc(db, "Profile", user.email);
-        setProfileRef(ref)
+        setProfileRef(ref);
       } else {
-        alert("Not Logged in");
+        message.error("Not Logged in");
       }
     });
 
     unsubscribe();
   }, []);
-
 
   useEffect(() => {
     const getBasketListings = async () => {
@@ -43,20 +54,20 @@ function Profile() {
       const profileData = profileDoc.data();
       setProfileData(profileData);
 
-      if(profileData?.profilePic) {
-        const url = await getDownloadURL(ref(storage, profileData?.profilePic))
-        setProfileUrl(url)  
+      if (profileData?.profilePic) {
+        const url = await getDownloadURL(ref(storage, profileData?.profilePic));
+        setProfileUrl(url);
       }
 
       if (profileData && profileData.basket) {
         const basketIds = profileData.basket;
         const basketListings = [];
-    
+
         for (const id of basketIds) {
           const sellerDocRef = doc(db, "Sellers", id);
           const sellerDoc = await getDoc(sellerDocRef);
           const sellerData = sellerDoc.data();
-    
+
           if (sellerData) {
             basketListings.push({
               id: sellerDoc.id,
@@ -64,7 +75,7 @@ function Profile() {
             });
           }
         }
-    
+
         setBasketListings(basketListings);
         loadImages(basketListings);
       } else {
@@ -72,10 +83,9 @@ function Profile() {
         setNewImages([]);
       }
     };
-    
 
     getBasketListings();
-    console.log("here")
+    console.log("here");
   }, [profileRef, update, editName]);
 
   const loadImages = async (listings) => {
@@ -94,18 +104,15 @@ function Profile() {
 
   const handleNameEdit = () => {
     if (editName) {
-      // Save changes
       updateDoc(profileRef, {
         name: nameInput,
-      })
+      });
       setEditName(false);
     } else {
-      // Enable editing
       setEditName(true);
       setNameInput(profileData?.name || "");
     }
   };
-
 
   const handleUpload = async (file) => {
     function makeid() {
@@ -115,20 +122,18 @@ function Profile() {
       const charactersLength = characters.length;
       let counter = 0;
       while (counter < 14) {
-        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        result += characters.charAt(
+          Math.floor(Math.random() * charactersLength)
+        );
         counter += 1;
       }
       return result;
     }
 
-    if(profileData?.profilePic) {
-      await deleteObject(ref(storage, profileData?.profilePic));
-    }
-
     if (file) {
       const allowedTypes = ["image/jpeg", "image/png"];
       if (!allowedTypes.includes(file.type)) {
-        alert("Please upload a valid JPG or PNG image.");
+        message.error("Please upload a valid JPG or PNG image.");
         return false;
       }
 
@@ -137,59 +142,72 @@ function Profile() {
 
       updateDoc(profileRef, {
         profilePic: imagePath,
-      })
+      });
       await uploadBytes(imageRef, file);
 
       setUpdate(!update);
-      alert("Profile updated Added!")
-      navigate('/profile');
-      
+      message.success("Profile updated Added!");
+      navigate("/profile");
     }
-  }
 
+    if (profileData?.profilePic) {
+      await deleteObject(ref(storage, profileData?.profilePic));
+    }
+  };
 
   return (
     <>
-      <Navbar/>
-      <section className="container md-8">
-      <div className="container mt-5 bottom">
-        <div className="row justify-content-center">
-          <div className="col-md-8">
+      <Navbar />
+      <div className="container">
+        <div className="row">
+          <div className="col">
             <div className="card">
               <div className="card-body">
                 <h1 className="card-title">Profile</h1>
                 <div>
                   <p>
-                    Email: {email}
+                    <strong>Email:</strong> {email}
                   </p>
-                  <p>Username: {editName ? (
-                    <input
-                      className="form-control"
-                      type="text"
-                      value={nameInput}
-                      onChange={(e) => setNameInput(e.target.value)}
-                    />
+                  <p>
+                    <strong>Username:</strong>{" "}
+                    {editName ? (
+                      <input
+                        className="form-control"
+                        type="text"
+                        value={nameInput}
+                        onChange={(e) => setNameInput(e.target.value)}
+                      />
+                    ) : (
+                      profileData?.name
+                    )}
+                  </p>
+                  {profileData?.profilePic ? (
+                    <img src={profileUrl} alt="profile" className="avatar" />
                   ) : (
-                    profileData?.name
+                    <img
+                      src={ProfileDefault}
+                      alt="profile"
+                      className="avatar"
+                    />
                   )}
-                  </p>
-                  {profileData?.profilePic ? 
-                    <img src={profileUrl} alt="profile" className="avatar"/>
-                  : <img src={ProfileDefault} alt="profile" className="avatar"/>}
                 </div>
                 <button className="btn btn-primary" onClick={handleNameEdit}>
-                    {editName ? "Save Name" : "Edit Name"}
+                  {editName ? "Save Name" : "Edit Name"}
                 </button>
-                <label for="file-upload" className="custom-file-upload mt-2 ms-2">
-                  <img src={UploadIcon} alt={".."} className="upload-icon" /> 
+                <label
+                  for="file-upload"
+                  className="custom-file-upload mt-2 ms-2"
+                >
+                  <img src={UploadIcon} alt={".."} className="upload-icon" />
                   Upload profile picture
                 </label>
-                <input id="file-upload" 
+                <input
+                  id="file-upload"
                   type="file"
                   onChange={(event) => {
                     event.preventDefault();
                     let files = event.target.files[0];
-                    console.log(files)
+                    console.log(files);
                     handleUpload(files);
                   }}
                 />
@@ -202,7 +220,7 @@ function Profile() {
             <div className="card">
               <div className="card-body">
                 <h2>Favourites</h2>
-                <div className="row">
+                <div className="row row-cols-1 row-cols-md-3 g-4">
                   {basketListings.map((seller, index) => (
                     <div className="col" key={seller.id}>
                       <Link
@@ -233,7 +251,6 @@ function Profile() {
           </div>
         </div>
       </div>
-      </section>
     </>
   );
 }

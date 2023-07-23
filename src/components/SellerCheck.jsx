@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { collection, getDocs } from 'firebase/firestore';
-import { db, auth } from '../../firebase/firebase';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { collection, getDocs } from "firebase/firestore";
+import { db, auth } from "../../firebase/firebase";
+import { useNavigate } from "react-router-dom";
 
 function SellerCheck() {
   const navigate = useNavigate();
@@ -10,9 +10,12 @@ function SellerCheck() {
 
   useEffect(() => {
     const getApproved = async () => {
-      const approvedCollectionRef = collection(db, 'Approved');
+      const approvedCollectionRef = collection(db, "Approved");
       const data = await getDocs(approvedCollectionRef);
-      const approvedData = data.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+      const approvedData = data.docs.map((doc) => ({
+        ...doc.data(),
+        id: doc.id,
+      }));
       setApprovedList(approvedData);
     };
 
@@ -21,11 +24,13 @@ function SellerCheck() {
 
   const handleSellerCheck = () => {
     if (user != null) {
-      const isApprovedSeller = approvedList.some((approved) => approved.email === user.email);
+      const isApprovedSeller = approvedList.some(
+        (approved) => approved.email === user.email
+      );
       if (isApprovedSeller) {
-        navigate('/sellerslistings');
+        navigate("/sellerslistings");
       } else {
-        navigate('/notseller');
+        navigate("/notseller");
       }
     }
   };

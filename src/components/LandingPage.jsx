@@ -43,16 +43,19 @@ function LandingPage() {
 
   return (
     <>
-      <Navbar/>
+      <Navbar />
       <div className="container mt-5 bottom">
-      <h1>All Sellers</h1>
+        <h1>All Sellers</h1>
         <div className="row row-cols-1 row-cols-md-3 g-4">
           {groups.map((group, index) => (
             <div className="col" key={group.id}>
               <div className="card product text-bg-light h-100">
                 <div className="card-body">
                   <h5 className="card-title">{group.name}</h5>
-                  <Link to={`/specificlistings/${group.name}`} className="card-link">
+                  <Link
+                    to={`/specificlistings/${group.name}`}
+                    className="card-link"
+                  >
                     <img
                       src={newImages[index]}
                       className="card-img card-image"
