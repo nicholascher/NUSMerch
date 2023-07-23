@@ -6,6 +6,9 @@ import {
   updateDoc,
   doc,
   deleteDoc,
+  getDocs,
+  query,
+  where,
 } from "firebase/firestore";
 import {
   getStorage,
@@ -102,11 +105,29 @@ function Profile() {
     }
   };
 
-  const handleNameEdit = () => {
+  const handleNameEdit = async () => {
     if (editName) {
       updateDoc(profileRef, {
         name: nameInput,
       });
+      const roomsRef = collection(db, "Rooms");
+      const roomQuery = query(
+        roomsRef,
+        where("participants", "array-contains", email)
+      );
+      const snapshot = await getDocs(roomQuery);
+      snapshot.forEach((doc) => {
+        const roomData = doc.data();
+        const participants = roomData.participants;
+        const index = participants.indexOf(email);
+        if (index !== -1) {
+          const updatedUsername = [...roomData.username];
+          updatedUsername[index] = nameInput;
+
+          updateDoc(doc.ref, { username: updatedUsername });
+        }
+      });
+
       setEditName(false);
     } else {
       setEditName(true);

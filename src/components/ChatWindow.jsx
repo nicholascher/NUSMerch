@@ -115,11 +115,13 @@ function ChatWindow() {
       if (userSnapshot.exists()) {
         const userData = userSnapshot.data();
         const userName = userData.name;
+        const userEmail = currentUser.email;
 
         await addDoc(messageRef, {
           text: newMessage,
           createdAt: serverTimestamp(),
           user: userName,
+          email: userEmail,
         });
       }
       const chat = chats.find((chat) => chat.id === selectedChatId);
@@ -209,7 +211,7 @@ function ChatWindow() {
   }, [selectedChatId, chats, email, profilePictures]);
 
   const renderMessage = (message) => {
-    const isUserMessage = message.user === name;
+    const isUserMessage = message.email === email;
     const messageClass = isUserMessage ? "user-message" : "other-message";
     const alignClass = isUserMessage ? "message-right" : "message-left";
 
