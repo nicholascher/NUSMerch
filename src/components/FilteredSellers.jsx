@@ -25,6 +25,7 @@ function FilteredSellers() {
         return group.type === type;
       });
       setGroups(filteredGroups);
+      console.log(groups);
 
       const imagePromises = filteredGroups.map(async (group) => {
         if (group.imagePath) {
@@ -65,7 +66,7 @@ function FilteredSellers() {
                     <img
                       src={newImages[index]}
                       className="card-img card-image"
-                      alt="Group Image"
+                      alt={group.name}
                     />
                   </Link>
                 </div>
