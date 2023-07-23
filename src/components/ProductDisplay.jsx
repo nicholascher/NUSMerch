@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { getStorage, ref, getDownloadURL } from "firebase/storage";
 import { db, auth } from "../../firebase/firebase";
 import Signout from "./Signout";
-import { Rate, Alert, Button } from "antd";
+import { Rate, Alert, Button, message } from "antd";
 import { HeartOutlined, HeartFilled } from "@ant-design/icons";
 import { onAuthStateChanged } from "firebase/auth";
 import {
@@ -17,16 +17,20 @@ import {
   arrayUnion,
   arrayRemove,
   deleteDoc,
+  onSnapshot
 } from "firebase/firestore";
 import Navbar from "./Navbar";
 import insta from "../../Images/Instagram Icon.png";
 import tele from "../../Images/Telegram Icon.png";
 import "./Styles.css";
+import ProfileDefault from "../../Images/Profile Default.png"
 
 function ProductDisplay() {
   const location = useLocation();
   const seller = location.state;
 
+  const [profilePictures, setProfilePictures] = useState({});
+  const [usernames, setUsernames] = useState({});
   const [imageUrl, setImageUrl] = useState(null);
   const [rating, setRating] = useState(0);
   const [reviewText, setReviewText] = useState("");
@@ -130,14 +134,14 @@ function ProductDisplay() {
     setRating(0);
     setReviewText("");
     setUpdate(!update);
-    alert("Review added!!");
+    message.success("Review added!!");
   };
 
   const handleDeleteReview = async (reviewId) => {
     const reviewRef = doc(db, "Sellers", seller.id, "Review", reviewId);
     await deleteDoc(reviewRef);
     setUpdate(!update);
-    alert("Review Deleted!");
+    message.success("Review Deleted!");
   };
 
   const handleCreateRoom = async () => {
@@ -173,57 +177,80 @@ function ProductDisplay() {
     }
   };
 
+  useEffect(() => {
+    const unsubscribe = onSnapshot(collection(db, "Profile"), async (snapshot) => {
+      let profiles = {};
+      snapshot.forEach((doc) => {
+        const email = doc.id;
+        const profilePic = doc.data().profilePic;
+        const name = doc.data().name;
+        profiles[email] = {
+          profilePic: profilePic,
+          name: name,
+        };
+      });
+
+      const downloadURLs = await Promise.all(
+        Object.values(profiles).map(async (profile) => {
+          if (profile.profilePic) {
+            const storageRef = ref(storage, profile.profilePic);
+            return getDownloadURL(storageRef);
+          }
+          return ProfileDefault;
+        })
+      );
+
+      const updatedProfilePictures = {};
+      Object.keys(profiles).forEach((key, index) => {
+        updatedProfilePictures[key] = downloadURLs[index];
+      });
+
+      setProfilePictures(updatedProfilePictures);
+
+      const updatedUsernames = {};
+      Object.keys(profiles).forEach((key) => {
+        updatedUsernames[key] = profiles[key].name;
+      });
+      setUsernames(updatedUsernames);
+    });
+
+    return unsubscribe;
+  }, []);
+
+
+  const getProfilePictureUrl = (createdByEmail) => {
+    return profilePictures[createdByEmail] || ProfileDefault;
+  };
+
   return (
     <>
       <Navbar />
       <div
         className="card mx-auto"
-        style={{ marginTop: "20px", marginBottom: "20px", width: "1300px" }}
+        style={{ marginTop: "20px", marginBottom: "20px", width: "1100px" }}
       >
         <div className="row" style={{ marginTop: "20px" }}>
-          {additionalImages.length === 0 ? (
+          <div
+            className="carousel-container"
+            style={{ width: "400px", height: "400px", marginLeft: "20px", marginRight: "300px" }}
+          >
             <div
               id="carouselExampleFade"
-              className="carousel slide"
-              style={{
-                width: "35%",
-                height: "auto",
-                marginLeft: "20px",
-                marginRight: "300px",
-              }}
+              className="carousel slide d-flex justify-content-center align-items-center"
+              style={{ width: "100%", height: "100%" }}
             >
               <div className="carousel-inner">
                 <div className="carousel-item active">
                   <img
                     src={imageUrl}
-                    className="d-block w-100"
-                    alt="product image"
-                  />
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div
-              id="carouselExampleFade"
-              className="carousel slide col-md-7"
-              style={{
-                width: "35%",
-                height: "auto",
-                marginLeft: "20px",
-                marginRight: "300px",
-              }}
-            >
-              <div className="carousel-inner">
-                <div className="carousel-item active">
-                  <img
-                    src={imageUrl}
-                    className="d-block w-100"
+                    className="d-block display-pic"
                     alt="product image"
                   />
                 </div>
                 {additionalImages.map((image, index) => (
                   <div className="carousel-item" key={index}>
-                    <img src={image} className="d-block w-100" alt="..." />
+                    <img src={image} className="d-block w-100 display-pic"
+                      alt="..." />
                   </div>
                 ))}
               </div>
@@ -252,7 +279,7 @@ function ProductDisplay() {
                 <span className="visually-hidden">Next</span>
               </button>
             </div>
-          )}
+          </div>
 
           <div className="col-md-4">
             <h1>{seller.name}</h1>
@@ -260,31 +287,24 @@ function ProductDisplay() {
             <p>
               Average Rating: <Rate value={averageRating} disabled />
             </p>
-            <Button
-              type="text"
-              icon={
-                favourite ? (
-                  <HeartFilled
-                    style={{ display: "inline-flex", alignItems: "center" }}
-                  />
+            <div className="add-to-favorites-container">
+              <span>Add to Favourites:</span>
+              <button className="heart-button" onClick={handleAddToFavourites}>
+                {favourite ? (
+                  <HeartFilled style={{ color: "#f00" }} />
                 ) : (
-                  <HeartOutlined
-                    style={{ display: "inline-flex", alignItems: "center" }}
-                  />
-                )
-              }
-              onClick={handleAddToFavourites}
-            >
-              Add to Favourites
-            </Button>
+                  <HeartOutlined style={{ color: "#000" }} />
+                )}
+              </button>
+            </div>
             <p></p>
             {seller.instagram && (
-              <img src={insta} style={{ width: "30px", height: "auto" }}></img>
+              <img src={insta} style={{ width: "30px", height: "auto" }} alt="Instagram" />
             )}
             <span className="ms-2">{seller.instagram}</span>
             <p></p>
             {seller.telegram && (
-              <img src={tele} style={{ width: "30px", height: "auto" }}></img>
+              <img src={tele} style={{ width: "30px", height: "auto" }} alt="Telegram" />
             )}
             <span className="ms-2">{seller.telegram}</span>
             <p></p>
@@ -315,7 +335,7 @@ function ProductDisplay() {
       </div>
       <div
         className="card mx-auto"
-        style={{ marginTop: "20px", marginBottom: "20px", width: "1300px" }}
+        style={{ marginTop: "20px", marginBottom: "20px", width: "1100px" }}
       >
         <div className="row" style={{ marginTop: "20px" }}>
           <div className="col-md-7" style={{ marginLeft: "20px" }}>
@@ -328,7 +348,7 @@ function ProductDisplay() {
 
             <Rate value={rating} onChange={(value) => setRating(value)} />
 
-            <div className="mb-3">
+            <div className="mb-3 review-textarea">
               <label htmlFor="productDescription" className="form-label">
                 Leave a Review!
               </label>
@@ -359,17 +379,27 @@ function ProductDisplay() {
                 allReviews.map((review) => (
                   <div key={review.id} className="review-container">
                     <div className="review-content">
-                      <Rate value={review.rating} disabled />
-                      <p>{review.review}</p>
+                      <img
+                        src={getProfilePictureUrl(review.createdBy)}
+                        alt="User Profile"
+                        className="chat-pic"
+                      />
+                      <span>{usernames[review.createdBy]}</span>
+                      <span>
+                        {review.createdBy === email && (
+                          <button
+                            className="btn btn-danger delete btn-sm"
+                            onClick={() => handleDeleteReview(review.id)}
+                          >
+                            Delete Review
+                          </button>
+                        )}</span>
+                      <div>
+                        <Rate value={review.rating} disabled />
+                      </div>
+                      <p className="review-text">{review.review}</p>
                     </div>
-                    {review.createdBy === email && (
-                      <button
-                        className="btn btn-danger delete-review-button"
-                        onClick={() => handleDeleteReview(review.id)}
-                      >
-                        Delete Review
-                      </button>
-                    )}
+
                   </div>
                 ))
               )}
