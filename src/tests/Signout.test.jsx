@@ -41,7 +41,6 @@ test('should sign out and navigate to "/login" on clicking sign out button', asy
   </MemoryRouter>
   );
 
-  // Find and click the sign out button
   const signOutButton = screen.getByRole('button', { name: /sign out/i });
   fireEvent.click(signOutButton);
 

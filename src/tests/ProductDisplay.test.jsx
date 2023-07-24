@@ -49,11 +49,7 @@ vi.mock('firebase/firestore', async () => {
   const actual = await vi.importActual('firebase/firestore');
   return {
     ...actual,
-    addDoc: vi.fn(() => Promise.resolve({
-      docs: [
-      { id: 'reviewId1', data: () => ({ createdBy: '', rating: 0, review: 'Great product!' }) },
-      ]
-    })),
+    addDoc: vi.fn(() => Promise.resolve({})),
     getDoc: vi.fn(() => Promise.resolve({data: () => ({ name: 'John', basket: [] })})),
     getDocs: vi.fn(() => Promise.resolve({
       docs: [
