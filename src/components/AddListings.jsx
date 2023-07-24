@@ -207,7 +207,7 @@ function AddListings() {
       <h1 className="text-center mb-6">Add Listing</h1> 
       <div className="row justify-content-center">
         <div className="col-md-6">
-          <form>
+          <form data-testid="add-listings-form">
             <select
               className="form-select"
               aria-label="Default select example"
@@ -302,7 +302,7 @@ function AddListings() {
               />
             </div>
             <div className="mb-3">
-              <label htmlFor="form-file-multiple" className="form-label">
+              <label htmlFor="additional images" className="form-label">
                 Additional Product Images
               </label>
               <input
@@ -358,7 +358,7 @@ function AddListings() {
                 type="file"
                 accept=".jpg, .png"
                 className="form-control"
-                id="QRCode"
+                id="QRcode"
                 name="QRcode"
                 onChange={(event) => {
                   setQRUpload(event.target.files[0]);
@@ -367,7 +367,7 @@ function AddListings() {
             </div>
             <h2 className="text-center">Contact Details</h2>
             <div className="mb-3">
-              <label htmlFor="productName" className="form-label">
+              <label htmlFor="instagram" className="form-label">
                 Instagram Handle
               </label>
               <input
@@ -383,7 +383,7 @@ function AddListings() {
               />
             </div>
             <div className="mb-3">
-              <label htmlFor="productName" className="form-label">
+              <label htmlFor="telegram" className="form-label">
                 Telegram Handle
               </label>
               <input
