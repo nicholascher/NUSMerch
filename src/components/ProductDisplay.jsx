@@ -158,15 +158,23 @@ function ProductDisplay() {
     const userRef = await getDoc(profileDocRef);
     const userData = userRef.data();
 
-    const newRoom = {
-      participants: [email, seller.createdBy],
-      username: [userData.name, docData.name],
-      unread: {
-        [email]: 0,
-        [seller.createdBy]: 0,
-      },
-    };
-    await setDoc(roomRef, newRoom, `${email}_${seller.createdBy}`);
+
+    const existingRoomRef = (await getDoc(doc(db, "Rooms", `${seller.createdBy}_${email}`))).data();
+
+    console.log(existingRoomRef);
+
+    if (!existingRoomRef && email !== seller.createdBy) {
+      const newRoom = {
+        participants: [email, seller.createdBy],
+        username: [userData.name, docData.name],
+        unread: {
+          [email]: 0,
+          [seller.createdBy]: 0,
+        },
+      };
+      await setDoc(roomRef, newRoom, `${email}_${seller.createdBy}`);
+    }
+
   };
 
   const handleAddToFavourites = () => {
