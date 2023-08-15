@@ -393,6 +393,7 @@ function ProductDisplay() {
                 onChange={(event) => {
                   setReviewText(event.target.value);
                 }}
+                maxLength={500}
               ></textarea>
             </div>
             <button

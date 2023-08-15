@@ -8,6 +8,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import Navbar from "./Navbar";
 import { message } from "antd";
+import EmptyPage from "../../Images/Empty Page.jpg";
 
 function SellersListings() {
   const navigate = useNavigate();
@@ -81,7 +82,10 @@ function SellersListings() {
         </Link>
         <div className="row row-cols-1 row-cols-md-3 g-4">
           {sellers.length === 0 ? (
-            <blockquote>You have no Lisitings! Add one now!</blockquote>
+            <div className="empty-page">
+            <img className="empty-page-image" src={EmptyPage} alt="Empty Page" />
+            <p className="no-img-text">Uh oh! It looks like this you currently have no listings! Add one now!</p>
+            </div>
           ) : (
             sellers.map((seller, index) => (
               <div className="col" key={seller.id}>

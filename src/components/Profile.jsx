@@ -196,6 +196,7 @@ function Profile() {
                         className="form-control"
                         type="text"
                         value={nameInput}
+                        maxLength={20}
                         onChange={(e) => setNameInput(e.target.value)}
                       />
                     ) : (

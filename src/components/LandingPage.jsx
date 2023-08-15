@@ -4,6 +4,8 @@ import { collection, getDocs } from "firebase/firestore";
 import { getStorage, ref, getDownloadURL } from "firebase/storage";
 import { db } from "../../firebase/firebase";
 import Navbar from "./Navbar";
+import Background from '../../Images/Background.jpg'
+
 
 function LandingPage() {
   const [groups, setGroups] = useState([]);
@@ -43,13 +45,14 @@ function LandingPage() {
 
   return (
     <>
+    <div style={{backgroundColor: '#ffffff'}}>
       <Navbar />
-      <div className="container mt-5 bottom">
+      <div className="container mt-5 bottom" >
         <h1>All Sellers</h1>
         <div className="row row-cols-1 row-cols-md-3 g-4">
           {groups.map((group, index) => (
             <div className="col" key={group.id}>
-              <div className="card product text-bg-light h-100">
+              <div className="card product custom-card-color h-100" >
                 <div className="card-body">
                   <h5 className="card-title">{group.name}</h5>
                   <Link
@@ -67,6 +70,7 @@ function LandingPage() {
             </div>
           ))}
         </div>
+      </div>
       </div>
     </>
   );

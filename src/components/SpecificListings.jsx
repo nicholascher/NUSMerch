@@ -4,6 +4,7 @@ import { collection, getDocs } from "firebase/firestore";
 import { getStorage, ref, getDownloadURL } from "firebase/storage";
 import { db } from "../../firebase/firebase";
 import Navbar from "./Navbar";
+import EmptyPage from "../../Images/Empty Page.jpg";
 
 function SpecificListings() {
   const [sellers, setSellers] = useState([]);
@@ -53,7 +54,10 @@ function SpecificListings() {
         <h1>{type + "'s Listings"}</h1>
         <div className="row row-cols-1 row-cols-md-3 g-4">
           {sellers.length === 0 ? (
-            <blockquote>This seller has no listings!</blockquote>
+            <div className="empty-page">
+            <img className="empty-page-image" src={EmptyPage} alt="Empty Page" />
+            <p className="no-img-text">Uh oh! It looks like this seller currently has no listings!</p>
+            </div>
           ) : (
             sellers.map((seller, index) => (
               <div className="col" key={seller.id}>

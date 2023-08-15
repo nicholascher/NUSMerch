@@ -462,3 +462,30 @@ input[id="file-upload"] {
   justify-content: center;
   margin-bottom: 20px;
 }
+
+.empty-page {
+ margin: auto;
+ text-align: center;
+}
+
+.empty-page-image {
+  width: 100%;
+  height: auto;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.no-img-text {
+  font-family: 'Times New Roman',serif;
+  font-size: 23px;
+}
+
+.bg-light-blue {
+  background-color: #ffffff;
+}
+
+.card.custom-card-color{
+  background-color: #ffffff;
+}
+
+
